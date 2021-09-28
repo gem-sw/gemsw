@@ -1,0 +1,264 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../../DetectorDescription/Schema/DDLSchema.xsd">
+
+<!-- 
+     These XML files tend to be ileggible for non-experts, 
+     I ll try to explain how this file is built up.
+     There are four main sections:
+     [1] ConstantsSection to define constants
+     [2] SolidSection where solids are defined
+     [3] LogicalPartSection where materials are assigned to solids
+     [4] PosPartSection where solids are placed inside 
+         mother volumes and translated/rotated to right position
+     Few conventions:
+     - when solids are defined, half lenghts have to be used
+     - when solids are placed, one need to indicate translation to geometric center of solid
+     - axes used: z-axes runs bottom-up, x-axes runs left-right, y-axes goes out of the plane
+
+      Z ^  
+        |  ^ Y
+        | /
+        |/____> X
+  -->
+
+
+
+<ConstantsSection label="gem10x10.xml eval="true">
+  <Constant name="totthick"       value="16*mm"/>
+  <Constant name="pcbwidth"       value="297*mm"/>
+  <Constant name="pcbheight"      value="297*mm"/>
+  <Constant name="pcbthick"       value="3*mm"/>
+  <Constant name="pcbmarginX"     value="57*mm"/>
+  <Constant name="pcbmarginY"     value="57*mm"/>
+  <Constant name="gasboxwidth"    value="183*mm"/>
+  <Constant name="gasboxheight"   value="183*mm"/>
+  <Constant name="gasboxthick"    value="10*mm"/>
+  <Constant name="gasboxborder"   value="10*mm"/>
+  <Constant name="foilwidth"      value="89.5*mm"/>
+  <Constant name="foilheight"     value="89.5*mm"/>
+  <Constant name="foilthick"      value="0.05*mm"/>
+  <Constant name="driftgapthick"  value="3*mm"/>
+  <Constant name="trans1gapthick" value="3*mm"/>
+  <Constant name="trans2gapthick" value="3*mm"/>
+  <Constant name="inductgapthick" value="3*mm"/>
+  <Constant name="innerboxwidth"  value="[gasboxwidth]-2*[gasboxborder]"/>
+  <Constant name="innerboxheight" value="[gasboxheight]-2*[gasboxborder]"/>
+  <Constant name="stackthickness" value="4*[foilthick]+[driftgapthick]+[trans1gapthick]+[trans2gapthick]+[inductgapthick]" />
+  <Constant name="abovegasthick"  value="[gasboxthick]-[stackthickness]" />
+  <Constant name="lrgaswidth"     value="[innerboxwidth]/2-[foilwidth]/2" />
+  <Constant name="tbgasheight"    value="[innerboxheight]/2-[foilheight]/2" />
+</ConstantsSection>
+
+<SolidSection label="gem10x10.xml">
+  <Box name="TKGEMASMBLY" dz="[pcbheight]/2"    dy="[totthick]/2"    dx="[pcbwidth]/2" />
+  <Box name="TKGEMPCB"    dz="[pcbheight]/2"    dy="[pcbthick]/2"    dx="[pcbwidth]/2" />
+  <Box name="TKGEMBRDLft" dz="[gasboxheight]/2" dy="[gasboxthick]/2" dx="[gasboxborder]/2" />
+  <Box name="TKGEMBRDRgt" dz="[gasboxheight]/2" dy="[gasboxthick]/2" dx="[gasboxborder]/2" />
+  <Box name="TKGEMBRDTop" dz="[gasboxborder]/2" dy="[gasboxthick]/2" dx="[gasboxwidth]/2-[gasboxborder]" />
+  <Box name="TKGEMBRDBot" dz="[gasboxborder]/2" dy="[gasboxthick]/2" dx="[gasboxwidth]/2-[gasboxborder]" />
+  <!-- maybe i can make a union ? avoids assigning 4x same material -->
+  <Box name="TKGEMFoil1"  dz="[foilheight]/2"   dy="[foilthick]/2"   dx="[foilwidth]/2"/>
+  <Box name="TKGEMFoil2"  dz="[foilheight]/2"   dy="[foilthick]/2"   dx="[foilwidth]/2"/>
+  <Box name="TKGEMFoil3"  dz="[foilheight]/2"   dy="[foilthick]/2"   dx="[foilwidth]/2"/>
+  <Box name="TKGEMGas1"   dz="[foilheight]/2"   dy="[driftgapthick]/2"  dx="[foilwidth]/2" />
+  <Box name="TKGEMGas2"   dz="[foilheight]/2"   dy="[trans1gapthick]/2" dx="[foilwidth]/2" />
+  <Box name="TKGEMGas3"   dz="[foilheight]/2"   dy="[trans2gapthick]/2" dx="[foilwidth]/2" />
+  <Box name="TKGEMGas4"   dz="[foilheight]/2"   dy="[inductgapthick]/2" dx="[foilwidth]/2" />
+  <Box name="TKGEMCFoil"  dz="[foilheight]/2"   dy="[foilthick]/2"      dx="[foilwidth]/2"/>
+  <Box name="TKGEMCover"  dz="[gasboxheight]/2" dy="[pcbthick]/2"       dx="[gasboxwidth]/2"/>
+  <!-- remaining gas in the gasvolume of the detector -->
+  <Box name="TKGEMGasAbv" dz="[foilheight]/2"   dy="[abovegasthick]"  dx="[foilwidth]/2" />
+  <Box name="TKGEMGasLft" dz="[innerboxheight]/2" dy="[gasboxthick]" dx="[lrgaswidth]/2"/>
+  <Box name="TKGEMGasRgt" dz="[innerboxheight]/2" dy="[gasboxthick]" dx="[lrgaswidth]/2"/>
+  <Box name="TKGEMGasTop" dz="[innerboxheight]/2-[foilheight]/2" dy="[gasboxthick]" dx="[innerboxwidth]/2-[foilwidth]/2"/>
+  <Box name="TKGEMGasBot" dz="[innerboxheight]/2-[foilheight]/2" dy="[gasboxthick]" dx="[innerboxwidth]/2-[foilwidth]/2"/>
+  <!-- maybe i can make a union ? avoids assigning 5x same material -->
+</SolidSection>
+
+<LogicalPartSection label="gem10x10.xml">
+  <LogicalPart name ="TKGEMASMBLY" category="unspecified">
+  <rSolid name="TKGEMASMBLY"/>
+  <rMaterial name="materials:Assembly"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMPCB" category="unspecified">
+  <rSolid name="TKGEMPCB"/>
+  <rMaterial name="gemf:M_Rdout_Brd"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMCover" category="unspecified">
+  <rSolid name="TKGEMCover"/>
+  <rMaterial name="gemf:M_Rdout_Brd"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMBRDLft" category="unspecified">
+  <rSolid name="TKGEMBRDLft"/>
+  <rMaterial name="materials:g10"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMBRDRgt" category="unspecified">
+  <rSolid name="TKGEMBRDRgt"/>
+  <rMaterial name="materials:g10"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMBRDTop" category="unspecified">
+  <rSolid name="TKGEMBRDTop"/>
+  <rMaterial name="materials:g10"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMBRDBot" category="unspecified">
+  <rSolid name="TKGEMBRDBot"/>
+  <rMaterial name="materials:g10"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMFoil1" category="unspecified">
+  <rSolid name="TKGEMFoil1"/>
+  <rMaterial name="gemf:M_GEM_Foil"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMFoil2" category="unspecified">
+  <rSolid name="TKGEMFoil2"/>
+  <rMaterial name="gemf:M_GEM_Foil"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMFoil3" category="unspecified">
+  <rSolid name="TKGEMFoil3"/>
+  <rMaterial name="gemf:M_GEM_Foil"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGas1" category="unspecified">
+  <rSolid name="TKGEMGas1"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGas2" category="unspecified">
+  <rSolid name="TKGEMGas2"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGas3" category="unspecified">
+  <rSolid name="TKGEMGas3"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGas4" category="unspecified">
+  <rSolid name="TKGEMGas4"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMCFoil" category="unspecified">
+  <rSolid name="TKGEMCFoil"/>
+  <rMaterial name="gemf:M_GEM_Foil"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGasAbv" category="unspecified">
+  <rSolid name="TKGEMGasAbv"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGasLft" category="unspecified">
+  <rSolid name="TKGEMGasLft"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGasRgt" category="unspecified">
+  <rSolid name="TKGEMGasRgt"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGasTop" category="unspecified">
+  <rSolid name="TKGEMGasTop"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+  <LogicalPart name ="TKGEMGasBot" category="unspecified">
+  <rSolid name="TKGEMGasBot"/>
+  <rMaterial name="gemf:M_GEM_Gas"/>
+  </LogicalPart>
+</LogicalPartSection>
+
+<PosPartSection label="gem10x10.xml">
+  <PosPart copynumber="1">
+  <rParent name="gemtbworld:gemtbworld"/>
+  <rChild name="gem10x10:TKGEMASMBLY"/>
+  <Translation x="0*fm" y="0*fm" z="0*fm" />   <!-- X = width | Z = height | Y = thickness -->
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMPCB"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]/2" z="0*fm" /> 
+  </PosPart>                                    
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMBRDLft"/>
+  <Translation x="-[gasboxwidth]/2+[gasboxthick]/2" y="0*fm" z="0*fm" />
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMBRDRgt"/>
+  <Translation x="[gasboxwidth]/2-[gasboxthick]/2" y="0*fm" z="0*fm" />
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMBRDTop"/>
+  <Translation x="0*fm" y="0*fm" z="[gasboxwidth]/2-[gasboxthick]/2" />
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMBRDBot"/>
+  <Translation x="0*fm" y="0*fm" z="-[gasboxwidth]/2+[gasboxthick]/2" />
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGas1"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]+[driftgapthick]/2" z="0*fm" /> 
+  </PosPart>                                    
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMFoil1"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]+[driftgapthick]+[gemfoilthick]/2" z="0*fm" /> 
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGas2"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]+[driftgapthick]+[gemfoilthick]+[trans1gapthick]/2" z="0*fm" /> 
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMFoil2"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]+[driftgapthick]+[gemfoilthick]*3/2+[trans1gapthick]" z="0*fm" /> 
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGas3"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]+[driftgapthick]+[gemfoilthick]*2+[trans1gapthick]+[trans2gapthick]/2" z="0*fm" /> 
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMFoil3"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]+[driftgapthick]+[gemfoilthick]*5/2+[trans1gapthick]+[transgap2thick]" z="0*fm" /> 
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGas4"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]+[driftgapthick]+[gemfoilthick]*5/2+[trans1gapthick]+[transgap2thick]+[inductgapthick]/2" z="0*fm" /> 
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMCFoil"/>
+  <Translation x="0*fm" y="-[totalthick]/2+[pcbthick]+[driftgapthick]+[gemfoilthick]*7/2+[trans1gapthick]+[transgap2thick]+[inductgapthick]" z="0*fm" /> 
+  </PosPart>                  
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGasAbv"/>
+  <Translation x="0*fm" y="[totalthick]/2-[pcbthick]-[abovegasthick]/2" z="0*fm" /> 
+  </PosPart>
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGasLft"/>
+  <Translation x="-[foilwidth]/2-[lrgaswidth]" y="0*fm" z="0*fm" /> 
+  </PosPart>              
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGasRgt"/>
+  <Translation x="[foilwidth]/2+[lrgaswidth]" y="0*fm" z="0*fm" /> 
+  </PosPart>              
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGasTop"/>
+  <Translation x="0*fm" y="0*fm" z="[foilheight]/2+[tbgasheight]" /> 
+  </PosPart>              
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMGasBot"/>
+  <Translation x="0*fm" y="0*fm" z="-[foilheight]/2-[tbgasheight]" /> 
+  </PosPart>              
+  <PosPart copynumber="1">
+  <rParent name="gem10x10:TKGEMASMBLY"/>
+  <rChild name="gem10x10:TKGEMCover"/>
+  <Translation x="0*fm" y="[totalthick]/2-[pcbthick]/2" z="0*fm" /> 
+  </PosPart>                                    
+</PosPartSection>
+
+</DDDefinition>
