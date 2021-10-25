@@ -6,7 +6,7 @@
     <Constant name="rMax"   value="149.5*cm"/>
     <Constant name="dZ"     value="0.0122066*cm + 0.5*([rMax]-[rMin])"/>
     <Constant name="rPos"   value="([dZ] + [rMin])"/>
-    <Constant name="zPos"   value="([cms:CalorBeamZ3] + [mf:dzGE0])"/>
+    <Constant name="zPos"   value="0*cm"/>
     <Constant name="z10"    value="12.35*cm"/> 
     <Constant name="z20"    value="([z10]-5*cm)"/> 
     <Constant name="z30"    value="([z20]-5*cm)"/> 

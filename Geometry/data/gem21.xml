@@ -957,12 +957,12 @@
   <PosPart copyNumber="1">
     <rParent name="mf:ME2RingP"/>
     <rChild name="GEMDisk21LP"/>
-    <Translation x="0*fm" y="0*fm" z="([zFront]+[hthick])" />
+    <Translation x="0*fm" y="0*fm" z="0*fm" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="mf:ME2RingN"/>
     <rChild name="GEMDisk21LN"/>
-    <Translation x="0*fm" y="0*fm" z="([zFront]+[hthick])" />
+    <Translation x="0*fm" y="0*fm" z="0*fm" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="GEMBox21F"/>

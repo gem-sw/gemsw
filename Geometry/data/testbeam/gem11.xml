@@ -1,27 +1,36 @@
 <?xml version="1.0"?>
 <DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../../../DetectorDescription/Schema/DDLSchema.xsd">
 
+<!-- Modified GEM11.XML file to use to mimick 10x10 chambers used in testbeam -->
+<!-- In order not to mess up with the current numbering scheme, we keep 8 eta partitions
+     and we keep also all volumes for long and short chambers ... I ll make them identical though
+     GEM10x10 are rectangular and have the dimensions of the 10x10 chambers
+     Actually the 10x10 chambers are 8.95 x 8.95 cm2 and have 358 strips with 250um pitch -->
+<!-- Local Coordinate system: Z=height, X=width, Y=thickness -->
+<!-- Always Half-lenghts are specified -->
+
 <ConstantsSection label="gem11.xml" eval="true">
-  <Constant name="dzS1L" value="9.7025*cm"/>
-  <Constant name="dzS2L" value="9.7025*cm"/>
-  <Constant name="dzS3L" value="8.0535*cm"/>
-  <Constant name="dzS4L" value="8.0535*cm"/>
-  <Constant name="dzS5L" value="6.7280*cm"/>
-  <Constant name="dzS6L" value="6.7280*cm"/>
-  <Constant name="dzS7L" value="5.6535*cm"/>
-  <Constant name="dzS8L" value="5.6535*cm"/>
-  <Constant name="dzS1S" value="8.3275*cm"/>
-  <Constant name="dzS2S" value="8.3275*cm"/>
-  <Constant name="dzS3S" value="7.0285*cm"/>
-  <Constant name="dzS4S" value="7.0285*cm"/>
-  <Constant name="dzS5S" value="5.9785*cm"/>
-  <Constant name="dzS6S" value="5.9785*cm"/>
-  <Constant name="dzS7S" value="5.1030*cm"/>
-  <Constant name="dzS8S" value="5.1030*cm"/>
-  <Constant name="dzGap" value="0.2500*mm"/>
-  <Constant name="dzInL" value="([dzS1L]+[dzS2L]+[dzS3L]+[dzS4L]+[dzS5L]+[dzS6L]+[dzS7L]+[dzS8L]+7*[dzGap])"/>
-  <Constant name="dzInS" value="([dzS1S]+[dzS2S]+[dzS3S]+[dzS4S]+[dzS5S]+[dzS6S]+[dzS7S]+[dzS8S]+7*[dzGap])"/>
-  <Constant name="dzLS"  value="([dzInL]-[dzInS])"/>
+  <!-- ETA PARTITIONS -->
+  <Constant name="dzS1L" value="4.9750*cm"/> <!-- eta partition heights -->
+  <Constant name="dzS2L" value="4.9750*cm"/>
+  <Constant name="dzS3L" value="4.9750*cm"/>
+  <Constant name="dzS4L" value="4.9750*cm"/>
+  <Constant name="dzS5L" value="4.9750*cm"/>
+  <Constant name="dzS6L" value="4.9750*cm"/>
+  <Constant name="dzS7L" value="4.9750*cm"/>
+  <Constant name="dzS8L" value="4.9750*cm"/>
+  <Constant name="dzS1S" value="4.9750*cm"/>
+  <Constant name="dzS2S" value="4.9750*cm"/>
+  <Constant name="dzS3S" value="4.9750*cm"/>
+  <Constant name="dzS4S" value="4.9750*cm"/>
+  <Constant name="dzS5S" value="4.9750*cm"/>
+  <Constant name="dzS6S" value="4.9750*cm"/>
+  <Constant name="dzS7S" value="4.9750*cm"/>
+  <Constant name="dzS8S" value="4.9750*cm"/>
+  <Constant name="dzGap" value="4.9750*mm"/>
+  <Constant name="dzInL" value="([dzS1L]+[dzS2L]+[dzS3L]+[dzS4L]+[dzS5L]+[dzS6L]+[dzS7L]+[dzS8L]+7*[dzGap])"/> <!-- Total lenght in z (height) Short Chamber -->
+  <Constant name="dzInS" value="([dzS1S]+[dzS2S]+[dzS3S]+[dzS4S]+[dzS5S]+[dzS6S]+[dzS7S]+[dzS8S]+7*[dzGap])"/> <!-- Total length in z (height) Long Chamber -->
+  <Constant name="dzLS"  value="([dzInL]-[dzInS])"/>                                                           <!-- Difference in Length between Short and Long -->
   <Constant name="z10L"  value="([dzInL]-[dzS1L])"/> 
   <Constant name="z20L"  value="([z10L]-[dzS1L]-2*[dzGap]-[dzS2L])"/> 
   <Constant name="z30L"  value="([z20L]-[dzS2L]-2*[dzGap]-[dzS3L])"/> 
@@ -38,8 +47,8 @@
   <Constant name="z60S"  value="([z50S]-[dzS5S]-2*[dzGap]-[dzS6S])"/> 
   <Constant name="z70S"  value="([z60S]-[dzS6S]-2*[dzGap]-[dzS7S])"/> 
   <Constant name="z80S"  value="([z70S]-[dzS7S]-2*[dzGap]-[dzS8S])"/> 
-  <Constant name="dxTop" value="22.2929*cm"/>
-  <Constant name="Angle" value="5.07347*deg"/>
+  <Constant name="dxTop" value="4.9750*cm"/>   <!-- eta partition width -->
+  <Constant name="Angle" value="0.0000*deg"/>  <!-- setting angle to zero makes rectangles -->
   <Constant name="slope" value="tan([Angle])"/>
   <Constant name="dx11L" value="([dxTop]-[slope]*([dzInL]-[z10L]+[dzS1L]))"/>
   <Constant name="dx12L" value="([dxTop]-[slope]*([dzInL]-[z10L]-[dzS1L]))"/>
@@ -73,25 +82,27 @@
   <Constant name="dx72S" value="([dxTop]-[slope]*([dzInL]+[dzLS]-[z70S]-[dzS7S]))"/>
   <Constant name="dx81S" value="([dxTop]-[slope]*([dzInL]+[dzLS]-[z80S]+[dzS8S]))"/>
   <Constant name="dx82S" value="([dxTop]-[slope]*([dzInL]+[dzLS]-[z80S]-[dzS8S]))"/>
-  <Constant name="dyGB11"      value="8.100*mm"/>
-  <Constant name="dzGB11L"     value="64.150*cm"/>
+  <!-- GEM BOX - ALUMINIUM - ... ??? why do we have volume A and volume B ??? -->
+  <Constant name="dyGB11"      value="8.100*mm"/>      <!-- Thickness of the total chamber - No need to change -->
+  <Constant name="dzGB11L"     value="37.8*cm"/>       <!-- Lenght of total chamber - Let's take 2cm border w.r.t. active volume -->
   <Constant name="dzGB11S"     value="([dzGB11L]-[dzLS])"/>
-  <Constant name="dxTopGB11L"  value="25.49925*cm"/>
+  <Constant name="dxTopGB11L"  value="6.9750*cm"/>     <!-- width of the total chamber - Let's take 2cm borders w.r.t. active volume -->
   <Constant name="dxTopGB11S"  value="([dxTopGB11L]-2*[slope]*[dzLS])"/>
   <Constant name="dxBotGB11"   value="([dxTopGB11L]-2*[slope]*[dzGB11L])"/>
-  <Constant name="dzTot"       value="([dxTop]/[slope]-[dzInL]-[dzGB11L])"/>
+  <Constant name="dzTot"       value="([dxTop]-[dzInL]-[dzGB11L])"/>
   <Constant name="rPosL"       value="([dzTot]+[dzGB11L])"/>
   <Constant name="rPosS"       value="([dzTot]+[dzGB11S])"/>
-  <Constant name="dyGA11"      value="9.250*mm"/>
-  <Constant name="dzGA11L"     value="63.750*cm"/>
+  <Constant name="dyGA11"      value="9.250*mm"/>      <!-- Thickness of the total chamber - No need to change - but why different from B ? -->
+  <Constant name="dzGA11L"     value="37.8*cm"/>       
   <Constant name="dzGA11S"     value="([dzGA11L]-[dzLS])"/>
-  <Constant name="dxBotGA11"   value="7.127*cm"/>
-  <Constant name="dxTopGA11L"  value="18.352*cm"/>
+  <Constant name="dxBotGA11"   value="12.9500*cm"/>    
+  <Constant name="dxTopGA11L"  value="12.9500*cm"/>    
   <Constant name="slope1"      value="(([dxTopGA11L]-[dxBotGA11])/(2*[dzGA11L]))"/>
   <Constant name="dxTopGA11S"  value="([dxTopGA11L]-2*[slope1]*[dzLS])"/>
-  <Constant name="dyBase"      value="3.2*mm"/>
+  <Constant name="dyBase"      value="3.2*mm"/>        <!-- Thickness PCB readout board - for us 1.85mm - but ok not to change -->
   <Constant name="dyTop"       value="1.0*mm"/>
-  <Constant name="dxFrame"     value="10.0*mm"/>
+  <Constant name="dxFrame"     value="10.0*mm"/>       <!-- Thickness of Int+Ext frame -->
+  <!-- GEM INTERIOR - AIR - => remove frame from GEMBOX -->
   <Constant name="dyGBI11"     value="([dyGB11]-0.5*([dyBase]+[dyTop]))"/>
   <Constant name="dzGBI11L"    value="([dzGB11L]-[dxFrame])"/>
   <Constant name="dzGBI11S"    value="([dzGB11S]-[dxFrame])"/>
@@ -108,6 +119,7 @@
   <Constant name="dxTopGBJ11L" value="[dxTopGAI11L]"/>
   <Constant name="dxBotGBJ11"  value="([dxTopGBJ11L]-2*[slope1]*[dzGBI11L])"/>
   <Constant name="dxTopGBJ11S" value="([dxBotGBJ11]+2*[slope1]*[dzGBI11S])"/>
+<!-- GEM FOILS -->
   <Constant name="dyFoil"      value="0.025*mm"/>
   <Constant name="dyGap1"      value="(3.0*mm-[dyFoil])/2"/>
   <Constant name="dyGap2"      value="(1.0*mm-2*[dyFoil])/2"/>
@@ -120,19 +132,21 @@
   <Constant name="yGap3"       value="([yFoil2]+[dyGap3]+[dyFoil])"/>
   <Constant name="yFoil3"      value="([yGap3]+[dyGap3]+[dyFoil])"/>
   <Constant name="yGap4"       value="([yFoil3]+[dyGap4]+[dyFoil])"/>
+<!-- GEM Readout Board - FR4 - Covers the frame -->
   <Constant name="dyReadOut"   value="1.5*mm"/>
   <Constant name="yReadOut"    value="(-[dyGBI11]+7.0*mm+[dyReadOut])"/>
-  <Constant name="dzCardL"     value="63.150*cm"/>
+  <Constant name="dzCardL"     value="36.800*cm"/>   
   <Constant name="dzCardS"     value="([dzCardL]-[dzLS])"/>
-  <Constant name="dxTopCardL"  value="25.4*cm"/>
+  <Constant name="dxTopCardL"  value="5.975*cm"/>     
   <Constant name="dxBotCard"   value="([dxTopCardL]-2*[slope]*[dzCardL])"/>
   <Constant name="dxTopCardS"  value="([dxBotCard]+2*[slope]*[dzCardS])"/>
-  <Constant name="dzFoilL"     value="60.450*cm"/>
+  <Constant name="dzFoilL"     value="36.800*cm"/>   
   <Constant name="dzFoilS"     value="([dzFoilL]-[dzLS])"/>
-  <Constant name="dxTopFoilL"  value="22.29385*cm"/>
+  <Constant name="dxTopFoilL"  value="5.975*cm"/> 
   <Constant name="dxBotFoil"   value="([dxTopFoilL]-2*[slope]*[dzFoilL])"/>
   <Constant name="dxTopFoilS"  value="([dxBotFoil]+2*[slope]*[dzFoilS])"/>
-  <Constant name="Tilt"        value="[gemf:Tilt]"/>
+  <Constant name="Tilt"        value="[gemf:Tilt]"/> <!-- ???? -->
+<!-- Cooling -->
   <Constant name="TubeBotL"    value="60.0*mm"/>
   <Constant name="TubeHeightL" value="1140.0*mm"/>
   <Constant name="TubeHeightS" value="([TubeHeightL]-2*[dzLS])"/>
@@ -157,10 +171,12 @@
   <Constant name="zTubeSlantS" value="([zTubeMidS]+[TubeRMax]-([TubeSlantLS]*cos([Tilt])/2))"/>
   <Constant name="zTubeBotL"   value="([zTubeSlantL]+[TubeRMax]-([TubeSlantLL]*cos([Tilt])/2))"/>
   <Constant name="zTubeBotS"   value="([zTubeSlantS]+[TubeRMax]-([TubeSlantLS]*cos([Tilt])/2))"/>
-  <Constant name="dyStrip"    value="0.5*mm"/>
-  <Constant name="dzStrip"    value="17.0*mm"/>
+<!-- Readout Strips -->
+  <Constant name="dyStrip"    value="0.0175*mm"/>    <!-- Error in original description ... strips are 35um Cu -->
+  <Constant name="dzStrip"    value="4.950*mm"/>     
   <Constant name="dzStripX"   value="7.0*mm"/>
-  <Constant name="Gap01"      value="100.00*mm"/>
+<!-- No Idea ... Need to understand  -->
+  <Constant name="Gap01"      value="100.00*mm"/> <!-- 10cm gap ??? -->
   <Constant name="Gap12"      value="99.00*mm"/>
   <Constant name="Gap23"      value="100.00*mm"/>
   <Constant name="Gap34"      value="69.00*mm"/>
@@ -170,7 +186,7 @@
   <Constant name="Gap78"      value="100.00*mm"/>
   <Constant name="Gap89"      value="100.00*mm"/>
   <Constant name="yStrip"     value="([yReadOut]+[dyReadOut]+[dyStrip])"/>
-  <Constant name="zStrip0L"   value="([dzGBI11L]-86.68*mm)"/>
+  <Constant name="zStrip0L"   value="([dzGBI11L]-86.68*mm)"/> <!-- where does this magic number come from ??? -->
   <Constant name="zStrip1L"   value="([zStrip0L]-[Gap01])"/>
   <Constant name="zStrip2L"   value="([zStrip1L]-[Gap12])"/>
   <Constant name="zStrip3L"   value="([zStrip2L]-[Gap23])"/>
@@ -180,7 +196,7 @@
   <Constant name="zStrip7L"   value="([zStrip6L]-[Gap67])"/>
   <Constant name="zStrip8L"   value="([zStrip7L]-[Gap78])"/>
   <Constant name="zStrip9L"   value="([zStrip8L]-[Gap89])"/>
-  <Constant name="zStrip0S"   value="([dzGBI11S]-86.68*mm)"/>
+  <Constant name="zStrip0S"   value="([dzGBI11S]-86.68*mm)"/> <!-- where does this magic number come from ??? -->
   <Constant name="zStrip1S"   value="([zStrip0S]-[Gap01])"/>
   <Constant name="zStrip2S"   value="([zStrip1S]-[Gap12])"/>
   <Constant name="zStrip3S"   value="([zStrip2S]-[Gap23])"/>
@@ -190,6 +206,7 @@
   <Constant name="zStrip7S"   value="([zStrip6S]-[Gap67])"/>
   <Constant name="zStrip8S"   value="([zStrip7S]-[Gap78])"/>
   <Constant name="zStrip9S"   value="([zStrip8S]-[Gap89])"/>
+<!-- Plugin Cards / Hybrids -->
   <Constant name="dxHybrid"   value="25.0*mm"/>
   <Constant name="dyHybrid"   value="0.5*mm"/>
   <Constant name="dzHybrid"   value="22.0*mm"/>
