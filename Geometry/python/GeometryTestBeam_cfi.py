@@ -124,7 +124,7 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         'Geometry/MTDSimData/data/v2/mtdProdCuts.xml',
         'Geometry/CMSCommonData/data/FieldParameters.xml',
         ## testbeam
-        'gemsw/Geometry/data/testbeam/muonNumbering.xml',
+        'gemsw/Geometry/data/muonNumbering.xml',
         #'gemsw/Geometry/data/testbeam/tbGE11.xml',
         'gemsw/Geometry/data/testbeam/tbGE0.xml',
         'gemsw/Geometry/data/testbeam/tbGE21.xml',

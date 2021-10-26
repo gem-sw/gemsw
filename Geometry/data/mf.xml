@@ -151,27 +151,6 @@
    <rParent name="mf:MEN"/>
    <rChild name="mf:ME1RingN"/>
   </PosPart>
-
-  <PosPart copyNumber="1">
-   <rParent name="mf:MEP"/>
-   <rChild name="mf:ME12RingP"/>
-   <Translation x="0*fm " y="0*fm " z="6953.1125*mm"/>
-  </PosPart>
-  <PosPart copyNumber="1">
-   <rParent name="mf:MEN"/>
-   <rChild name="mf:ME12RingN"/>
-   <Translation x="0*fm " y="0*fm " z="6953.1125*mm"/>
-  </PosPart>
-
-  <PosPart copyNumber="1">
-   <rParent name="mf:MEP"/>
-   <rChild name="mf:ME13RingP"/>
-  </PosPart>
-  <PosPart copyNumber="1">
-   <rParent name="mf:MEN"/>
-   <rChild name="mf:ME13RingN"/>
-  </PosPart>
-
   <PosPart copyNumber="1">
    <rParent name="mf:MEP"/>
    <rChild name="mf:ME2RingP"/>
@@ -183,40 +162,6 @@
    <!-- <Translation x="0*fm " y="0*fm " z="8.1925*m  " /> -->
   </PosPart>
 
-  <PosPart copyNumber="1">
-   <rParent name="mf:MEP"/>
-   <rChild name="mf:ME3RingP"/>
-   <Translation x="0*fm " y="0*fm " z="9.4475*m  "/>
-  </PosPart>
-  <PosPart copyNumber="1">
-   <rParent name="mf:MEN"/>
-   <rChild name="mf:ME3RingN"/>
-   <Translation x="0*fm " y="0*fm " z="9.4475*m  "/>
-  </PosPart>
-
-  <PosPart copyNumber="1">
-   <rParent name="mf:MEP"/>
-   <rChild name="mf:ME4RingP"/>
-   <Translation x="0*fm " y="0*fm " z="10.3432*m + 0.46*cm "/>
-  </PosPart>
-  <PosPart copyNumber="1">
-   <rParent name="mf:MEN"/>
-   <rChild name="mf:ME4RingN"/>
-   <Translation x="0*fm " y="0*fm " z="10.3432*m + 0.46*cm "/>
-  </PosPart>
-
-  <PosPart copyNumber="1">
-   <rParent name="mf:ME2RingP"/>
-   <rChild name="mf:RR2X"/>
-   <rRotation name="rotations:R005"/>
-   <Translation x="0*fm " y="0*fm " z="-28.25*cm+8.1925*m "/>
-  </PosPart>
-  <PosPart copyNumber="1">
-   <rParent name="mf:ME2RingN"/>
-   <rChild name="mf:RR2X"/>
-   <rRotation name="rotations:R005"/>
-   <Translation x="0*fm " y="0*fm " z="-28.25*cm+8.1925*m "/>
-  </PosPart>
  </PosPartSection>
 
 </DDDefinition>
