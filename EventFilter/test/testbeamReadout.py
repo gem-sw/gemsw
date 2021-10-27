@@ -95,7 +95,8 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.RecoSim_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
-process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D87Reco_cff')
+#process.load('gemsw.Geometry.GeometryTestBeam_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
@@ -190,6 +191,7 @@ process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector","gemLocalModeD
 process.muonGEMDigis.fedIdStart = cms.uint32(888)
 process.muonGEMDigis.fedIdEnd   = cms.uint32(888)
 process.simMuonGEMPadDigis.InputCollection = 'muonGEMDigis'
+process.gemRecHits.gemDigiLabel = 'muonGEMDigis'
 
 ## schedule and path definition
 process.p1 = cms.Path(process.dumpRaw)
@@ -197,6 +199,7 @@ process.p2 = cms.Path(process.muonGEMDigis)
 process.p3 = cms.Path(process.simMuonGEMPadDigis * process.simMuonGEMPadDigiClusters)
 process.p4 = cms.Path(process.gemRecHits * process.gemSegments)
 process.p5 = cms.Path(process.GEMDQM)
+process.p5.remove(process.GEMDAQStatusSource)
 process.out = cms.EndPath(process.output)
 process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 process.endjob_step = cms.EndPath(process.endOfProcess)
