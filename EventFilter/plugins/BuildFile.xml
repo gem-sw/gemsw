@@ -1,0 +1,13 @@
+<use name="CondFormats/DataRecord"/>
+<use name="CondFormats/GEMObjects"/>
+<use name="EventFilter/GEMRawToDigi"/>
+<use name="DataFormats/FEDRawData"/>
+<use name="DataFormats/GEMDigi"/>
+<use name="Utilities/StorageFactory"/>
+<use name="FWCore/Sources"/>
+<use name="xz"/>
+<use name="zstd"/>
+<use name="zlib"/>
+<library   file="*.cc" name="AnalyzerUnpackerGEMLocalModePlugins">
+  <flags   EDM_PLUGIN="1"/>
+</library>
