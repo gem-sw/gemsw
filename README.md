@@ -18,5 +18,5 @@ git cms-init -q
 git cms-merge-topic yeckang:mapping_update_v0.5 # Will be updated
 git clone git@github.com:yeckang/gemsw.git -b testBeam_unpack
 cd gemsw/EventFilter/test
-cmsRun testBeamReadout.py inputFiles=<file path> feds=888 useB904Data=True
+cmsRun testBeamReadout.py inputFiles=<file path> feds=888 useB904Data=True dqm=True reconstruct=True
 ```
