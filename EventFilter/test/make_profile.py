@@ -4,10 +4,10 @@ import sys, os
 f = r.TFile.Open(sys.argv[1], 'read')
 
 dir_name = 'DQMData/Run 1/GEM/Run summary/Digis/'
-track1_chambers = f.Get(dir_name + 'occ_GE11-M-01L1-S')
-track2_chambers = f.Get(dir_name + 'occ_GE11-M-03L1-S')
+track1_chambers = f.Get(dir_name + 'occ_GE11-P-02L1-L')
+track2_chambers = f.Get(dir_name + 'occ_GE11-P-06L1-L')
 
-GE21M1 = f.Get(dir_name + 'occ_GE21-M-01L1-S')
+GE21M1 = f.Get(dir_name + 'occ_GE21-P-01L1-S')
 
 saveHist = []
 
