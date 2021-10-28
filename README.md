@@ -17,7 +17,8 @@ cd CMSSW_12_1_0_pre4/src
 git cms-init -q
 git cms-merge-topic yeckang:mapping_update_v0.5 # Will be updated
 git clone git@github.com:yeckang/gemsw.git -b testBeam_unpack
+scram b -j 4
 cd gemsw/EventFilter/test
-cmsRun testBeamReadout.py inputFiles=<file path> feds=888 useB904Data=True dqm=True reconstruct=True
+cmsRun testbeamReadout.py inputFiles=<file path> feds=888 useB904Data=True dqm=True reconstruct=True
 python make_profile.py <DQM root file> <root file to save profile>
 ```
