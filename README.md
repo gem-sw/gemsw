@@ -21,5 +21,5 @@ git clone git@github.com:yeckang/gemsw.git -b testBeam_unpack
 scram b -j 4
 cd gemsw/EventFilter/test
 cmsRun testbeamReadout.py inputFiles=<file path> feds=888 useB904Data=True dqm=True reconstruct=True
-python make_profile.py <DQM root file> <root file to save profile>
+python3 make_profile.py <DQM root file> <root file to save profile>
 ```
