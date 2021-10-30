@@ -64,6 +64,11 @@ options.register('reconstruct',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  'Reconstruct the data')
+options.register('skipBadDigi',
+                 True,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 'skip unpacking bad status digis')
 options.register('feds',
                  [1467,1468],
                  VarParsing.VarParsing.multiplicity.list,
@@ -95,8 +100,8 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.RecoSim_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
-#process.load('Configuration.Geometry.GeometryExtended2026D87Reco_cff')
-process.load('gemsw.Geometry.GeometryTestBeam_cff')
+process.load('Configuration.Geometry.GeometryExtended2026D87Reco_cff')
+#process.load('gemsw.Geometry.GeometryTestBeam_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
@@ -190,6 +195,7 @@ process.dqmSaver.tag = "GEM"
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector","gemLocalModeDataSource")
 process.muonGEMDigis.fedIdStart = cms.uint32(888)
 process.muonGEMDigis.fedIdEnd   = cms.uint32(888)
+process.muonGEMDigis.skipBadStatus = cms.bool(options.skipBadDigi)
 process.simMuonGEMPadDigis.InputCollection = 'muonGEMDigis'
 process.gemRecHits.gemDigiLabel = 'muonGEMDigis'
 
