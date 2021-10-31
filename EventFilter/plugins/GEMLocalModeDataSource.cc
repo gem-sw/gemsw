@@ -248,14 +248,15 @@ bool GEMLocalModeDataSource::setRunAndEventInfo(edm::EventID &id, edm::TimeValue
 		amc13Event.setCDFHeader(1, 0, 0, m_fedid);
 		amc13Event.setAMC13Header(0, 1, 0);
         uint32_t amc13EvtLength = 0;
-        buf.push_back(amc13Event.getCDFHeader());
-        buf.push_back(amc13Event.getAMC13Header());
 		
 		for (uint8_t ii=0; ii<amc13Event.nAMC(); ii++) {
 			amc13Event.addAMCheader(tmpBuf[ii]);
 			buf.push_back(tmpBuf[ii]);
 		}
 		
+        uint64_t lv1Id = 0;
+        uint64_t orbitNum = 0;
+        uint64_t bx = 0;
 		// read AMC payloads
 		for (uint8_t iamc = 0; iamc<amc13Event.nAMC(); ++iamc) {
             uint32_t amcSize = 0;
@@ -267,6 +268,10 @@ bool GEMLocalModeDataSource::setRunAndEventInfo(edm::EventID &id, edm::TimeValue
 			amcData.setGEMeventHeader(tmpBuf[2]);
 
             amcSize += 3;
+
+            lv1Id = amcData.lv1Id();
+            bx = amcData.bunchCrossing();
+            orbitNum = amcData.orbitNumber();
 			
 			// read GEB
 			for (uint8_t igeb=0; igeb<amcData.davCnt(); igeb++) {
@@ -274,6 +279,7 @@ bool GEMLocalModeDataSource::setRunAndEventInfo(edm::EventID &id, edm::TimeValue
 				inpFile.read((char*)tmpBuf, sizeof(uint64_t));
 				buf.push_back(tmpBuf[0]);
 				gebData.setChamberHeader(tmpBuf[0]);
+                //std::cout << "OH : " << int(gebData.inputID()) << std::endl;
 
                 amcSize += 1;
 
@@ -345,6 +351,12 @@ bool GEMLocalModeDataSource::setRunAndEventInfo(edm::EventID &id, edm::TimeValue
         amc13Event.setAMC13Trailer(0, 0, 0);
         buf.push_back(amc13Event.getAMC13Trailer());
         buf.push_back(amc13Event.getCDFTrailer());
+
+		amc13Event.setCDFHeader(0x1, lv1Id, bx, m_fedid);
+		amc13Event.setAMC13Header(0, 1, orbitNum);
+
+        buf.insert(buf.begin(), amc13Event.getAMC13Header());
+        buf.insert(buf.begin(), amc13Event.getCDFHeader());
 
 		if (buf.size()>12) {
 			m_nGoodEvents++;
