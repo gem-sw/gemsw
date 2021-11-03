@@ -2,45 +2,7 @@
 <DDDefinition>
 
 <SolidSection label="muonBase.xml">
-  <Tubs name="MUON1" rMin="0.0*m" rMax="10*m" dz="10*m" startPhi="0*deg" deltaPhi="360*deg"/>
-  <Polycone name="MUON2" startPhi="0*deg" deltaPhi="360*deg">
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="10*m" rMin="0.0*m" rMax="10*m"/>
-  </Polycone>
-  <Polycone name="MUON3" startPhi="0*deg" deltaPhi="360*deg">
-    <ZSection z="0*m" rMin="0.0*m" rMax="11*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="0*m" rMin="0.0*m" rMax="10*m"/>
-    <ZSection z="10*m" rMin="0.0*m" rMax="10*m"/>
-  </Polycone>
-  <UnionSolid name="MUON0">
-    <rSolid name="MUON1"/>
-    <rSolid name="MUON2"/>
-    <Translation x="0.0*fm" y="0.0*fm" z="0.0*fm"/>
-  </UnionSolid>
-  <UnionSolid name="MUON">
-    <rSolid name="MUON0"/>
-    <rSolid name="MUON3"/>
-    <Translation x="0.0*fm" y="0.0*fm" z="0.0*fm"/>
-  </UnionSolid>
+  <Box name="MUON" dx="10*m" dy="10*m" dz="10*m"/>
 </SolidSection>
 
 <LogicalPartSection label="muonBase.xml">

@@ -101,10 +101,10 @@
       <rSolid name="GE0"/>
       <rMaterial name="materials:ME_free_space"/>
     </LogicalPart>
-    <LogicalPart name="GE0N" category="unspecified">
+    <!-- <LogicalPart name="GE0N" category="unspecified">
       <rSolid name="GE0"/>
       <rMaterial name="materials:ME_free_space"/>
-    </LogicalPart>
+    </LogicalPart> -->
     <LogicalPart name="GE0Box" category="unspecified">
       <rSolid name="GE0Box"/>
       <rMaterial name="materials:Air"/>
@@ -182,11 +182,11 @@
       <rChild name="ge0:GE0P"/>
       <Translation x="0*fm" y="0*fm" z="[zPos]" />
     </PosPart>
-    <PosPart copyNumber="1">
+    <!-- <PosPart copyNumber="1">
       <rParent name="mf:GE0RingN"/>
       <rChild name="ge0:GE0N"/>
       <Translation x="0*fm" y="0*fm" z="[zPos]" />
-    </PosPart>
+    </PosPart> -->
     <PosPart copyNumber="1">
       <rParent name="ge0:GE0Box"/>
       <rChild name="ge0:GE0L"/>

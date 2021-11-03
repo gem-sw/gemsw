@@ -12,20 +12,13 @@
         <Constant name="dx"           value="0.0*cm"/>
         <Constant name="rz"           value="0.0*deg"/>
     </ConstantsSection>
-    
-    <RotationSection label="ge0.xml">
-          <Rotation name="RotationSrz" phiX="180*deg+[rz]" thetaX="270*deg" phiY="90*deg" thetaY="180*deg" phiZ="90*deg+[rz]" thetaZ="90*deg"/>
-          <Rotation name="RotationLrz" phiX="180*deg+[rz]" thetaX="90*deg" phiY="90*deg" thetaY="0*deg" phiZ="90*deg+[rz]" thetaZ="90*deg"/>
-    </RotationSection>
 
     <PosPartSection label="ge0.xml">
-        
         <PosPart copyNumber="1">
             <rParent name="ge0:GE0P"/>
             <rChild name="ge0:GE0Box"/>
-            <Translation x="0" z="-540.3*cm" y="120*cm" />
-        </PosPart>        
-    </PosPartSection>
-    
+            <Translation x="0*cm" z="0*cm" y="120*cm" />
+        </PosPart>
+    </PosPartSection>    
 </DDDefinition>
 

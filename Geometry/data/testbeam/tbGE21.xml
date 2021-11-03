@@ -13,21 +13,11 @@
         <Constant name="rz"           value="0.0*deg"/>
     </ConstantsSection>
     
-    <RotationSection label="gem21.xml">
-          <Rotation name="RotationSrz" phiX="180*deg+[rz]" thetaX="270*deg" phiY="90*deg" thetaY="180*deg" phiZ="90*deg+[rz]" thetaZ="90*deg"/>
-          <Rotation name="RotationLrz" phiX="180*deg+[rz]" thetaX="90*deg" phiY="90*deg" thetaY="0*deg" phiZ="90*deg+[rz]" thetaZ="90*deg"/>
-    </RotationSection>
-
     <PosPartSection label="gem21.xml">
-        <!-- <PosPart copyNumber="2">
-            <rParent name="gem21:GEMDisk21LP"/>
-            <rChild name="gem21:GEMBox21B"/>
-            <Translation x="0" z="0*cm" y="110*cm" />
-        </PosPart> -->
         <PosPart copyNumber="1">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0" z="0*cm" y="110*cm" />
+            <Translation x="0" z="-796.14*cm" y="110*cm" />
         </PosPart>
     </PosPartSection>
     

@@ -92,10 +92,10 @@
    <PartSelector path="//GE0RingN"/>
    <PartSelector path="//ME1RingP"/>
    <PartSelector path="//ME1RingN"/>
-   <PartSelector path="//ME12RingP"/>
+   <!-- <PartSelector path="//ME12RingP"/>
    <PartSelector path="//ME12RingN"/>
    <PartSelector path="//ME13RingP"/>
-   <PartSelector path="//ME13RingN"/>
+   <PartSelector path="//ME13RingN"/> -->
    <Parameter name="CopyNoTag" value="[me_station]"/>
    <Parameter name="CopyNoOffset" value="1*[super]"/>
   </SpecPar>
@@ -106,7 +106,7 @@
    <Parameter name="CopyNoTag" value="[me_station]"/>
    <Parameter name="CopyNoOffset" value="2*[super]"/>
   </SpecPar>
-  <SpecPar name="MuonEndcapStation3">
+  <!-- <SpecPar name="MuonEndcapStation3">
    <Parameter name="OnlyForMuonNumbering" value="muonstep41" eval="false"/>
    <PartSelector path="//ME3RingP"/>
    <PartSelector path="//ME3RingN"/>
@@ -119,15 +119,15 @@
    <PartSelector path="//ME4RingN"/>
    <Parameter name="CopyNoTag" value="[me_station]"/>
    <Parameter name="CopyNoOffset" value="4*[super]"/>
-  </SpecPar>
+  </SpecPar> -->
  </SpecParSection>
  <SpecParSection label="muonGEMnumbering" eval="true">
-  <SpecPar name="MuonGEMEndcap">
+  <!-- <SpecPar name="MuonGEMEndcap">
    <Parameter name="OnlyForMuonNumbering" value="muonstep50" eval="false"/>
    <PartSelector path="//GEMDisk11."/>
    <Parameter name="CopyNoTag" value="[mg_ring]"/>
    <Parameter name="CopyNoOffset" value="1*[super]"/>
-  </SpecPar>
+  </SpecPar> -->
   <SpecPar name="MuonGEMEndcap2">
    <Parameter name="OnlyForMuonNumbering" value="muonstep51" eval="false"/>
    <PartSelector path="//GEMDisk21L."/>
@@ -136,14 +136,14 @@
   </SpecPar>
   <SpecPar name="MuonGEMSector">
    <Parameter name="OnlyForMuonNumbering" value="muonstep52" eval="false"/>
-   <PartSelector path="//GEMBox11."/>
+   <!-- <PartSelector path="//GEMBox11."/> -->
    <PartSelector path="//GEMBox21."/>
    <Parameter name="CopyNoTag" value="[mg_sector]"/>
    <Parameter name="CopyNoOffset" value="3*[super]"/>
   </SpecPar>
   <SpecPar name="MuonGEMChamber">
    <Parameter name="OnlyForMuonNumbering" value="muonstep53" eval="false"/>
-   <PartSelector path="//GHA1.*"/>
+   <!-- <PartSelector path="//GHA1.*"/> -->
    <PartSelector path="//GHA2.*"/>
    <Parameter name="CopyNoTag" value="[mg_roll]"/>
    <Parameter name="CopyNoOffset" value="4*[super]"/>

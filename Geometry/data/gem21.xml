@@ -427,10 +427,10 @@
     <rSolid name="GE21L"/>
     <rMaterial name="materials:ME_free_space"/>
   </LogicalPart>
-  <LogicalPart name="GEMDisk21LN" category="unspecified">
+  <!-- <LogicalPart name="GEMDisk21LN" category="unspecified">
     <rSolid name="GE21L"/>
     <rMaterial name="materials:ME_free_space"/>
-  </LogicalPart>
+  </LogicalPart> -->
   <LogicalPart name="GEMBox21F" category="unspecified">
     <rSolid name="GEMBox21L"/>
     <rMaterial name="materials:Aluminium"/>
@@ -957,13 +957,13 @@
   <PosPart copyNumber="1">
     <rParent name="mf:ME2RingP"/>
     <rChild name="GEMDisk21LP"/>
-    <Translation x="0*fm" y="0*fm" z="0*fm" />
+    <Translation x="0*fm" y="0*fm" z="([zFront]+[hthick])" />
   </PosPart>
-  <PosPart copyNumber="1">
+  <!-- <PosPart copyNumber="1">
     <rParent name="mf:ME2RingN"/>
     <rChild name="GEMDisk21LN"/>
-    <Translation x="0*fm" y="0*fm" z="0*fm" />
-  </PosPart>
+    <Translation x="0*fm" y="0*fm" z="([zFront]+[hthick])" />
+  </PosPart> -->
   <PosPart copyNumber="1">
     <rParent name="GEMBox21F"/>
     <rChild name="GMAX21F"/>
