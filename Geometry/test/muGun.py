@@ -77,7 +77,7 @@ process.generator = cms.EDFilter("Pythia8EGun",
 )
 
 process.g4SimHits.UseMagneticField = cms.bool(False)
-process.g4SimHits.OnlySDs =  cms.vstring('MuonSensitiveDetector')
+process.g4SimHits.OnlySDs = cms.vstring('MuonSensitiveDetector')
 process.g4SimHits.Physics.CutsPerRegion = cms.bool(False)
 
 process.mix = cms.EDProducer("MixingModule",
