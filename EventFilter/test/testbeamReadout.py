@@ -54,6 +54,11 @@ options.register('evtDisp',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  'Produce histos for individual events')
+options.register('isME0data',
+                 False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 'The data from ME0')
 options.register('trigger',
                  False,
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -69,11 +74,6 @@ options.register('skipBadDigi',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  'skip unpacking bad status digis')
-options.register('feds',
-                 [1467,1468],
-                 VarParsing.VarParsing.multiplicity.list,
-                 VarParsing.VarParsing.varType.int,
-                 "List of FEDs")
 options.register('unpackerLabel',
                  'rawDataCollector',
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -120,12 +120,16 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 # Input source
+if (options.isME0data) :
+    fedId_ = cms.untracked.int32(1478)
+else :
+    fedId_ = cms.untracked.int32(1477)
 process.source = cms.Source(
     "GEMLocalModeDataSource",
     fileNames = cms.untracked.vstring(options.inputFiles),
     #fileNames = cms.untracked.vstring("file:run000000/run000000_ls0001_index000000.raw"),
     skipEvents=cms.untracked.uint32(0),
-    fedId = cms.untracked.int32(888),
+    fedId = fedId_,
     hasFerolHeader = cms.untracked.bool(True),
     runNumber = cms.untracked.int32(1)
 )
@@ -171,7 +175,7 @@ if options.useB904Data:
 # dump raw data
 process.dumpRaw = cms.EDAnalyzer(
     "DumpFEDRawDataProduct",
-    feds = cms.untracked.vint32(options.feds),
+    feds = cms.untracked.vint32([1477,1478]),
     token = cms.untracked.InputTag(options.unpackerLabel),
     dumpPayload = cms.untracked.bool(options.dumpRaw)
 )
@@ -193,8 +197,12 @@ process.dqmSaver.tag = "GEM"
 
 #process.muonGEMDigis.InputLabel = options.unpackerLabel
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector","gemLocalModeDataSource")
-process.muonGEMDigis.fedIdStart = cms.uint32(888)
-process.muonGEMDigis.fedIdEnd   = cms.uint32(888)
+if (options.isME0data) :
+    process.muonGEMDigis.fedIdStart = cms.uint32(1478)
+    process.muonGEMDigis.fedIdEnd   = cms.uint32(1478)
+else :
+    process.muonGEMDigis.fedIdStart = cms.uint32(1477)
+    process.muonGEMDigis.fedIdEnd   = cms.uint32(1477)
 process.muonGEMDigis.skipBadStatus = cms.bool(options.skipBadDigi)
 process.simMuonGEMPadDigis.InputCollection = 'muonGEMDigis'
 process.gemRecHits.gemDigiLabel = 'muonGEMDigis'
