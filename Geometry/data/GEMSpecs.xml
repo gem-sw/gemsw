@@ -7,7 +7,7 @@
     </SpecPar>
     <SpecPar name="nStripsGE11" eval="true">
       <PartSelector path="//GHA1.."/>
-      <Parameter name="nStrips" value="384"/>
+      <Parameter name="nStrips" value="358"/>
     </SpecPar>
     <SpecPar name="nStripsGE21" eval="true">
       <PartSelector path="//GHA2.."/>
@@ -19,7 +19,7 @@
     </SpecPar>
     <SpecPar name="nPadsGE11" eval="true">
       <PartSelector path="//GHA1.."/>
-      <Parameter name="nPads" value="192"/>
+      <Parameter name="nPads" value="179"/>
     </SpecPar>
     <SpecPar name="nPadsGE21" eval="true">
       <PartSelector path="//GHA2.."/>
@@ -27,7 +27,7 @@
     </SpecPar>
     <SpecPar name="dPhiGE11" eval="true">
       <PartSelector path="//GHA1.."/>
-      <Parameter name="dPhi" value="10.15*deg"/>
+      <Parameter name="dPhi" value="1.144*deg"/>
     </SpecPar>
     <SpecPar name="dPhiGE21" eval="true">
       <PartSelector path="//GHA2.."/>
