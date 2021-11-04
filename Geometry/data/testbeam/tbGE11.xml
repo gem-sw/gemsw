@@ -20,55 +20,18 @@
     </RotationSection>
 
     <PosPartSection label="gem11.xml">
-        <PosPart copyNumber="53">
-            <rParent name="gem11:GEMDisk11P"/>
-            <rChild name="gem11:GEMBox11L"/>
-            <rRotation name="y90" />
-            <Translation x="0" z="0*cm" y="10*cm" />
-        </PosPart>
         <PosPart copyNumber="52">
             <rParent name="gem11:GEMDisk11P"/>
             <rChild name="gem11:GEMBox11L"/>
-            <Translation x="0" z="0*cm" y="10*cm" />
+            <Translation x="0" z="0*cm" y="134*cm" />
         </PosPart>
 
-        <PosPart copyNumber="55">
-            <rParent name="gem11:GEMDisk11P"/>
-            <rChild name="gem11:GEMBox11L"/>
-            <rRotation name="y90" />
-            <Translation x="0" z="0*cm" y="80*cm" />
-        </PosPart>
         <PosPart copyNumber="54">
             <rParent name="gem11:GEMDisk11P"/>
             <rChild name="gem11:GEMBox11L"/>
-            <Translation x="0" z="0*cm" y="80*cm" />
+            <Translation x="0" z="0*cm" y="274*cm" />
         </PosPart>
-
-        <PosPart copyNumber="57">
-            <rParent name="gem11:GEMDisk11P"/>
-            <rChild name="gem11:GEMBox11L"/>
-            <rRotation name="y90" />
-            <Translation x="0" z="0*cm" y="150*cm" />
-        </PosPart>
-        <PosPart copyNumber="56">
-            <rParent name="gem11:GEMDisk11P"/>
-            <rChild name="gem11:GEMBox11L"/>
-            <Translation x="0" z="0*cm" y="150*cm" />
-        </PosPart>
-
-        <PosPart copyNumber="59">
-            <rParent name="gem11:GEMDisk11P"/>
-            <rChild name="gem11:GEMBox11L"/>
-            <rRotation name="y90" />
-            <Translation x="0" z="0*cm" y="220*cm" />
-        </PosPart>
-        <PosPart copyNumber="58">
-            <rParent name="gem11:GEMDisk11P"/>
-            <rChild name="gem11:GEMBox11L"/>
-            <Translation x="0" z="0*cm" y="220*cm" />
-        </PosPart>
-
     </PosPartSection>
-    
+
 </DDDefinition>
 

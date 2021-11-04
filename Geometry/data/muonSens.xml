@@ -3,7 +3,7 @@
   <SpecParSection label="muonsensitive">
     <SpecPar name="gem">
       <PartSelector path="//GHA0..*"/>
-      <!-- <PartSelector path="//GHA1..*"/> -->
+      <PartSelector path="//GHA1..*"/>
       <PartSelector path="//GHA2..*"/>
       <Parameter name="SensitiveDetector" value="MuonSensitiveDetector"/>
       <Parameter name="ReadOutName" value="MuonGEMHits"/>
