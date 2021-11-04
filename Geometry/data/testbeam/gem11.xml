@@ -314,10 +314,10 @@
   <Trd1 name="GGA116" dz="[dzS6S]" dy1="[dyGap2]" dy2="[dyGap2]" dx1="[dx61S]" dx2="[dx62S]" />
   <Trd1 name="GGA117" dz="[dzS7S]" dy1="[dyGap2]" dy2="[dyGap2]" dx1="[dx71S]" dx2="[dx72S]" />
   <Trd1 name="GGA118" dz="[dzS8S]" dy1="[dyGap2]" dy2="[dyGap2]" dx1="[dx81S]" dx2="[dx82S]" />
-  <Trd1 name="GHA101" dz="5*cm" dy1="[dyGap1]" dy2="[dyGap1]" dx1="5*cm" dx2="5.1*cm" />
-  <Trd1 name="GHA102" dz="5*cm" dy1="[dyGap1]" dy2="[dyGap1]" dx1="5*cm" dx2="5.1*cm" />
-  <Trd1 name="GHA103" dz="5*cm" dy1="[dyGap1]" dy2="[dyGap1]" dx1="5*cm" dx2="5.1*cm" />
-  <Trd1 name="GHA104" dz="5*cm" dy1="[dyGap1]" dy2="[dyGap1]" dx1="5*cm" dx2="5.1*cm" />
+  <Trd1 name="GHA101" dz="5*cm" dy1="[dyGap1]" dy2="[dyGap1]" dx1="4.95*cm" dx2="5.05*cm" />
+  <Trd1 name="GHA102" dz="5*cm" dy1="[dyGap1]" dy2="[dyGap1]" dx1="4.95*cm" dx2="5.05*cm" />
+  <Trd1 name="GHA103" dz="5*cm" dy1="[dyGap1]" dy2="[dyGap1]" dx1="4.95*cm" dx2="5.05*cm" />
+  <Trd1 name="GHA104" dz="5*cm" dy1="[dyGap1]" dy2="[dyGap1]" dx1="4.95*cm" dx2="5.05*cm" />
   <Trd1 name="GHA105" dz="[dzS5L]" dy1="[dyGap1]" dy2="[dyGap1]" dx1="[dx51L]" dx2="[dx52L]" />
   <Trd1 name="GHA106" dz="[dzS6L]" dy1="[dyGap1]" dy2="[dyGap1]" dx1="[dx61L]" dx2="[dx62L]" />
   <Trd1 name="GHA107" dz="[dzS7L]" dy1="[dyGap1]" dy2="[dyGap1]" dx1="[dx71L]" dx2="[dx72L]" />

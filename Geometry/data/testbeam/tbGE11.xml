@@ -23,13 +23,13 @@
         <PosPart copyNumber="52">
             <rParent name="gem11:GEMDisk11P"/>
             <rChild name="gem11:GEMBox11L"/>
-            <Translation x="0" z="0*cm" y="134*cm" />
+            <Translation x="0" z="0*cm" y="134*cm + 0.53125*cm" />
         </PosPart>
 
         <PosPart copyNumber="54">
             <rParent name="gem11:GEMDisk11P"/>
             <rChild name="gem11:GEMBox11L"/>
-            <Translation x="0" z="0*cm" y="274*cm" />
+            <Translation x="0" z="0*cm" y="274*cm + 0.53125*cm" />
         </PosPart>
     </PosPartSection>
 
