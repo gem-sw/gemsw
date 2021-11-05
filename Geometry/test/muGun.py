@@ -125,25 +125,4 @@ process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGener
 #process.MessageLogger.G4cout=dict()
 #process.MessageLogger.G4cerr=dict()
 #process.MessageLogger.SimG4CoreApplication=dict()
-
-# process.g4SimHits.StackingAction.RusRoGammaEnergyLimit = cms.double(0.0)
-# process.g4SimHits.StackingAction.RusRoNeutronEnergyLimit = cms.double(0.0)
-# #  tracking cuts
-# process.common_maximum_time.DeadRegions = cms.vstring()
-# process.common_maximum_time.CriticalDensity = cms.double(0)
-# process.common_maximum_time.CriticalEnergyForVacuum = cms.double(0)
-# process.g4SimHits.StackingAction.TrackNeutrino = cms.bool(True)
-# process.g4SimHits.StackingAction.KillGamma     = cms.bool(False)
-# process.g4SimHits.StackingAction.CriticalEnergyForVacuum = cms.double(0)
-# process.g4SimHits.StackingAction.DeadRegions = cms.vstring()
-# process.g4SimHits.SteppingAction.CriticalDensity = cms.double(0)
-# process.g4SimHits.SteppingAction.CriticalEnergyForVacuum = cms.double(0)
-# process.g4SimHits.SteppingAction.DeadRegions = cms.vstring()
-# #  time cuts
-# TimeCut = cms.double(10000.0)
-# process.common_maximum_time.MaxTrackTime = TimeCut
-# process.g4SimHits.StackingAction.MaxTrackTime = TimeCut
-# process.g4SimHits.SteppingAction.MaxTrackTime = TimeCut
-#  cuts per region
-
-# process.g4SimHits.Physics.DefaultCutValue = cms.double(0.07)
+#process.MessageLogger.SimG4CoreGeometry=dict()

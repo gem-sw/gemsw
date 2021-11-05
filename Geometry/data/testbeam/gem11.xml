@@ -11,23 +11,25 @@
 
 <ConstantsSection label="gem11.xml" eval="true">
   <!-- ETA PARTITIONS -->
-  <Constant name="dzS1L" value="4.9750*cm"/> <!-- eta partition heights -->
-  <Constant name="dzS2L" value="4.9750*cm"/>
-  <Constant name="dzS3L" value="4.9750*cm"/>
-  <Constant name="dzS4L" value="4.9750*cm"/>
-  <Constant name="dzS5L" value="4.9750*cm"/>
-  <Constant name="dzS6L" value="4.9750*cm"/>
-  <Constant name="dzS7L" value="4.9750*cm"/>
-  <Constant name="dzS8L" value="4.9750*cm"/>
-  <Constant name="dzS1S" value="4.9750*cm"/>
-  <Constant name="dzS2S" value="4.9750*cm"/>
-  <Constant name="dzS3S" value="4.9750*cm"/>
-  <Constant name="dzS4S" value="4.9750*cm"/>
-  <Constant name="dzS5S" value="4.9750*cm"/>
-  <Constant name="dzS6S" value="4.9750*cm"/>
-  <Constant name="dzS7S" value="4.9750*cm"/>
-  <Constant name="dzS8S" value="4.9750*cm"/>
-  <Constant name="dzGap" value="4.9750*mm"/>
+  <Constant name="g10x10" value="4.9750*cm"/> <!-- eta partition heights -->
+  <Constant name="dzS1L" value="[g10x10]"/> <!-- eta partition heights -->
+  <Constant name="dzS2L" value="[g10x10]"/>
+  <Constant name="dzS3L" value="[g10x10]"/>
+  <Constant name="dzS4L" value="[g10x10]"/>
+  <Constant name="dzS5L" value="[g10x10]"/>
+  <Constant name="dzS6L" value="[g10x10]"/>
+  <Constant name="dzS7L" value="[g10x10]"/>
+  <Constant name="dzS8L" value="[g10x10]"/>
+  <Constant name="dzS1S" value="[g10x10]"/>
+  <Constant name="dzS2S" value="[g10x10]"/>
+  <Constant name="dzS3S" value="[g10x10]"/>
+  <Constant name="dzS4S" value="[g10x10]"/>
+  <Constant name="dzS5S" value="[g10x10]"/>
+  <Constant name="dzS6S" value="[g10x10]"/>
+  <Constant name="dzS7S" value="[g10x10]"/>
+  <Constant name="dzS8S" value="[g10x10]"/>
+  <!-- <Constant name="dzGap" value="4.9750*mm"/> -->
+  <Constant name="dzGap" value="0.2500*mm"/>
   <Constant name="dzInL" value="([dzS1L]+[dzS2L]+[dzS3L]+[dzS4L]+[dzS5L]+[dzS6L]+[dzS7L]+[dzS8L]+7*[dzGap])"/> <!-- Total lenght in z (height) Short Chamber -->
   <Constant name="dzInS" value="([dzS1S]+[dzS2S]+[dzS3S]+[dzS4S]+[dzS5S]+[dzS6S]+[dzS7S]+[dzS8S]+7*[dzGap])"/> <!-- Total length in z (height) Long Chamber -->
   <Constant name="dzLS"  value="([dzInL]-[dzInS])"/>                                                           <!-- Difference in Length between Short and Long -->
@@ -47,7 +49,7 @@
   <Constant name="z60S"  value="([z50S]-[dzS5S]-2*[dzGap]-[dzS6S])"/> 
   <Constant name="z70S"  value="([z60S]-[dzS6S]-2*[dzGap]-[dzS7S])"/> 
   <Constant name="z80S"  value="([z70S]-[dzS7S]-2*[dzGap]-[dzS8S])"/> 
-  <Constant name="dxTop" value="4.9750*cm"/>   <!-- eta partition width -->
+  <Constant name="dxTop" value="[g10x10]"/>   <!-- eta partition width -->
   <!-- <Constant name="Angle" value="0.0001*deg"/>   setting angle to zero makes rectangles -->
   <Constant name="Angle" value="90*deg"/>  <!-- setting angle to zero makes rectangles -->
   <Constant name="slope" value="tan([Angle])"/>
@@ -138,8 +140,9 @@
   <Constant name="yReadOut"    value="(-[dyGBI11]+7.0*mm+[dyReadOut])"/>
   <Constant name="dzCardL"     value="36.800*cm"/>   
   <Constant name="dzCardS"     value="([dzCardL]-[dzLS])"/>
-  <Constant name="dxTopCardL"  value="5.975*cm"/>     
-  <Constant name="dxBotCard"   value="([dxTopCardL]-2*[slope]*[dzCardL])"/>
+  <Constant name="dxTopCardL"  value="5.975*cm"/>
+  <!-- <Constant name="dxBotCard"   value="([dxTopCardL]-2*[slope]*[dzCardL])"/> -->
+  <Constant name="dxBotCard"   value="[g10x10]"/>
   <Constant name="dxTopCardS"  value="([dxBotCard]+2*[slope]*[dzCardS])"/>
   <Constant name="dzFoilL"     value="36.800*cm"/>   
   <Constant name="dzFoilS"     value="([dzFoilL]-[dzLS])"/>
@@ -273,7 +276,8 @@
   <Trd1 name="GRAX11L" dz="[dzCardL]" dy1="[dyReadOut]" dy2="[dyReadOut]" dx1="[dxBotCard]" dx2="[dxTopCardL]" />
   <Trd1 name="GIAX11L" dz="[dzCardL]" dy1="[dyGap3]" dy2="[dyGap3]" dx1="[dxBotCard]" dx2="[dxTopCardL]" />
   <Trd1 name="GJAX11L" dz="[dzCardL]" dy1="[dyGap2]" dy2="[dyGap2]" dx1="[dxBotCard]" dx2="[dxTopCardL]" />
-  <Trd1 name="GSAX11L" dz="[dzCardL]" dy1="[dyGap1]" dy2="[dyGap1]" dx1="[dxBotCard]" dx2="[dxTopCardL]" />
+  <!-- <Trd1 name="GSAX11L" dz="[dzCardL]" dy1="[dyGap1]" dy2="[dyGap1]" dx1="[dxBotCard]" dx2="[dxTopCardL]" /> -->
+  <Trd1 name="GSAX11L" dz="[dzCardL]" dy1="80*cm" dy2="80*cm" dx1="[dxBotCard]" dx2="[dxTopCardL]" />
   <Trd1 name="GKAX11L" dz="[dzFoilL]" dy1="[dyFoil]" dy2="[dyFoil]" dx1="[dxBotFoil]" dx2="[dxTopFoilL]" />
   <Trd1 name="GDAX11L" dz="[dzCardL]" dy1="[dyGap4]" dy2="[dyGap4]" dx1="[dxBotCard]" dx2="[dxTopCardL]" />
   <Trd1 name="GRAX11S" dz="[dzCardS]" dy1="[dyReadOut]" dy2="[dyReadOut]" dx1="[dxBotCard]" dx2="[dxTopCardS]" />
@@ -415,7 +419,8 @@
   </LogicalPart>
   <LogicalPart name="GSAX11L" category="unspecified">
     <rSolid name="GSAX11L"/>
-    <rMaterial name="materials:G10"/>
+    <!-- <rMaterial name="materials:G10"/> -->
+    <rMaterial name="materials:Air"/>
   </LogicalPart>
   <LogicalPart name="GSAX11S" category="unspecified">
     <rSolid name="GSAX11S"/>
@@ -1054,3 +1059,9 @@
 </PosPartSection>
 
 </DDDefinition>
+
+ <!-- 
+ solid=gem11:GHA101   Trapezoid:   dz=5 theta=0 phi=0 dy1=0.14875 dx1=4.95 dx2=4.95       alpha1=0 dy2=0.14875 dx3=5.05  dx4=5.05 alpha2=0
+ solid=gem11:GSAX11L   Trapezoid:  dz=36.8 theta=0 phi=0 dy1=0.14875 dx1=4.975 dx2=4.975 alpha1=0 dy2=0.14875 dx3=5.975 dx4=5.975 alpha2=0
+
+ solid=gem11:GSAX11L  Trapezoid:  dz=36.8 theta=0 phi=0 dy1=0.14875 dx1=-1.20198e+18 dx2=-1.20198e+18 alpha1=0 dy2=0.14875 dx3=5.975 dx4=5.975 alpha2=0 -->
