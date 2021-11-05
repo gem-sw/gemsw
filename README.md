@@ -17,7 +17,7 @@ cd CMSSW_12_1_0_pre4/src
 cmsenv
 git cms-init -q
 git cms-merge-topic yeckang:mapping_update_v0.5 # Will be updated
-git clone git@github.com:yeckang/gemsw.git -b testBeam_unpack
+git clone git@github.com:gem-sw/gemsw.git
 scram b -j 4
 cd gemsw/EventFilter/test
 cmsRun testbeamReadout.py inputFiles=<file path> useB904Data=True skipBadDigi=False dqm=True reconstruct=True isME0data=<True or False>
