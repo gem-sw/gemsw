@@ -100,8 +100,8 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.RecoSim_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
-process.load('Configuration.Geometry.GeometryExtended2026D87Reco_cff')
-#process.load('gemsw.Geometry.GeometryTestBeam_cff')
+#process.load('Configuration.Geometry.GeometryExtended2026D87Reco_cff')
+process.load('gemsw.Geometry.GeometryTestBeam_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
@@ -167,7 +167,7 @@ if options.useB904Data:
     process.GlobalTag.toGet = cms.VPSet(
             cms.PSet(record = cms.string("GEMeMapRcd"),
                      tag = cms.string("GEMeMapTestBeam"),
-                     connect = cms.string("sqlite_file:./GEMeMap_TestBeam.db")
+                     connect = cms.string("sqlite_file:../data/GEMeMap_TestBeam.db")
                     )
     )
     process.muonGEMDigis.useDBEMap = True

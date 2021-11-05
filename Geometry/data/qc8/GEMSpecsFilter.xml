@@ -10,9 +10,9 @@
       <PartSelector path="//GEMBox21.*"/>      
       <PartSelector path="//GSAX21.*"/>      
       <PartSelector path="//GHA2..*"/>
-      <PartSelector path="//GE0Box"/>      
+      <!-- <PartSelector path="//GE0Box"/>      
       <PartSelector path="//GE0L"/>      
-      <PartSelector path="//GHA0..*"/>
+      <PartSelector path="//GHA0..*"/> -->
       <Parameter name="MuStructure" value="MuonEndCapGEM"/>
     </SpecPar>
   </SpecParSection>
