@@ -425,7 +425,7 @@
 <LogicalPartSection label="gem21.xml">
   <LogicalPart name="GEMDisk21LP" category="unspecified">
     <rSolid name="GEMBox21L"/>
-    <rMaterial name="materials:ME_free_space"/>
+    <rMaterial name="materials:Air"/>
   </LogicalPart>
   <!-- <LogicalPart name="GEMDisk21LN" category="unspecified">
     <rSolid name="GE21L"/>
@@ -957,7 +957,7 @@
   <PosPart copyNumber="1">
     <rParent name="mf:ME2RingP"/>
     <rChild name="GEMDisk21LP"/>
-    <Translation x="0*fm" y="0*fm" z="([zFront]+[hthick])" />
+    <!-- <Translation x="0*fm" y="0*fm" z="([zFront]+[hthick])" /> -->
   </PosPart>
   <!-- <PosPart copyNumber="1">
     <rParent name="mf:ME2RingN"/>
@@ -967,12 +967,12 @@
   <PosPart copyNumber="1">
     <rParent name="GEMBox21F"/>
     <rChild name="GMAX21F"/>
-    <Translation x="0*fm" y="[ypGM21]" z="0*fm" />
+    <Translation x="0*fm" y="0*fm" z="0*fm" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="GEMBox21B"/>
     <rChild name="GMAX21B"/>
-    <Translation x="0*fm" y="[ypGM21]" z="0*fm" />
+    <Translation x="0*fm" y="0*fm" z="0*fm" />
   </PosPart>
 
   <PosPart copyNumber="1">

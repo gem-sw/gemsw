@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<DDDefinition>
+
+<ConstantsSection label="mf.xml" eval="true">
+  <Constant name="z1GE0"    value="0*mm"/>
+  <Constant name="z2GE0"    value="0*mm"/>
+  <Constant name="dzGE0"    value="138.0*mm"/>
+  <Constant name="rMinGE0"  value="0*mm"/>
+  <Constant name="rMaxGE0"  value="0*mm"/>
+  <Constant name="rMaxFGE0" value="0*mm"/>
+</ConstantsSection>
+
+ <SolidSection label="mf.xml">
+  <Box name="ME"      dx="10*m" dy="10*m" dz="10*m"/>
+  <Box name="GE0Ring" dx="2*m" dy="0.1*m" dz="2*m"/>
+  <Box name="ME1Ring" dx="2*m" dy="0.5*m" dz="2*m"/>
+  <Box name="ME2Ring" dx="10*m" dy="10*m" dz="10*m"/>
+ </SolidSection>
+
+ <LogicalPartSection label="mf.xml">
+  <LogicalPart name="MEP" category="unspecified">
+   <rSolid name="ME"/>
+   <rMaterial name="materials:Air"/>
+  </LogicalPart>
+  <LogicalPart name="ME2RingP" category="unspecified">
+   <rSolid name="gem21:GEMBox21L"/>
+   <rMaterial name="materials:Air"/>
+  </LogicalPart>
+ </LogicalPartSection>
+
+ <PosPartSection label="mf.xml">
+  <PosPart copyNumber="1">
+   <rParent name="muonBase:MUON"/>
+   <rChild name="mf:MEP"/>
+   <Translation x="0*cm" z="0*cm" y="0*cm" />
+  </PosPart>
+  <PosPart copyNumber="1">
+   <rParent name="mf:MEP"/>
+   <rChild name="mf:ME2RingP"/>
+   <Translation x="0*cm" z="0*cm" y="30*cm" />
+  </PosPart>
+ </PosPartSection>
+
+</DDDefinition>

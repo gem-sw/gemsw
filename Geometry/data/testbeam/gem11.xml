@@ -11,23 +11,23 @@
 
 <ConstantsSection label="gem11.xml" eval="true">
   <!-- ETA PARTITIONS -->
-  <Constant name="g10x10" value="4.9750*cm"/> <!-- eta partition heights -->
-  <Constant name="dzS1L" value="[g10x10]"/> <!-- eta partition heights -->
-  <Constant name="dzS2L" value="[g10x10]"/>
-  <Constant name="dzS3L" value="[g10x10]"/>
-  <Constant name="dzS4L" value="[g10x10]"/>
-  <Constant name="dzS5L" value="[g10x10]"/>
-  <Constant name="dzS6L" value="[g10x10]"/>
-  <Constant name="dzS7L" value="[g10x10]"/>
-  <Constant name="dzS8L" value="[g10x10]"/>
-  <Constant name="dzS1S" value="[g10x10]"/>
-  <Constant name="dzS2S" value="[g10x10]"/>
-  <Constant name="dzS3S" value="[g10x10]"/>
-  <Constant name="dzS4S" value="[g10x10]"/>
-  <Constant name="dzS5S" value="[g10x10]"/>
-  <Constant name="dzS6S" value="[g10x10]"/>
-  <Constant name="dzS7S" value="[g10x10]"/>
-  <Constant name="dzS8S" value="[g10x10]"/>
+  <Constant name="gem10" value="4.9750*cm"/> <!-- eta partition heights -->
+  <Constant name="dzS1L" value="[gem10]"/> <!-- eta partition heights -->
+  <Constant name="dzS2L" value="[gem10]"/>
+  <Constant name="dzS3L" value="[gem10]"/>
+  <Constant name="dzS4L" value="[gem10]"/>
+  <Constant name="dzS5L" value="[gem10]"/>
+  <Constant name="dzS6L" value="[gem10]"/>
+  <Constant name="dzS7L" value="[gem10]"/>
+  <Constant name="dzS8L" value="[gem10]"/>
+  <Constant name="dzS1S" value="[gem10]"/>
+  <Constant name="dzS2S" value="[gem10]"/>
+  <Constant name="dzS3S" value="[gem10]"/>
+  <Constant name="dzS4S" value="[gem10]"/>
+  <Constant name="dzS5S" value="[gem10]"/>
+  <Constant name="dzS6S" value="[gem10]"/>
+  <Constant name="dzS7S" value="[gem10]"/>
+  <Constant name="dzS8S" value="[gem10]"/>
   <!-- <Constant name="dzGap" value="4.9750*mm"/> -->
   <Constant name="dzGap" value="0.2500*mm"/>
   <Constant name="dzInL" value="([dzS1L]+[dzS2L]+[dzS3L]+[dzS4L]+[dzS5L]+[dzS6L]+[dzS7L]+[dzS8L]+7*[dzGap])"/> <!-- Total lenght in z (height) Short Chamber -->
@@ -49,7 +49,7 @@
   <Constant name="z60S"  value="([z50S]-[dzS5S]-2*[dzGap]-[dzS6S])"/> 
   <Constant name="z70S"  value="([z60S]-[dzS6S]-2*[dzGap]-[dzS7S])"/> 
   <Constant name="z80S"  value="([z70S]-[dzS7S]-2*[dzGap]-[dzS8S])"/> 
-  <Constant name="dxTop" value="[g10x10]"/>   <!-- eta partition width -->
+  <Constant name="dxTop" value="[gem10]"/>   <!-- eta partition width -->
   <!-- <Constant name="Angle" value="0.0001*deg"/>   setting angle to zero makes rectangles -->
   <Constant name="Angle" value="90*deg"/>  <!-- setting angle to zero makes rectangles -->
   <Constant name="slope" value="tan([Angle])"/>
@@ -138,17 +138,19 @@
 <!-- GEM Readout Board - FR4 - Covers the frame -->
   <Constant name="dyReadOut"   value="1.5*mm"/>
   <Constant name="yReadOut"    value="(-[dyGBI11]+7.0*mm+[dyReadOut])"/>
-  <Constant name="dzCardL"     value="36.800*cm"/>   
+  <Constant name="dzCardL"     value="[gem10]"/>   
   <Constant name="dzCardS"     value="([dzCardL]-[dzLS])"/>
   <Constant name="dxTopCardL"  value="5.975*cm"/>
   <!-- <Constant name="dxBotCard"   value="([dxTopCardL]-2*[slope]*[dzCardL])"/> -->
-  <Constant name="dxBotCard"   value="[g10x10]"/>
+  <Constant name="dxBotCard"   value="[gem10]"/>
   <Constant name="dxTopCardS"  value="([dxBotCard]+2*[slope]*[dzCardS])"/>
-  <Constant name="dzFoilL"     value="36.800*cm"/>   
+  <Constant name="dzFoilL"     value="[gem10]"/>   
   <Constant name="dzFoilS"     value="([dzFoilL]-[dzLS])"/>
   <Constant name="dxTopFoilL"  value="5.975*cm"/> 
-  <Constant name="dxBotFoil"   value="([dxTopFoilL]-2*[slope]*[dzFoilL])"/>
-  <Constant name="dxTopFoilS"  value="([dxBotFoil]+2*[slope]*[dzFoilS])"/>
+  <!-- <Constant name="dxBotFoil"   value="([dxTopFoilL]-2*[slope]*[dzFoilL])"/> -->
+  <!-- <Constant name="dxTopFoilS"  value="([dxBotFoil]+2*[slope]*[dzFoilS])"/> -->
+  <Constant name="dxBotFoil"   value="[gem10]"/>
+  <Constant name="dxTopFoilS"  value="[gem10]"/>
   <Constant name="Tilt"        value="[gemf:Tilt]"/> <!-- ???? -->
 <!-- Cooling -->
   <Constant name="TubeBotL"    value="60.0*mm"/>
@@ -230,20 +232,21 @@
 
 <SolidSection label="gem11.xml">
   <Tubs name="GE11" rMin="1.265*m" rMax="2.64*m" dz="90*cm " startPhi="0*deg" deltaPhi="360*deg"/>
-
+  <Trd1 name="GEMBox11L" dz="100*cm" dy1="80*cm" dy2="80*cm" dx1="100*cm" dx2="100*cm" />
   <Trd1 name="GB11L" dz="[dzGB11L]" dy1="[dyGB11]" dy2="[dyGB11]" dx1="[dxBotGB11]" dx2="[dxTopGB11L]" />
   <Trd1 name="GB11S" dz="[dzGB11S]" dy1="[dyGB11]" dy2="[dyGB11]" dx1="[dxBotGB11]" dx2="[dxTopGB11S]" />
   <Trd1 name="GA11L" dz="[dzGA11L]" dy1="[dyGA11]" dy2="[dyGA11]" dx1="[dxBotGA11]" dx2="[dxTopGA11L]" />
   <Trd1 name="GA11S" dz="[dzGA11S]" dy1="[dyGA11]" dy2="[dyGA11]" dx1="[dxBotGA11]" dx2="[dxTopGA11S]" />
-  <UnionSolid name="GEMBox11L">
+  <!-- <UnionSolid name="GEMBox11L">
     <rSolid name="GB11L"/>
     <rSolid name="GA11L"/>
+      <Trd1 name="GSAX11L" dz="[dzCardL]" dy1="80*cm" dy2="80*cm" dx1="[dxBotCard]" dx2="[dxTopCardL]" />
     <Translation x="0.0*fm" y="([dyGB11]+[dyGA11])" z="([dzGB11L]-[dzGA11L])"/>
-  </UnionSolid>
+  </UnionSolid> -->
   <UnionSolid name="GEMBox11S">
     <rSolid name="GB11S"/>
     <rSolid name="GA11S"/>
-    <Translation x="0.0*fm" y="([dyGB11]+[dyGA11])" z="([dzGB11S]-[dzGA11S])"/>
+    <!-- <Translation x="0.0*fm" y="([dyGB11]+[dyGA11])" z="([dzGB11S]-[dzGA11S])"/> -->
   </UnionSolid>
 
   <Trd1 name="GBI11L" dz="[dzGBI11L]" dy1="[dyGBI11]" dy2="[dyGBI11]" dx1="[dxBotGBI11]" dx2="[dxTopGBI11L]" />
@@ -378,7 +381,7 @@
     <rMaterial name="materials:Aluminium"/>
   </LogicalPart>
   <LogicalPart name="GMAX11L" category="unspecified">
-    <rSolid name="GMAX11L"/>
+    <rSolid name="GEMBox11L"/>
     <rMaterial name="materials:Air"/>
   </LogicalPart>
   <LogicalPart name="GMAX11S" category="unspecified">
@@ -418,7 +421,7 @@
     <rMaterial name="gemf:M_GEM_Foil"/>
   </LogicalPart>
   <LogicalPart name="GSAX11L" category="unspecified">
-    <rSolid name="GSAX11L"/>
+    <rSolid name="GEMBox11L"/>
     <!-- <rMaterial name="materials:G10"/> -->
     <rMaterial name="materials:Air"/>
   </LogicalPart>
@@ -741,47 +744,61 @@
   <PosPart copyNumber="1">
     <rParent name="gem11:GEMBox11L"/>
     <rChild name="gem11:GMAX11L"/>
-    <Translation x="0*fm" y="[ypGM11]" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[ypGM11]" z="0*fm" /> -->
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="gem11:GMAX11L"/>
     <rChild name="gem11:GSAX11L"/>
-    <Translation x="0*fm" y="[yGap1]" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[yGap1]" z="0*fm" /> -->
+    <Translation x="0*fm" y="0*fm" z="0*fm" />
   </PosPart>
+<!-- Position GMAX11L:1 in GEMBox11L at (0,1.1,0) with rotation matrix (1, 0, 0, 0, 1, 0, 0, 0, 1)
+Position GSAX11L:1 in GMAX11L at (0,-896.413,0) with rotation matrix (1, 0, 0, 0, 1, 0, 0, 0, 1)
+
+ Position GSAX11L:1 in GMAX11L at (0,-896.413,0) with rotation matrix (1, 0, 0, 0, 1, 0, 0, 0, 1)
+solid=gem11:GSAX11L   Trapezoid:  dz=36.8 theta=0 phi=0 dy1=80 dx1=4.975 dx2=4.975 alpha1=0 dy2=80 dx3=5.975 dx4=5.975 alpha2=0 -->
+
   <PosPart copyNumber="1">
     <rParent name="gem11:GMAX11L"/>
     <rChild name="gem11:GKAX11L"/>
-    <Translation x="0*fm" y="[yFoil1]" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[yFoil1]" z="0*fm" /> -->
+    <Translation x="0*fm" y="1*mm" z="0*fm" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="gem11:GMAX11L"/>
     <rChild name="gem11:GJAX11L"/>
-    <Translation x="0*fm" y="[yGap2]" z="0*fm" />
+    <Translation x="0*fm" y="1.5*mm" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[yGap2]" z="0*fm" /> -->
   </PosPart>
   <PosPart copyNumber="2">
     <rParent name="gem11:GMAX11L"/>
     <rChild name="gem11:GKAX11L"/>
-    <Translation x="0*fm" y="[yFoil2]" z="0*fm" />
+    <Translation x="0*fm" y="2*mm" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[yFoil2]" z="0*fm" /> -->
   </PosPart>
   <PosPart copyNumber="2">
     <rParent name="gem11:GMAX11L"/>
     <rChild name="gem11:GIAX11L"/>
-    <Translation x="0*fm" y="[yGap3]" z="0*fm" />
+    <Translation x="0*fm" y="2.5*mm" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[yGap3]" z="0*fm" /> -->
   </PosPart>
   <PosPart copyNumber="3">
     <rParent name="gem11:GMAX11L"/>
     <rChild name="gem11:GKAX11L"/>
-    <Translation x="0*fm" y="[yFoil3]" z="0*fm" />
+    <Translation x="0*fm" y="3*mm" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[yFoil3]" z="0*fm" /> -->
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="gem11:GMAX11L"/>
     <rChild name="gem11:GDAX11L"/>
-    <Translation x="0*fm" y="[yGap4]" z="0*fm" />
+    <Translation x="0*fm" y="3.5*mm" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[yGap4]" z="0*fm" /> -->
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="gem11:GMAX11L"/>
     <rChild name="gem11:GRAX11L"/>
-    <Translation x="0*fm" y="[yReadOut]" z="0*fm" />
+    <Translation x="0*fm" y="4*mm" z="0*fm" />
+    <!-- <Translation x="0*fm" y="[yReadOut]" z="0*fm" /> -->
   </PosPart>
 
   <PosPart copyNumber="1">

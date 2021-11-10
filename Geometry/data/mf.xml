@@ -19,16 +19,16 @@
 
  <LogicalPartSection label="mf.xml">
   <LogicalPart name="MEP" category="unspecified">
-    <rSolid name="cms:OCMS"/>
-    <rMaterial name="materials:Air"/>
+   <rSolid name="ME"/>
+   <rMaterial name="materials:Air"/>
   </LogicalPart>
   <!-- <LogicalPart name="MEN" category="unspecified">
    <rSolid name="ME"/>
    <rMaterial name="materials:Air"/>
   </LogicalPart> -->
   <LogicalPart name="GE0RingP" category="unspecified">
-    <rSolid name="cms:OCMS"/>
-    <rMaterial name="materials:Air"/>
+   <rSolid name="ge0:GE0Box"/>
+   <rMaterial name="materials:Air"/>
   </LogicalPart>
   <!-- <LogicalPart name="GE0RingN" category="unspecified">
    <rSolid name="GE0Ring"/>
