@@ -20,17 +20,30 @@
     </RotationSection>
 
     <PosPartSection label="gem11.xml">
+  <PosPart copyNumber="1">
+   <rParent name="mf:MEP"/>
+   <rChild name="mf:ME1RingP"/>
+    <Translation x="0" z="0*cm" y="200*cm" />
+  </PosPart>
+
         <PosPart copyNumber="52">
             <rParent name="gem11:GEMDisk11P"/>
             <rChild name="gem11:GEMBox11L"/>
-            <Translation x="0" z="0*cm" y="134*cm + 0.53125*cm" />
+    <Translation x="0" z="0*cm" y="0.53125*cm" />
         </PosPart>
+
+  <!-- <PosPart copyNumber="2">
+   <rParent name="mf:MEP"/>
+   <rChild name="mf:ME1RingP"/>
+            <Translation x="0" z="0*cm" y="200*cm" />
+  </PosPart>
 
         <PosPart copyNumber="54">
             <rParent name="gem11:GEMDisk11P"/>
             <rChild name="gem11:GEMBox11L"/>
-            <Translation x="0" z="0*cm" y="274*cm + 0.53125*cm" />
-        </PosPart>
+            <Translation x="0" z="0*cm" y="74*cm + 0.53125*cm" />
+        </PosPart> -->
+
     </PosPartSection>
 
 </DDDefinition>

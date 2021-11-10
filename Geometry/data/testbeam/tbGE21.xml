@@ -12,12 +12,19 @@
         <Constant name="dx"           value="0.0*cm"/>
         <Constant name="rz"           value="0.0*deg"/>
     </ConstantsSection>
-    
+
     <PosPartSection label="gem21.xml">
+  <PosPart copyNumber="1">
+   <rParent name="mf:MEP"/>
+   <rChild name="mf:ME2RingP"/>
+            <Translation x="0*cm" z="0*cm" y="120.341*cm" />
+  </PosPart>
+
         <PosPart copyNumber="1">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21F"/>
-            <Translation x="0*cm" z="-726.135*cm" y="120.341*cm" />
+            <Translation x="0*cm" z="-726.135*cm" y="0*cm" />
+
         </PosPart>
     </PosPartSection>
     

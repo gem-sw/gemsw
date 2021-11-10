@@ -7,7 +7,7 @@
 
 <LogicalPartSection label="muonBase.xml">
   <LogicalPart name="MUON" category="unspecified">
-    <rSolid name="MUON"/>
+    <rSolid name="cms:OCMS"/>
     <rMaterial name="materials:Air"/>
   </LogicalPart>
 </LogicalPartSection>

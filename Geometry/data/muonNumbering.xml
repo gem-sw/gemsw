@@ -80,7 +80,7 @@
   <SpecPar name="MuonEndcap">
    <Parameter name="OnlyForMuonNumbering" value="muonstep2" eval="false"/>
    <PartSelector path="//MEP"/>
-   <PartSelector path="//MEN"/>
+   <!-- <PartSelector path="//MEN"/> -->
    <Parameter name="CopyNoTag" value="[me_region]"/>
    <Parameter name="CopyNoOffset" value="2*[super]"/>
   </SpecPar>
@@ -89,9 +89,9 @@
   <SpecPar name="MuonEndcapStation1">
    <Parameter name="OnlyForMuonNumbering" value="muonstep39" eval="false"/>
    <PartSelector path="//GE0RingP"/>
-   <PartSelector path="//GE0RingN"/>
+   <!-- <PartSelector path="//GE0RingN"/> -->
    <PartSelector path="//ME1RingP"/>
-   <PartSelector path="//ME1RingN"/>
+   <!-- <PartSelector path="//ME1RingN"/> -->
    <!-- <PartSelector path="//ME12RingP"/>
    <PartSelector path="//ME12RingN"/>
    <PartSelector path="//ME13RingP"/>
@@ -102,7 +102,7 @@
   <SpecPar name="MuonEndcapStation2">
    <Parameter name="OnlyForMuonNumbering" value="muonstep40" eval="false"/>
    <PartSelector path="//ME2RingP"/>
-   <PartSelector path="//ME2RingN"/>
+   <!-- <PartSelector path="//ME2RingN"/> -->
    <Parameter name="CopyNoTag" value="[me_station]"/>
    <Parameter name="CopyNoOffset" value="2*[super]"/>
   </SpecPar>

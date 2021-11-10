@@ -704,11 +704,11 @@
     <rChild name="gem11:GEMDisk11P"/>
     <Translation x="0*fm" y="0*fm" z="0*m" />
   </PosPart>
-  <PosPart copyNumber="1">
+  <!-- <PosPart copyNumber="1">
     <rParent name="mf:ME1RingN"/>
     <rChild name="gem11:GEMDisk11N"/>
     <Translation x="0*fm" y="0*fm" z="0*m" />
-  </PosPart>
+  </PosPart> -->
   <PosPart copyNumber="1">
     <rParent name="gem11:GEMBox11L"/>
     <rChild name="gem11:GMAX11L"/>

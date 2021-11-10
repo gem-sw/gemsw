@@ -7,7 +7,9 @@
     <Constant name="dZ"     value="0.0122066*cm + 0.5*([rMax]-[rMin])"/>
     <Constant name="rPos"   value="([dZ] + [rMin])"/>
     <Constant name="zPos"   value="0*cm"/>
-    <Constant name="z10"    value="12.35*cm"/> 
+    <!-- <Constant name="z10"    value="12.35*cm"/>  -->
+    <Constant name="dzGE0"    value="5*cm"/> 
+    <Constant name="z10"    value="0*cm"/> 
     <Constant name="z20"    value="([z10]-5*cm)"/> 
     <Constant name="z30"    value="([z20]-5*cm)"/> 
     <Constant name="z40"    value="([z30]-5*cm)"/> 
@@ -75,8 +77,10 @@
   </ConstantsSection>
 
   <SolidSection label="ge0.xml">
-    <Tubs name="GE0" rMin="[rMin]" rMax="[rMax]+2.5*cm" dz="[mf:dzGE0] " startPhi="0*deg" deltaPhi="360*deg"/>
-    <Trd1 name="GE0Box" dz="[dZ]" dy1="[mf:dzGE0]" dy2="[mf:dzGE0]" dx1="[xBot]" dx2="[xTop]" />
+    <!-- <Tubs name="GE0" rMin="[rMin]" rMax="[rMax]+2.5*cm" dz="[mf:dzGE0] " startPhi="0*deg" deltaPhi="360*deg"/>
+    <Trd1 name="GE0Box" dz="[dZ]" dy1="[mf:dzGE0]" dy2="[mf:dzGE0]" dx1="[xBot]" dx2="[xTop]" /> -->
+    <Trd1 name="GE0"    dz="[dZ]" dy1="[dzGE0]" dy2="[dzGE0]" dx1="[xBot]" dx2="[xTop]" />
+    <Trd1 name="GE0Box"    dz="[dZ]" dy1="[dzGE0]" dy2="[dzGE0]" dx1="[xBot]" dx2="[xTop]" />
     <Trd1 name="GE0L"    dz="[dZ]" dy1="[tSense]" dy2="[tSense]" dx1="[xBot]" dx2="[xTop]" />
     <Trd1 name="GE0Base" dz="[dZ]" dy1="[tBase]"  dy2="[tBase]"  dx1="[xBot]" dx2="[xTop]" />
     <Trd1 name="GE0Gas1" dz="[dZ]" dy1="[tGas1]"  dy2="[tGas1]"  dx1="[xBot]" dx2="[xTop]" />

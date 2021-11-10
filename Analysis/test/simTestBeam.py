@@ -78,7 +78,7 @@ process.generator = cms.EDFilter("Pythia8EGun",
 
 process.g4SimHits.UseMagneticField = cms.bool(False)
 process.g4SimHits.OnlySDs = cms.vstring('MuonSensitiveDetector')
-process.g4SimHits.Physics.CutsPerRegion = cms.bool(False)
+#process.g4SimHits.Physics.CutsPerRegion = cms.bool(False)
 
 process.mix = cms.EDProducer("MixingModule",
     digitizers = cms.PSet(),
@@ -108,21 +108,27 @@ process.muonGEMDigis.readMultiBX = True
 process.muonGEMDigis.useDBEMap = process.gemPacker.useDBEMap
 process.muonGEMDigis.keepDAQStatus = True
 
+process.gemRecHits.gemDigiLabel = cms.InputTag("simMuonGEMDigis")
+
 process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
-process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis+process.gemRecHits)
+process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
+process.reconstruction_step = cms.Path(process.gemRecHits)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
 process.schedule = cms.Schedule(process.generation_step,process.simulation_step,
-process.digitisation_step,process.digi2raw_step,
+#process.digitisation_step,
+#process.digi2raw_step,
+#process.reconstruction_step,
 process.endjob_step,process.FEVTDEBUGoutput_step)
 
 process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGeneratorService.generator
 
-
-#process.MessageLogger.G4cout=dict()
-#process.MessageLogger.G4cerr=dict()
-#process.MessageLogger.SimG4CoreApplication=dict()
-#process.MessageLogger.SimG4CoreGeometry=dict()
+## for debuging
+process.MessageLogger.G4cout=dict()
+process.MessageLogger.G4cerr=dict()
+process.MessageLogger.SimG4CoreApplication=dict()
+process.MessageLogger.SimG4CoreGeometry=dict()
+process.g4SimHits.MuonSD.PrintHits = cms.bool(True)

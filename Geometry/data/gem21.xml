@@ -424,7 +424,7 @@
 
 <LogicalPartSection label="gem21.xml">
   <LogicalPart name="GEMDisk21LP" category="unspecified">
-    <rSolid name="GE21L"/>
+    <rSolid name="GEMBox21L"/>
     <rMaterial name="materials:ME_free_space"/>
   </LogicalPart>
   <!-- <LogicalPart name="GEMDisk21LN" category="unspecified">
