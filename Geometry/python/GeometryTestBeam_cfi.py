@@ -19,7 +19,7 @@ XMLIdealGeometryESSource = cms.ESSource("XMLIdealGeometryESSource",
         'gemsw/Geometry/data/testbeam/muonNumbering.xml',
         'gemsw/Geometry/data/muonSens.xml',
         'gemsw/Geometry/data/GEMSpecsFilter.xml',
-        'gemsw/Geometry/data/GEMSpecs.xml',
+        'gemsw/Geometry/data/testbeam/GEMSpecs.xml',
     ),
     rootNodeName = cms.string('cms:OCMS')
 )
