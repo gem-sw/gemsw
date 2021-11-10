@@ -27,7 +27,7 @@
     </SpecPar>
     <SpecPar name="dPhiGE11" eval="true">
       <PartSelector path="//GHA1.."/>
-      <Parameter name="dPhi" value="1.144*deg"/>
+      <Parameter name="dPhi" value="0.229*deg"/>
     </SpecPar>
     <SpecPar name="dPhiGE21" eval="true">
       <PartSelector path="//GHA2.."/>
