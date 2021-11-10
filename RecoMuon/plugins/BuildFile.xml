@@ -1,0 +1,14 @@
+<use name="gemsw/RecoMuon"/>
+<use name="DataFormats/Common"/>
+<use name="DataFormats/TrackReco"/>
+<use name="DataFormats/TrackingRecHit"/>
+<use name="DataFormats/TrajectorySeed"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/MessageLogger"/>
+<use name="FWCore/ParameterSet"/>
+<use name="RecoMuon/TrackingTools"/>
+<use name="RecoMuon/TransientTrackingRecHit"/>
+<use name="TrackingTools/KalmanUpdators"/>
+<use name="TrackingTools/TrajectoryState"/>
+<use name="RecoTracker/TrackProducer"/>
+<flags EDM_PLUGIN="1"/>
