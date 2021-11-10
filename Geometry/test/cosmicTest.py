@@ -16,8 +16,8 @@ process.load('Configuration.StandardSequences.DigiToRaw_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 # test beam detectors at y-axis - GE21 at (0,110*cm,0), GE0 at (0,120*cm,0)
-#process.load('gemsw.Geometry.GeometryTestBeam_cff')
-process.load('gemsw.Geometry.GeometryQC8GE21_cff')
+process.load('gemsw.Geometry.GeometryQC8GE11_cff')
+#process.load('gemsw.Geometry.GeometryQC8GE21_cff')
 
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #from Configuration.AlCa.GlobalTag import GlobalTag

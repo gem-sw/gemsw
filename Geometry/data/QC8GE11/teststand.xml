@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../../DetectorDescription/Schema/DDLSchema.xsd">
+    <ConstantsSection label="gem11.xml" eval="true">
+        <Constant name="layers"       value="5"/>
+        <Constant name="dxSC"         value="0.0*cm"/>
+        <Constant name="dySC"         value="30.0*cm"/>
+        <Constant name="dzSC"         value="23.0*cm"/>
+        <Constant name="separationSC" value="3.47*cm"/>
+        <Constant name="dyBox"        value="150*cm"/>
+        <Constant name="dxBox"        value="200*cm"/>
+        <Constant name="dzBox"        value="200*cm"/>
+        <Constant name="dx"           value="0.0*cm"/>
+        <Constant name="rz"           value="0.0*deg"/>
+    </ConstantsSection>
+    
+    <RotationSection label="gem11.xml">
+          <RotationSequence name="x90">
+            <RotationByAxis axis="x" angle="90*deg"/>
+          </RotationSequence>
+    </RotationSection>
+
+    <PosPartSection label="gem11.xml">
+        <PosPart copyNumber="1">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" - 40*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="2">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" - 40*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+
+        <PosPart copyNumber="3">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" - 20*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="4">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" - 20*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+
+        <PosPart copyNumber="5">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" + 1*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="6">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" + 1*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+
+        <PosPart copyNumber="7">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" + 20*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="8">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" + 20*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+
+        <PosPart copyNumber="9">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" + 40*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="10">
+            <rParent name="gem11:GEMDisk11P"/>
+            <rChild name="gem11:GEMBox11S"/>
+            <Translation x="0*cm" y="0*cm" z=" + 40*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+    </PosPartSection>
+    
+</DDDefinition>
+

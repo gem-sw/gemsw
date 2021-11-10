@@ -16,14 +16,15 @@ process.load('Configuration.StandardSequences.DigiToRaw_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
 # test beam detectors at y-axis - GE21 at (0,110*cm,0), GE0 at (0,120*cm,0)
-process.load('gemsw.Geometry.GeometryTestBeam_cff')
+#process.load('gemsw.Geometry.GeometryQC8GE11_cff')
+process.load('gemsw.Geometry.GeometryQC8GE21_cff')
 
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1),
+    input = cms.untracked.int32(10),
 )
 process.source = cms.Source("EmptySource")
 process.configurationMetadata = cms.untracked.PSet(
@@ -62,11 +63,15 @@ process.generator = cms.EDFilter("Pythia8EGun",
         AddAntiParticle = cms.bool(True),
         MaxE = cms.double(20.0),
         MinE = cms.double(9.0),
+        # MaxEta = cms.double(0.0001),
+        # MinEta = cms.double(-0.0001),        
+        # MaxPhi = cms.double(1.5708),
+        # MinPhi = cms.double(1.5707),
         MaxEta = cms.double(0.0001),
         MinEta = cms.double(-0.0001),        
-        MaxPhi = cms.double(1.5708),
-        MinPhi = cms.double(1.5707),
-        ParticleID = cms.vint32(13)
+        MaxPhi = cms.double(3),
+        MinPhi = cms.double(0),
+        ParticleID = cms.vint32(13, 211,13,13,13,13)
     ),
     PythiaParameters = cms.PSet(
         parameterSets = cms.vstring()

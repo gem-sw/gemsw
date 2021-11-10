@@ -23,7 +23,7 @@
    <rMaterial name="materials:Air"/>
   </LogicalPart>
   <LogicalPart name="ME1RingP" category="unspecified">
-   <rSolid name="gem11:GEMBox11L"/>
+   <rSolid name="ME1Ring"/>
    <rMaterial name="materials:Air"/>
   </LogicalPart>
  </LogicalPartSection>
