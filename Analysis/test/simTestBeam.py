@@ -119,16 +119,9 @@ process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
 process.schedule = cms.Schedule(process.generation_step,process.simulation_step,
-#process.digitisation_step,
+process.digitisation_step,
 #process.digi2raw_step,
-#process.reconstruction_step,
+process.reconstruction_step,
 process.endjob_step,process.FEVTDEBUGoutput_step)
 
 process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGeneratorService.generator
-
-## for debuging
-process.MessageLogger.G4cout=dict()
-process.MessageLogger.G4cerr=dict()
-process.MessageLogger.SimG4CoreApplication=dict()
-process.MessageLogger.SimG4CoreGeometry=dict()
-process.g4SimHits.MuonSD.PrintHits = cms.bool(True)
