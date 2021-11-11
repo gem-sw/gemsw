@@ -6,8 +6,10 @@
 <use name="FWCore/Framework"/>
 <use name="FWCore/MessageLogger"/>
 <use name="FWCore/ParameterSet"/>
+<use name="RecoMuon/CosmicMuonProducer"/>
 <use name="RecoMuon/TrackingTools"/>
 <use name="RecoMuon/TransientTrackingRecHit"/>
+<use name="TrackingTools/PatternTools"/>
 <use name="TrackingTools/KalmanUpdators"/>
 <use name="TrackingTools/TrajectoryState"/>
 <use name="RecoTracker/TrackProducer"/>

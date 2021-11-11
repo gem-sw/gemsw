@@ -30,8 +30,9 @@
 
 #include "RecoMuon/TransientTrackingRecHit/interface/MuonTransientTrackingRecHit.h"
 #include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
-#include "RecoMuon/CosmicMuonProducer/interface/CosmicMuonSmoother.h"
+#include "gemsw/RecoMuon/interface/MuonSmoother.h"
 #include "RecoMuon/StandAloneTrackFinder/interface/StandAloneMuonSmoother.h"
+//#include "TrackingTools/PatternTools/interface/MuonSmoother.h"
 #include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
 #include "TrackingTools/KalmanUpdators/interface/KFUpdator.h"
 #include "RecoTracker/TrackProducer/src/TrajectoryToResiduals.h"
@@ -57,7 +58,7 @@ public:
 private:
   int iev; // events through
   edm::EDGetTokenT<GEMRecHitCollection> theGEMRecHitToken_;
-  CosmicMuonSmoother* theSmoother_;
+  MuonSmoother* theSmoother_;
   MuonServiceProxy* theService_;
   KFUpdator* theUpdator_;
 
@@ -82,7 +83,7 @@ GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) : iev(0) {
   edm::ParameterSet serviceParameters = ps.getParameter<edm::ParameterSet>("ServiceParameters");
   theService_ = new MuonServiceProxy(serviceParameters, consumesCollector(), MuonServiceProxy::UseEventSetupIn::RunAndEvent);
   edm::ParameterSet smootherPSet = ps.getParameter<edm::ParameterSet>("MuonSmootherParameters");
-  theSmoother_ = new CosmicMuonSmoother(smootherPSet,theService_);
+  theSmoother_ = new MuonSmoother(smootherPSet,theService_);
   theUpdator_ = new KFUpdator();
   produces<reco::TrackCollection>();
   produces<TrackingRecHitCollection>();
