@@ -49,12 +49,12 @@
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:ME1RingP" />
-      <Translation x="0" z="0*cm" y="10*cm" />
+      <Translation x="0" z="0*cm" y="45*cm" />
     </PosPart>
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:ME1RingN" />
-      <Translation x="0" z="0*cm" y="150*cm" />
+      <Translation x="0" z="0*cm" y="185*cm" />
     </PosPart>
 
     <PosPart copyNumber="1">
