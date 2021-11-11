@@ -424,13 +424,9 @@
 
 <LogicalPartSection label="gem21.xml">
   <LogicalPart name="GEMDisk21LP" category="unspecified">
-    <rSolid name="GEMBox21L"/>
+    <rSolid name="mf:ME2Ring"/>
     <rMaterial name="materials:Air"/>
   </LogicalPart>
-  <!-- <LogicalPart name="GEMDisk21LN" category="unspecified">
-    <rSolid name="GE21L"/>
-    <rMaterial name="materials:ME_free_space"/>
-  </LogicalPart> -->
   <LogicalPart name="GEMBox21F" category="unspecified">
     <rSolid name="GEMBox21L"/>
     <rMaterial name="materials:Aluminium"/>

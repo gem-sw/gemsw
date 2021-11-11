@@ -91,7 +91,7 @@
    <PartSelector path="//GE0RingP"/>
    <!-- <PartSelector path="//GE0RingN"/> -->
    <PartSelector path="//ME1RingP"/>
-   <!-- <PartSelector path="//ME1RingN"/> -->
+   <PartSelector path="//ME1RingN"/>
    <!-- <PartSelector path="//ME12RingP"/>
    <PartSelector path="//ME12RingN"/>
    <PartSelector path="//ME13RingP"/>

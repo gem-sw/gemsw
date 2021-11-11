@@ -23,8 +23,9 @@
 
 
 
-<ConstantsSection label="gem10x10.xml eval="true">
-  <Constant name="totthick"       value="16*mm"/>
+<ConstantsSection label="gem10x10.xml" eval="true">
+  <Constant name="totalthick"     value="16*mm"/>
+  <Constant name="gemfoilthick"   value="0.05*mm"/>
   <Constant name="pcbwidth"       value="297*mm"/>
   <Constant name="pcbheight"      value="297*mm"/>
   <Constant name="pcbthick"       value="3*mm"/>
@@ -50,7 +51,7 @@
 </ConstantsSection>
 
 <SolidSection label="gem10x10.xml">
-  <Box name="TKGEMASMBLY" dz="[pcbheight]/2"    dy="[totthick]/2"    dx="[pcbwidth]/2" />
+  <Box name="TKGEMASMBLY" dz="[pcbheight]/2"    dy="[totalthick]/2"    dx="[pcbwidth]/2" />
   <Box name="TKGEMPCB"    dz="[pcbheight]/2"    dy="[pcbthick]/2"    dx="[pcbwidth]/2" />
   <Box name="TKGEMBRDLft" dz="[gasboxheight]/2" dy="[gasboxthick]/2" dx="[gasboxborder]/2" />
   <Box name="TKGEMBRDRgt" dz="[gasboxheight]/2" dy="[gasboxthick]/2" dx="[gasboxborder]/2" />
