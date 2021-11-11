@@ -79,7 +79,7 @@ options.register('unpackerLabel',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
                  "Label for the GEM unpacker RAW input collection")
-options.register('useB904Data',
+options.register('use20x10',
                  False,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool)
@@ -92,8 +92,10 @@ options.parseArguments()
 
 
 
-from Configuration.Eras.Era_Run3_cff import Run3
-process = cms.Process('RECO',Run3)
+#from Configuration.Eras.Era_Run3_cff import Run3
+#process = cms.Process('RECO',Run3)
+from Configuration.StandardSequences.Eras import eras
+process = cms.Process('tb',eras.phase2_muon)
 
 process.load('Configuration.StandardSequences.L1Reco_cff')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
@@ -127,7 +129,6 @@ else :
 process.source = cms.Source(
     "GEMLocalModeDataSource",
     fileNames = cms.untracked.vstring(options.inputFiles),
-    #fileNames = cms.untracked.vstring("file:run000000/run000000_ls0001_index000000.raw"),
     skipEvents=cms.untracked.uint32(0),
     fedId = fedId_,
     hasFerolHeader = cms.untracked.bool(True),
@@ -163,7 +164,15 @@ if (options.debug):
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 ## for the time being the mapping does not work with the data label. Use MC instead
-if options.useB904Data:
+if options.use20x10:
+    process.GlobalTag.toGet = cms.VPSet(
+            cms.PSet(record = cms.string("GEMeMapRcd"),
+                     tag = cms.string("GEMeMapTestBeam"),
+                     connect = cms.string("sqlite_file:../data/GEMeMap_TestBeam_with_20x10.db")
+                    )
+    )
+    process.muonGEMDigis.useDBEMap = True
+else :
     process.GlobalTag.toGet = cms.VPSet(
             cms.PSet(record = cms.string("GEMeMapRcd"),
                      tag = cms.string("GEMeMapTestBeam"),
