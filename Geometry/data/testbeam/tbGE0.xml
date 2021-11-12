@@ -15,7 +15,7 @@
 
     <RotationSection label="ge0.xml">
         <RotationSequence name="y90">
-            <RotationByAxis axis="y" angle="90*deg" />
+            <RotationByAxis axis="y" angle="-90*deg" />
         </RotationSequence>
     </RotationSection>
 

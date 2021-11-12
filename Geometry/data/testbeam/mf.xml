@@ -11,7 +11,7 @@
   </ConstantsSection>
 
   <SolidSection label="mf.xml">
-    <Box name="ME" dx="10*m" dy="10*m" dz="10*m" />
+    <Box name="ME" dx="20*m" dy="20*m" dz="20*m" />
     <Box name="GE0Ring" dx="2*m" dy="0.1*m" dz="2*m" />
     <Box name="ME1Ring" dx="2*m" dy="0.5*m" dz="2*m" />
     <Box name="ME2Ring" dx="2*m" dy="0.1*m" dz="2*m" />
@@ -60,13 +60,14 @@
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:GE0RingP" />
+      <!--<Translation x="-([ge0:dzS1]+[ge0:dzS2]+[ge0:dzS3]+[ge0:dzS4])" z="0*cm" y="110*cm" />-->
       <Translation x="0*cm" z="0*cm" y="110*cm" />
     </PosPart>
 
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:ME2RingP" />
-      <Translation x="0*cm" z="0*cm" y="120*cm" />
+      <Translation x="-[gem21:dx132F]/2" z="70.44*cm" y="120*cm" />
   </PosPart>
   </PosPartSection>
 
