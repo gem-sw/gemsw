@@ -176,7 +176,7 @@ else :
     process.GlobalTag.toGet = cms.VPSet(
             cms.PSet(record = cms.string("GEMeMapRcd"),
                      tag = cms.string("GEMeMapTestBeam"),
-                     connect = cms.string("sqlite_file:../data/GEMeMap_TestBeam.db")
+                     connect = cms.string("sqlite_file:../data/GEMeMap_TestBeam_simple_me0.db")
                     )
     )
     process.muonGEMDigis.useDBEMap = True
