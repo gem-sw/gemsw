@@ -13,8 +13,6 @@ process.load('gemsw.Geometry.GeometryTestBeam_cff')
 #process.load('Configuration.StandardSequences.RecoSim_cff')
 #process.load('Configuration.StandardSequences.EndOfProcess_cff')
 
-process.TFileService = cms.Service("TFileService",fileName = cms.string("histo.root"))
-
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(1)
 )

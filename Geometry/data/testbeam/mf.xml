@@ -10,6 +10,13 @@
     <Constant name="rMaxFGE0" value="0*mm" />
   </ConstantsSection>
 
+
+  <RotationSection label="mf.xml">
+      <RotationSequence name="y90">
+          <RotationByAxis axis="y" angle="-90*deg" />
+      </RotationSequence>
+  </RotationSection>
+
   <SolidSection label="mf.xml">
     <Box name="ME" dx="20*m" dy="20*m" dz="20*m" />
     <Box name="GE0Ring" dx="2*m" dy="0.1*m" dz="2*m" />
@@ -60,8 +67,9 @@
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:GE0RingP" />
-      <!--<Translation x="-([ge0:dzS1]+[ge0:dzS2]+[ge0:dzS3]+[ge0:dzS4])" z="0*cm" y="110*cm" />-->
-      <Translation x="0*cm" z="0*cm" y="110*cm" />
+      <Translation x="-([ge0:dzS1]+[ge0:dzS2]+[ge0:dzS3]+[ge0:dzS4])" z="0*cm" y="110*cm" />
+      <!--<Translation x="0*cm" z="0*cm" y="110*cm" />-->
+      <rRotation name="y90" />
     </PosPart>
 
     <PosPart copyNumber="1">
