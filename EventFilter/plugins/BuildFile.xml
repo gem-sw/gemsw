@@ -5,6 +5,7 @@
 <use name="DataFormats/GEMDigi"/>
 <use name="Utilities/StorageFactory"/>
 <use name="FWCore/Sources"/>
+<use name="IOPool/Streamer"/>
 <use name="xz"/>
 <use name="zstd"/>
 <use name="zlib"/>

@@ -8,7 +8,7 @@
     <Constant name="rPos"   value="([dZ] + [rMin])"/>
     <Constant name="zPos"   value="0*cm"/>
     <!-- <Constant name="z10"    value="12.35*cm"/>  -->
-    <Constant name="dzGE0"    value="5*cm"/> 
+    <Constant name="dzGE0"    value="3*cm"/> 
     <Constant name="z10"    value="0*cm"/> 
     <Constant name="z20"    value="([z10]-5*cm)"/> 
     <Constant name="z30"    value="([z20]-5*cm)"/> 

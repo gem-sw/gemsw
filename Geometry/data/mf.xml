@@ -11,10 +11,10 @@
 </ConstantsSection>
 
  <SolidSection label="mf.xml">
-  <Box name="ME" dx="10*m" dy="10*m" dz="10*m"/>
-  <Box name="GE0Ring" dx="10*m" dy="10*m" dz="10*m"/>
-  <Box name="ME1Ring" dx="10*m" dy="10*m" dz="10*m"/>
-  <Box name="ME2Ring" dx="10*m" dy="10*m" dz="10*m"/>
+  <Box name="ME"      dx="10*m" dy="10*m" dz="10*m"/>
+  <Box name="GE0Ring" dx="2*m" dy="0.1*m" dz="2*m"/>
+  <Box name="ME1Ring" dx="2*m" dy="0.5*m" dz="2*m"/>
+  <Box name="ME2Ring" dx="2*m" dy="0.1*m" dz="2*m"/>
  </SolidSection>
 
  <LogicalPartSection label="mf.xml">
@@ -22,53 +22,62 @@
    <rSolid name="ME"/>
    <rMaterial name="materials:Air"/>
   </LogicalPart>
-  <LogicalPart name="MEN" category="unspecified">
+  <!-- <LogicalPart name="MEN" category="unspecified">
    <rSolid name="ME"/>
    <rMaterial name="materials:Air"/>
-  </LogicalPart>
+  </LogicalPart> -->
   <LogicalPart name="GE0RingP" category="unspecified">
-   <rSolid name="GE0Ring"/>
+   <rSolid name="ge0:GE0Box"/>
    <rMaterial name="materials:Air"/>
   </LogicalPart>
-  <LogicalPart name="GE0RingN" category="unspecified">
+  <!-- <LogicalPart name="GE0RingN" category="unspecified">
    <rSolid name="GE0Ring"/>
    <rMaterial name="materials:Air"/>
-  </LogicalPart>
+  </LogicalPart> -->
   <LogicalPart name="ME1RingP" category="unspecified">
-   <rSolid name="ME1Ring"/>
-   <rMaterial name="materials:Air"/>
-  </LogicalPart>
-  <LogicalPart name="ME1RingN" category="unspecified">
-   <rSolid name="ME1Ring"/>
+   <rSolid name="gem11:GEMBox11L"/>
    <rMaterial name="materials:Air"/>
   </LogicalPart>
   <LogicalPart name="ME2RingP" category="unspecified">
-   <rSolid name="ME2Ring"/>
+   <rSolid name="gem21:GEMBox21L"/>
    <rMaterial name="materials:Air"/>
   </LogicalPart>
-  <LogicalPart name="ME2RingN" category="unspecified">
+
+  <!-- <LogicalPart name="ME1RingN" category="unspecified">
+   <rSolid name="ME1Ring"/>
+   <rMaterial name="materials:Air"/>
+  </LogicalPart> -->
+  <!-- <LogicalPart name="ME2RingP" category="unspecified">
+   <rSolid name="gem21:GEMBox21F"/>
+   <rMaterial name="materials:Air"/>
+  </LogicalPart> -->
+  <!-- <LogicalPart name="ME2RingN" category="unspecified">
    <rSolid name="ME2Ring"/>
    <rMaterial name="materials:Air"/>
-  </LogicalPart>
+  </LogicalPart> -->
  </LogicalPartSection>
 
  <PosPartSection label="mf.xml">
   <PosPart copyNumber="1">
    <rParent name="muonBase:MUON"/>
    <rChild name="mf:MEP"/>
+   <Translation x="0*cm" z="0*cm" y="0*cm" />
   </PosPart>
-  <PosPart copyNumber="1">
+  <!-- <PosPart copyNumber="1">
    <rParent name="mf:MEP"/>
    <rChild name="mf:GE0RingP"/>
-  </PosPart>
-  <PosPart copyNumber="1">
+   <Translation x="0*cm" z="0*cm" y="10*cm" />
+  </PosPart> -->
+  <!-- <PosPart copyNumber="1">
    <rParent name="mf:MEP"/>
    <rChild name="mf:ME1RingP"/>
-  </PosPart>
-  <PosPart copyNumber="1">
+   <Translation x="0*cm" z="0*cm" y="20*cm" />
+  </PosPart> -->
+  <!-- <PosPart copyNumber="1">
    <rParent name="mf:MEP"/>
    <rChild name="mf:ME2RingP"/>
-  </PosPart>
+   <Translation x="0*cm" z="0*cm" y="30*cm" />
+  </PosPart> -->
  </PosPartSection>
 
 </DDDefinition>
