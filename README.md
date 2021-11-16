@@ -23,3 +23,15 @@ cd gemsw/EventFilter/test
 cmsRun testbeamReadout.py inputFiles=<file path> useB904Data=True skipBadDigi=False dqm=True reconstruct=True isME0data=<True or False>
 python3 make_profile.py <DQM root file> <root file to save profile>
 ```
+
+# fireworks
+cmsrel CMSSW_12_2_0_pre1
+cd CMSSW_12_2_0_pre1/src
+git cms-merge-topic jshlee:fireworks-GEMOnly-CMSSW_12_2_X
+git clone git@github.com:gem-sw/gemsw.git
+scram b -j 4
+cd gemsw/Analysis/test
+
+cmsRun dumpSimGeometry_cfg.py tag=GEMTB
+cmsRun dumpRecoGeometry_cfg.py tag=GEMTB calo=0 tracker=0 muon=0 gem=1 tgeo=0
+cmsRun dumpRecoGeometry_cfg.py tag=GEMTB calo=0 tracker=0 muon=0 gem=1 tgeo=1
