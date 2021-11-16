@@ -158,6 +158,12 @@ options.register ('muon',
                   VarParsing.VarParsing.varType.bool,
                   "write Muon geometry")
 
+options.register ('gem',
+                  True, # default value
+                  VarParsing.VarParsing.multiplicity.singleton,
+                  VarParsing.VarParsing.varType.bool,
+                  "write GEM geometry")
+
 options.register ('calo',
                   True, # default value
                   VarParsing.VarParsing.multiplicity.singleton,
@@ -195,6 +201,7 @@ if ( options.tgeo == True):
     process.add_(cms.ESProducer("FWTGeoRecoGeometryESProducer",
                  Tracker = cms.untracked.bool(options.tracker),
                  Muon = cms.untracked.bool(options.muon),
+                 GEM = cms.untracked.bool(options.gem),
                  Calo = cms.untracked.bool(options.calo),
                  Timing = cms.untracked.bool(options.timing)))
     process.dump = cms.EDAnalyzer("DumpFWTGeoRecoGeometry",
@@ -207,6 +214,7 @@ else:
     process.add_(cms.ESProducer("FWRecoGeometryESProducer",
                  Tracker = cms.untracked.bool(options.tracker),
                  Muon = cms.untracked.bool(options.muon),
+                 GEM = cms.untracked.bool(options.gem),
                  Calo = cms.untracked.bool(options.calo),
                  Timing = cms.untracked.bool(options.timing)))
     process.dump = cms.EDAnalyzer("DumpFWRecoGeometry",
