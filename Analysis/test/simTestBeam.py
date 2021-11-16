@@ -107,13 +107,13 @@ process.rawDataCollector.RawCollectionList = cms.VInputTag(cms.InputTag("gemPack
 process.muonGEMDigis.readMultiBX = True
 process.muonGEMDigis.useDBEMap = process.gemPacker.useDBEMap
 process.muonGEMDigis.keepDAQStatus = True
-
-process.gemRecHits.gemDigiLabel = cms.InputTag("simMuonGEMDigis")
+process.gemRecHits.gemDigiLabel = cms.InputTag('simMuonGEMDigis')
 
 process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
-process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
+#process.digi2raw_step = cms.Path(process.gemRecHits)
+#process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
 process.reconstruction_step = cms.Path(process.gemRecHits)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)

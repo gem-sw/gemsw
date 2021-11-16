@@ -13,18 +13,11 @@
         <Constant name="rz" value="0.0*deg" />
     </ConstantsSection>
 
-    <RotationSection label="ge0.xml">
-        <RotationSequence name="y90">
-            <RotationByAxis axis="y" angle="90*deg" />
-        </RotationSequence>
-    </RotationSection>
-
     <PosPartSection label="ge0.xml">
     <!-- main Translation done in mf.xml -->
         <PosPart copyNumber="1">
             <rParent name="ge0:GE0P" />
             <rChild name="ge0:GE0Box" />
-            <rRotation name="y90" />
         </PosPart>
     </PosPartSection>
 </DDDefinition>

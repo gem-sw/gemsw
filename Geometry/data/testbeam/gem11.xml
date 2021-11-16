@@ -844,13 +844,13 @@
   <PosPart copyNumber="1">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA101"/>
-    <Translation x="0*fm" y="0*mm" z="0*cm" />
+    <Translation x="0*fm" y="-351*mm" z="0*cm" />
   </PosPart>
   <PosPart copyNumber="2">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA102"/>
     <rRotation name="x180y90" />
-    <Translation x="0*fm" y="1*mm" z="0*cm" />
+    <Translation x="0*fm" y="-350*mm" z="0*cm" />
   </PosPart>
   <PosPart copyNumber="3">
     <rParent name="gem11:GSAX11L"/>

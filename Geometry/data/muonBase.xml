@@ -2,7 +2,7 @@
 <DDDefinition>
 
 <SolidSection label="muonBase.xml">
-  <Box name="MUON" dx="10*m" dy="10*m" dz="10*m"/>
+  <Box name="MUON" dx="20*m" dy="20*m" dz="20*m"/>
 </SolidSection>
 
 <LogicalPartSection label="muonBase.xml">
