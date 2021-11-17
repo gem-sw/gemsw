@@ -18,6 +18,7 @@
 
 #include <Geometry/Records/interface/MuonGeometryRecord.h>
 #include <Geometry/GEMGeometry/interface/GEMGeometry.h>
+#include "Geometry/CommonTopologies/interface/GEMStripTopology.h"
 
 #include "DataFormats/Common/interface/Handle.h"
 #include "DataFormats/GEMRecHit/interface/GEMRecHitCollection.h"
@@ -49,7 +50,7 @@ public:
   virtual ~GEMTrackFinder() {}
   /// Produce the GEMSegment collection
   void produce(edm::Event&, const edm::EventSetup&) override;
-  double trackChi2_, trackResX_, trackResY_;
+  double trackChi2_;
   bool skipLargeChamber_;
 
   multimap<float,const GEMEtaPartition*> detLayerMap_;
@@ -75,8 +76,6 @@ private:
 
 GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) : iev(0) {
   trackChi2_ = ps.getParameter<double>("trackChi2");
-  trackResX_ = ps.getParameter<double>("trackResX");
-  trackResY_ = ps.getParameter<double>("trackResY");
   skipLargeChamber_ = ps.getParameter<bool>("skipLargeChamber");
   theGEMRecHitToken_ = consumes<GEMRecHitCollection>(ps.getParameter<edm::InputTag>("gemRecHitLabel"));
   // register what this produces
@@ -140,6 +139,7 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
         int local_idx = (ieta-1)/2;
         int idx = idx_offset*2 + local_idx;
         yChamb[idx] = et;
+        detLayerMap_.insert( make_pair(et->position().y(), et) );
       }
     } else {
       detLayerMap_.insert( make_pair(et->position().y(), et) );
@@ -148,19 +148,15 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
     // save key as neg to sort from top to bottom
   }
 
-  cout << "Start Getting seeds" << endl;
   trajectorySeedCands_.clear();
   for (int i = 0; i < 2; i++) {
-    cout << Form("from chamber %d", i) << endl;
     auto frontSeeds = BuildSeedHits(xChamb[i], yChamb[i], gemRecHits.product());
     for (int j = 2; j < 4; j++) {
-      cout << Form("from chamber %d", j) << endl;
       auto rearSeeds = BuildSeedHits(xChamb[j], yChamb[j], gemRecHits.product());
       // Push_back trajectory candidates in trajectorySeedCands_
       findSeeds(frontSeeds, rearSeeds);
     }
   }
-  cout << "End Getting seeds" << endl;
   //cout << "GEMTrackFinder::frontSeeds->size() " << frontSeeds.size() << endl;
   //cout << "GEMTrackFinder::trajectorySeeds->size() " << trajectorySeeds->size() << endl;
 
@@ -172,8 +168,8 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
   for (auto seed : trajectorySeedCands_){
     Trajectory smoothed = makeTrajectory(seed, gemRecHits.product());
     if (smoothed.isValid()){
-      cout << "GEMTrackFinder::Trajectory " << smoothed.foundHits() << endl;
-      cout << "GEMTrackFinder::Trajectory chiSquared/ndof " << smoothed.chiSquared()/float(smoothed.ndof()) << endl;
+      //cout << "GEMTrackFinder::Trajectory " << smoothed.foundHits() << endl;
+      //cout << "GEMTrackFinder::Trajectory chiSquared/ndof " << smoothed.chiSquared()/float(smoothed.ndof()) << endl;
       //if (( maxChi2 > smoothed.chiSquared()/float(smoothed.ndof())) and ( smoothed.chiSquared()/float(smoothed.ndof()) > 7.0)){
       if (maxChi2 > smoothed.chiSquared()/float(smoothed.ndof())){
         maxChi2 = smoothed.chiSquared()/float(smoothed.ndof());
@@ -191,8 +187,8 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
     return;
   }
   //cout << maxChi2 << endl;
-  cout << "GEMTrackFinder::bestTrajectory " << bestTrajectory.foundHits() << endl;
-  cout << "GEMTrackFinder::bestTrajectory chiSquared/ ndof " << bestTrajectory.chiSquared()/float(bestTrajectory.ndof()) << endl;
+  //cout << "GEMTrackFinder::bestTrajectory " << bestTrajectory.foundHits() << endl;
+  //cout << "GEMTrackFinder::bestTrajectory chiSquared/ ndof " << bestTrajectory.chiSquared()/float(bestTrajectory.ndof()) << endl;
   //cout << maxChi2 << endl;
   // make track
   const FreeTrajectoryState* ftsAtVtx = bestTrajectory.geometricalInnermostState().freeState();
@@ -208,7 +204,7 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
                     persistentMomentum,
                     ftsAtVtx->charge(),
                     ftsAtVtx->curvilinearError());
- 
+
   reco::TrackExtra tx;
   //adding rec hits
   TrackingRecHit::ConstRecHitContainer transHits = findMissingHits(bestTrajectory);
@@ -223,7 +219,7 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
   tx.setSeedRef(bestTrajectory.seedRef());
   recHitsIndex +=nHitsAdded;
 
-  trackExtraCollection->emplace_back(tx );
+  trackExtraCollection->emplace_back(tx);
   reco::TrackExtraRef trackExtraRef(trackExtraCollectionRefProd, trackExtraIndex++ );
   track.setExtra(trackExtraRef);
   trackCollection->emplace_back(track);
@@ -249,9 +245,9 @@ void GEMTrackFinder::findSeeds(MuonTransientTrackingRecHit::MuonRecHitContainer 
     
     for (auto fronthit : frontSeeds){
       for (auto rearhit : rearSeeds){
-        GlobalVector segDirGV = fronthit->globalPosition() - rearhit->globalPosition();
+        GlobalVector segDirGV = rearhit->globalPosition() - fronthit->globalPosition();
 
-        int charge= 1;
+        int charge= -1;
         AlgebraicSymMatrix mat(5,0);
         mat = fronthit->parametersError().similarityT( fronthit->projectionMatrix() );
         LocalTrajectoryError error(asSMatrix<5>(mat));
@@ -304,7 +300,7 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
     }
     
     GlobalPoint tsosGP = tsos.globalPosition();
-    cout << "tsos gp   "<< tsosGP << refChamber->id() <<endl;
+    //cout << "tsos gp   "<< tsosGP << refChamber->id() <<endl;
     
     float maxR = 500;
     // find best in all layers
@@ -317,17 +313,20 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
       
       GEMRecHitCollection::range range = gemHits->get(etaPartID);
       //cout<< "Number of GEM rechits available , from chamber: "<< etaPartID<<endl;
+      const GEMStripTopology* top_(dynamic_cast<const GEMStripTopology*>(&(etaPart->topology())));
+      const float stripLength(top_->stripLength());
+      const float stripPitch(etaPart->pitch());
       for (GEMRecHitCollection::const_iterator rechit = range.first; rechit!=range.second; ++rechit){
 
         LocalPoint tsosLP = etaPart->toLocal(tsosGP);
         LocalPoint rhLP = (*rechit).localPosition();
         //double y_err = (*rechit).localPositionError().yy();
-        if (abs(rhLP.x() - tsosLP.x()) > trackResX_) continue;
-        if (abs(rhLP.y() - tsosLP.y()) > trackResY_) continue;
+        if (abs(rhLP.x() - tsosLP.x()) > stripPitch*5) continue;
+        if (abs(rhLP.y() - tsosLP.y()) > stripLength/2) continue;
         // need to find best hits per chamber
         float deltaR = (rhLP - tsosLP).mag();
         if (maxR > deltaR){
-          cout << " found hit   "<< etaPartID << " pos = "<< rhLP << " R = "<<deltaR <<endl;
+          // cout << " found hit   "<< etaPartID << " pos = "<< rhLP << " R = "<<deltaR <<endl;
           const GeomDet* geomDet(etaPart);  
           tmpRecHit = MuonTransientTrackingRecHit::specificBuild(geomDet,&*rechit);
           maxR = deltaR;
@@ -367,13 +366,13 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
       // cout <<" chmap.first "<< chmap.first
       //      << " -1*hit->globalPosition().y() "<< -1*hit->globalPosition().y()
       //      <<endl;
-      if (abs(chmap.first + hit->globalPosition().y()) < 1. ){
+      if (abs(chmap.first - hit->globalPosition().y()) < 1. ){
         hasHit = true;
         break;
       }
     }
     if (hasHit) continue;
-    
+
     auto refChamber = chmap.second;
 
     tsos = theService_->propagator("StraightLinePropagator")->propagate(tsos,refChamber->surface());
@@ -383,7 +382,7 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
     
     GlobalPoint tsosGP = tsos.globalPosition();
 
-    cout << "tsos gp   "<< tsosGP << refChamber->id() <<endl;
+    //cout << "tsos gp   "<< tsosGP << refChamber->id() <<endl;
     //cout << "tsos error "<< tsos.localError().positionError() << endl;
     
     shared_ptr<MuonTransientTrackingRecHit> tmpRecHit;
@@ -396,9 +395,9 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
       const LocalPoint pos2D(pos.x(), pos.y(), 0);
       const BoundPlane& bps(etaPart->surface());
         
-      if(abs(pos.y()) < 17 && abs(pos.x()) < 40 )
-        cout << " missing hit "<< etaPart->id() << " pos = "<<pos<< " R = "<<pos.mag() <<" inside "
-             <<  bps.bounds().inside(pos2D) <<endl;
+      //if(abs(pos.y()) < 17 && abs(pos.x()) < 40 )
+      //  cout << " missing hit "<< etaPart->id() << " pos = "<<pos<< " R = "<<pos.mag() <<" inside "
+      //       <<  bps.bounds().inside(pos2D) <<endl;
         
       if (bps.bounds().inside(pos2D)){
         //if (!bp.bounds().inside(pos)) continue;
@@ -417,7 +416,7 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
       ++nmissing;
     }
   }
-  cout << "found "<<nmissing <<" missing hits"<<endl;
+  //cout << "found "<<nmissing <<" missing hits"<<endl;
   
   return recHits;
 }
@@ -441,7 +440,7 @@ MuonTransientTrackingRecHit::MuonRecHitContainer GEMTrackFinder::BuildSeedHits(c
       auto localErrY = rechitY->localPositionError();
 
       Float_t lpx = localPointX.x();
-      Float_t lpy = localPointY.x();
+      Float_t lpy = -localPointY.x();
       Float_t lpz = localPointX.z();
       Float_t lpxx = localErrX.xx();
       Float_t lpyy = localErrY.xx();
@@ -452,7 +451,6 @@ MuonTransientTrackingRecHit::MuonRecHitContainer GEMTrackFinder::BuildSeedHits(c
       auto rechit = rechitX->clone();
       rechit->setPositionAndError(localPoint, localError);
 
-      cout <<"BuildSeedHits "<< etaPartIDx << rechit->localPosition()<<endl;
       hits.push_back(MuonTransientTrackingRecHit::specificBuild(geomDet,&*rechit));
     }
   }

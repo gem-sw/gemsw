@@ -7,6 +7,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
+process.load('Configuration.StandardSequences.MagneticField_0T_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedGauss_cfi')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
@@ -18,9 +19,9 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 # test beam detectors at y-axis - GE21 at (0,110*cm,0), GE0 at (0,120*cm,0)
 process.load('gemsw.Geometry.GeometryTestBeam_cff')
 
-#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-#from Configuration.AlCa.GlobalTag import GlobalTag
-#process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+from Configuration.AlCa.GlobalTag import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(100),
@@ -104,6 +105,26 @@ process.gemPacker.useDBEMap = False
 
 process.rawDataCollector.RawCollectionList = cms.VInputTag(cms.InputTag("gemPacker"))
 
+process.load('RecoMuon.TrackingTools.MuonServiceProxy_cff')
+process.MuonServiceProxy.ServiceParameters.Propagators.append('StraightLinePropagator')
+
+process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
+                                        process.MuonServiceProxy,
+                                        gemRecHitLabel = cms.InputTag("gemRecHits"),
+                                        maxClusterSize = cms.double(10),
+                                        minClusterSize = cms.double(1),
+                                        trackChi2 = cms.double(1000.0),
+                                        skipLargeChamber = cms.bool(False),
+                                        MuonSmootherParameters = cms.PSet(
+                                           PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
+                                           PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
+                                           RescalingFactor = cms.double(5.0)
+                                        ),
+                                        )
+process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
+process.GEMTrackFinder.ServiceParameters.CSCLayers = cms.untracked.bool(False)
+process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
+
 process.muonGEMDigis.readMultiBX = True
 process.muonGEMDigis.useDBEMap = process.gemPacker.useDBEMap
 process.muonGEMDigis.keepDAQStatus = True
@@ -114,7 +135,7 @@ process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
 #process.digi2raw_step = cms.Path(process.gemRecHits)
 #process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
-process.reconstruction_step = cms.Path(process.gemRecHits)
+process.reconstruction_step = cms.Path(process.gemRecHits * process.GEMTrackFinder)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
