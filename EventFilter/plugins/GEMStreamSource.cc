@@ -184,7 +184,7 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
 void GEMStreamSource::produce(edm::Event& e) { e.put(std::move(rawData_)); }
 
 bool GEMStreamSource::openFile(const std::string& fileName) {
-  std::// cout << " open file.. " << fileName << std::endl;
+  std::cout << " open file.. " << fileName << std::endl;
   fin_.close();
   fin_.clear();
   size_t pos = fileName.find(':');
