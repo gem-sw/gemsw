@@ -102,7 +102,6 @@ process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('Configuration.StandardSequences.RecoSim_cff')
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('FWCore.MessageService.MessageLogger_cfi')
-#process.load('Configuration.Geometry.GeometryExtended2026D87Reco_cff')
 process.load('gemsw.Geometry.GeometryTestBeam_cff')
 process.load('Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -181,7 +180,8 @@ else :
     )
     process.muonGEMDigis.useDBEMap = True
 
-# dump raw data
+# dump raw data 
+# not needed by default
 process.dumpRaw = cms.EDAnalyzer(
     "DumpFEDRawDataProduct",
     feds = cms.untracked.vint32([1477,1478]),

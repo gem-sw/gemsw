@@ -1,6 +1,7 @@
 <use name="CondFormats/DataRecord"/>
 <use name="CondFormats/GEMObjects"/>
 <use name="EventFilter/GEMRawToDigi"/>
+<use name="EventFilter/Utilities"/>
 <use name="DataFormats/FEDRawData"/>
 <use name="DataFormats/GEMDigi"/>
 <use name="Utilities/StorageFactory"/>
@@ -9,6 +10,6 @@
 <use name="xz"/>
 <use name="zstd"/>
 <use name="zlib"/>
-<library   file="*.cc" name="AnalyzerUnpackerGEMLocalModePlugins">
+<library   file="*.cc" name="gemswEventFilterPlugins">
   <flags   EDM_PLUGIN="1"/>
 </library>
