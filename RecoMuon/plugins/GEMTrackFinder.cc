@@ -50,7 +50,7 @@ public:
   virtual ~GEMTrackFinder() {}
   /// Produce the GEMSegment collection
   void produce(edm::Event&, const edm::EventSetup&) override;
-  double trackChi2_, trackResX_, trackResY_;
+  double trackChi2_;
   bool skipLargeChamber_;
 
   multimap<float,const GEMEtaPartition*> detLayerMap_;
@@ -76,8 +76,6 @@ private:
 
 GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) : iev(0) {
   trackChi2_ = ps.getParameter<double>("trackChi2");
-  trackResX_ = ps.getParameter<double>("trackResX");
-  trackResY_ = ps.getParameter<double>("trackResY");
   skipLargeChamber_ = ps.getParameter<bool>("skipLargeChamber");
   theGEMRecHitToken_ = consumes<GEMRecHitCollection>(ps.getParameter<edm::InputTag>("gemRecHitLabel"));
   // register what this produces
@@ -323,8 +321,8 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
         LocalPoint tsosLP = etaPart->toLocal(tsosGP);
         LocalPoint rhLP = (*rechit).localPosition();
         //double y_err = (*rechit).localPositionError().yy();
-        if (abs(rhLP.x() - tsosLP.x()) > stripPitch*7) continue;
-        if (abs(rhLP.y() - tsosLP.y()) > stripLength) continue;
+        if (abs(rhLP.x() - tsosLP.x()) > stripPitch*5) continue;
+        if (abs(rhLP.y() - tsosLP.y()) > stripLength/2) continue;
         // need to find best hits per chamber
         float deltaR = (rhLP - tsosLP).mag();
         if (maxR > deltaR){
