@@ -48,9 +48,10 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
     id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
 
   FEDRawData& fedData = rawData_->FEDData(fedId_);
-  uint32_t fedSize = (frdEventMsg->eventSize()/ 8 + 5) * sizeof(uint64_t)*8;
-  fedData.resize(fedSize);
   auto words = makeFEDRAW(frdEventMsg.get(), fedId_);
+  //cout << "words.size() " << words.size() << endl;
+  uint32_t fedSize = words.size() * sizeof(uint64_t);
+  fedData.resize(fedSize*8);
   memcpy(fedData.data(), words.data(), fedSize);
 
   if (hasSecFile) {
@@ -62,10 +63,10 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
     }
 
     FEDRawData& fedData2 = rawData_->FEDData(fedId2_);
-    const uint32_t fedSize2 = (frdEventMsg2->eventSize()/ 8 + 5) * sizeof(uint64_t)*8;
-    fedData2.resize(fedSize2);
-    //uint64_t* fed2 = reinterpret_cast<uint64_t*>(fedData2.data());
     auto words2 = makeFEDRAW(frdEventMsg2.get(), fedId2_);
+    //cout << "words2.size() " << words2.size() << endl;
+    uint32_t fedSize2 = words2.size() * sizeof(uint64_t);
+    fedData2.resize(fedSize2*8);
     memcpy(fedData2.data(), words2.data(), fedSize2);
   }
 
