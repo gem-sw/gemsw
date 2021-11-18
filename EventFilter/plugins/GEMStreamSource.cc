@@ -55,6 +55,10 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
   memcpy(fedData.data(), fed, fedSize);
   if (hasSecFile) {
     std::unique_ptr<FRDEventMsgView> frdEventMsg2 = getEventMsg(fin2_);
+    if (frdEventMsg->event() != frdEventMsg2->event()) {
+      cout <<" event number does not match between files "<< frdEventMsg->event() << " "<< frdEventMsg2->event() << endl;
+      return false;
+    }
     uint64_t* fed2 = makeFEDRAW(frdEventMsg2.get(), fedId2_);
     FEDRawData& fedData2 = rawData_->FEDData(fedId2_);
     const uint32_t fedSize2 = (frdEventMsg2->eventSize() + 5) << 3;  //trailer length counts in 8 bytes
@@ -159,7 +163,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin
     }
     frdEventMsg = std::make_unique<FRDEventMsgView>(&buffer_[0]);
   }
-  // cout << "totalSize "<<totalSize <<endl;
 
   if (verifyChecksum_ && frdEventMsg->version() >= 5) {
     uint32_t crc = 0;
