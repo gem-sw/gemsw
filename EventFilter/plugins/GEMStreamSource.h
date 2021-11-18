@@ -31,7 +31,7 @@ private:
   void produce(edm::Event& e) override;
   std::ifstream openFile(const std::string& fileName);
   std::unique_ptr<FRDEventMsgView> getEventMsg(std::ifstream& fin);
-  uint64_t* makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId);
+  std::vector<uint64_t> makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId);
 
 private:
   // member data
