@@ -50,7 +50,8 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
   rawData_ = std::make_unique<FEDRawDataCollection>();
 
   FEDRawData& fedData = rawData_->FEDData(fedId_);
-  const uint32_t fedSize = (frdEventMsg->eventSize() + 5) << 3;  //trailer length counts in 8 bytes
+  // fedSize should be (frdEventMsg->eventSize()/8 + 5)*8, but it crashes, so it is set much larger
+  const uint32_t fedSize = (frdEventMsg->eventSize()) * sizeof(uint64_t);
   fedData.resize(fedSize);
   memcpy(fedData.data(), fed, fedSize);
   if (hasSecFile) {
@@ -61,8 +62,8 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
     }
     uint64_t* fed2 = makeFEDRAW(frdEventMsg2.get(), fedId2_);
     FEDRawData& fedData2 = rawData_->FEDData(fedId2_);
-    const uint32_t fedSize2 = (frdEventMsg2->eventSize() + 5) << 3;  //trailer length counts in 8 bytes
-    fedData2.resize(fedSize2);
+    const uint32_t fedSize2 = (frdEventMsg2->eventSize()) * sizeof(uint64_t);
+    fedData2.resize(fedSize2);    
     memcpy(fedData2.data(), fed2, fedSize2);
   }
 
@@ -140,7 +141,7 @@ std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin
   }
 
   std::unique_ptr<FRDEventMsgView> frdEventMsg(new FRDEventMsgView(&buffer_[0]));
-  // more debugging
+  // // more debugging
   // cout << "frdEventMsg->run() " << frdEventMsg->run() << endl;
   // cout << "frdEventMsg->lumi() " << frdEventMsg->lumi() << endl;
   // cout << "frdEventMsg->event() " << frdEventMsg->event() << endl;
@@ -193,7 +194,7 @@ uint64_t* GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fed
   amc13.setCDFHeader(0, LV1_id, BX_id, fedId);
   amc13.setAMC13Header(0, 1, OrN);
   amc13.setAMC13Trailer(BX_id, LV1_id, BX_id);
-  uint32_t EvtLength = eventSize + 5;  // 2 header + 2 trailer + 1 AMC header
+  uint32_t EvtLength = eventSize/8 + 5;  // 2 header + 2 trailer + 1 AMC header
   amc13.setCDFTrailer(EvtLength);
 
   std::vector<uint64_t> words(EvtLength);
