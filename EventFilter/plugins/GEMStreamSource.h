@@ -29,19 +29,25 @@ private:
                           edm::TimeValue_t& theTime,
                           edm::EventAuxiliary::ExperimentType& eType) override;
   void produce(edm::Event& e) override;
-
-  bool openFile(const std::string& fileName);
+  std::ifstream openFile(const std::string& fileName);
+  std::unique_ptr<FRDEventMsgView> getEventMsg(std::ifstream& fin);
+  uint64_t* makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId);
 
 private:
   // member data
   std::vector<std::string>::const_iterator itFileName_;
   std::vector<std::string>::const_iterator endFileName_;
+  bool hasSecFile;
   std::ifstream fin_;
+  std::ifstream fin2_;
+  GEMRawToDigi gemR2D;
   std::unique_ptr<FEDRawDataCollection> rawData_;
   std::vector<char> buffer_;
   const bool verifyAdler32_;
   const bool verifyChecksum_;
   const bool useL1EventID_;
+  int fedId_;
+  int fedId2_;
   uint16_t detectedFRDversion_ = 0;
   uint16_t flags_ = 0;
 };

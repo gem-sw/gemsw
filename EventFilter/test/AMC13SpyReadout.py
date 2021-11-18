@@ -6,6 +6,11 @@ options.parseArguments()
 
 process = cms.Process("AMC13SpyReadout")
 
+process.maxEvents = cms.untracked.PSet(
+    #input = cms.untracked.int32(options.maxEvents)
+    input = cms.untracked.int32(10)
+)
+
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True),
     SkipEvent = cms.untracked.vstring('ProductNotFound'),
@@ -20,12 +25,11 @@ process.maxEvents = cms.untracked.PSet(
     output = cms.untracked.int32(-1),
 )
 
-process.source = cms.Source(
-    "GEMStreamSource",
+process.source = cms.Source("GEMStreamSource",
     fileNames = cms.untracked.vstring(options.inputFiles),
     verifyAdler32 = cms.untracked.bool(False),
     verifyChecksum = cms.untracked.bool(False),
-    useL1EventID = cms.untracked.bool(False),
+    useL1EventID = cms.untracked.bool(True),
     firstLuminosityBlockForEachRun = cms.untracked.VLuminosityBlockID(*[cms.LuminosityBlockID(1,0)]),
     rawDataLabel = cms.untracked.string("GEM")
 )
