@@ -30,6 +30,7 @@ private:
                           edm::EventAuxiliary::ExperimentType& eType) override;
   void produce(edm::Event& e) override;
   std::ifstream openFile(const std::string& fileName);
+  bool openFile(const std::string& fileName, std::ifstream& fin);
   std::unique_ptr<FRDEventMsgView> getEventMsg(std::ifstream& fin);
   std::vector<uint64_t> makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId);
 
