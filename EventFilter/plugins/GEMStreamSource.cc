@@ -2,6 +2,8 @@
 #include <memory>
 #include <zlib.h>
 
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
+
 #include "IOPool/Streamer/interface/FRDEventMessage.h"
 #include "IOPool/Streamer/interface/FRDFileHeader.h"
 
@@ -29,12 +31,11 @@ GEMStreamSource::GEMStreamSource(edm::ParameterSet const& pset, edm::InputSource
       useL1EventID_(pset.getUntrackedParameter<bool>("useL1EventID", false)),
       fedId_(pset.getUntrackedParameter<int>("fedId", 1477)),
       fedId2_(pset.getUntrackedParameter<int>("fedId2", 1478)) {
-  
   openFile(fileNames(0)[0], fin_);
   hasSecFile = false;
   if (fileNames(0).size() == 2) {
     hasSecFile = true;
-    openFile(fileNames(0)[1], fin2_);    
+    openFile(fileNames(0)[1], fin2_);
   }
   produces<FEDRawDataCollection>();
 }
@@ -42,8 +43,8 @@ GEMStreamSource::GEMStreamSource(edm::ParameterSet const& pset, edm::InputSource
 bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
                                          edm::TimeValue_t& theTime,
                                          edm::EventAuxiliary::ExperimentType& eType) {
-
-  if (fin_.peek() == EOF) return false;
+  if (fin_.peek() == EOF)
+    return false;
 
   rawData_ = std::make_unique<FEDRawDataCollection>();
 
@@ -55,17 +56,15 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
   size_t fedSize = words.size() * sizeof(uint64_t);
   FEDRawData& fedData = rawData_->FEDData(fedId_);
   fedData.resize(fedSize);
-
-  //cout << "words.size() " << words.size() << " fedData.size() " << fedData.size() << endl;
-
   memcpy(fedData.data(), words.data(), fedSize);
 
-  // uint32_t fedSize = words.size() * sizeof(uint64_t);
-  // fedData.resize(fedSize * 8);
-  // memcpy(fedData.data(), words.data(), fedSize);
+  // FEDTrailer trailer(fedData.data() + fedData.size() - FEDTrailer::length);
+  // cout << "trailer.check() " << trailer.check() << " " << trailer.fragmentLength() << endl;
+  // cout << "fedData.size() " << fedData.size() << " FEDTrailer::length " << FEDTrailer::length << endl;
 
   if (hasSecFile) {
-    if (fin2_.peek() == EOF) return false;
+    if (fin2_.peek() == EOF)
+      return false;
     std::unique_ptr<FRDEventMsgView> frdEventMsg2 = getEventMsg(fin2_);
 
     if (frdEventMsg->event() != frdEventMsg2->event()) {
@@ -172,16 +171,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin
   }
 
   std::unique_ptr<FRDEventMsgView> frdEventMsg(new FRDEventMsgView(&buffer_[0]));
-  // more debugging
-  // cout << "frdEventMsg->run() " << frdEventMsg->run() << endl;
-  // cout << "frdEventMsg->lumi() " << frdEventMsg->lumi() << endl;
-  // cout << "frdEventMsg->event() " << frdEventMsg->event() << endl;
-  // cout << "frdEventMsg->size() " << frdEventMsg->size() << endl;
-  // cout << "frdEventMsg->flags() " << frdEventMsg->flags() << endl;
-  // cout << "frdEventMsg->eventSize() " << frdEventMsg->eventSize() << endl;
-  // cout << "frdEventMsg->paddingSize() " << frdEventMsg->paddingSize() << endl;
-  // cout << "buffer_.size() " << buffer_.size() << endl;
-  // cout << "FRDHeaderVersionSize[detectedFRDversion_] " << FRDHeaderVersionSize[detectedFRDversion_] << endl;
 
   const uint32_t totalSize = frdEventMsg->size();
   if (totalSize > buffer_.size()) {
@@ -213,32 +202,27 @@ std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin
           << adler;
     }
   }
+  LogDebug("GEMStreamSource") << "frdEventMsg run=" << frdEventMsg->run() << " lumi=" << frdEventMsg->lumi()
+                                   << " event=" << frdEventMsg->event() << " size=" << int(frdEventMsg->size())
+                                   << " eventSize=" << int(frdEventMsg->eventSize());
+
   return frdEventMsg;
 }
 
 std::vector<uint64_t> GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId) {
-
   uint64_t* event = (uint64_t*)frdEventMsg->payload();
   GEMAMC amc;
   amc.setAMCheader1(*(event));
   amc.setAMCheader2(*(event + 1));
-  cout << "amc.lv1Id()         " << amc.lv1Id() << endl;
-  cout << "amc.orbitNumber()   " << amc.orbitNumber() << endl;
-  cout << "amc.bunchCrossing() " << amc.bunchCrossing() << endl;
-  cout << "amc.amcNum()        " << int(amc.amcNum()) << endl;
-
-  //   amctest.setGEMeventHeader(*(newevent + 2));
-  //   cout << "amctest.lv1Id()         " << amctest.lv1Id() << endl;
-  //   cout << "amctest.orbitNumber()   " << amctest.orbitNumber() << endl;
-  //   cout << "amctest.bunchCrossing() " << amctest.bunchCrossing() << endl;
-  //   cout << "amctest.amcNum()        " << int(amctest.amcNum()) << endl;
+  LogDebug("GEMStreamSource") << "amc lv1Id=" << amc.lv1Id() << " orbitNumber=" << amc.orbitNumber()
+                                   << " bx=" << amc.bunchCrossing() << " amcNum=" << int(amc.amcNum());
 
   uint32_t eventSize = frdEventMsg->eventSize();
   uint16_t BX_id = amc.bunchCrossing();
   uint32_t LV1_id = amc.lv1Id();
   uint32_t OrN = amc.orbitNumber();
   GEMAMC13 amc13;
-  amc13.setCDFHeader(0, LV1_id, BX_id, fedId);
+  amc13.setCDFHeader(0x1, LV1_id, BX_id, fedId);
   amc13.setAMC13Header(0, 1, OrN);
   amc13.setAMC13Trailer(BX_id, LV1_id, BX_id);
   uint32_t EvtLength = eventSize / 8 + 5;  // 2 header + 2 trailer + 1 AMC header
@@ -253,46 +237,6 @@ std::vector<uint64_t> GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg, 
   }
   words[EvtLength - 2] = amc13.getAMC13Trailer();
   words[EvtLength - 1] = amc13.getCDFTrailer();
-
-  // // debugging fragmentLength
-  //   cout << "amc13.fragmentLength()         " << amc13.fragmentLength() << endl;
-  //   GEMAMC amctest;
-  //   cout << "amc13.getCDFTrailer() " << std::bitset<64>(amc13.getCDFTrailer()) << endl;
-  //   for (uint32_t i = 0; i < EvtLength; i++) {
-  //     cout << i << " " << std::bitset<64>(words[i]) << endl;
-  //   }
-
-  //   uint64_t* newevent = (uint64_t*)frdEventMsg->payload();
-  //   amctest.setAMCheader1(*(newevent));
-  //   amctest.setAMCheader2(*(newevent + 1));
-  //   amctest.setGEMeventHeader(*(newevent + 2));
-  //   cout << "amctest.lv1Id()         " << amctest.lv1Id() << endl;
-  //   cout << "amctest.orbitNumber()   " << amctest.orbitNumber() << endl;
-  //   cout << "amctest.bunchCrossing() " << amctest.bunchCrossing() << endl;
-  //   cout << "amctest.amcNum()        " << int(amctest.amcNum()) << endl;
-  //   cout << "amctest.boardId()       " << amctest.boardId() << endl;
-  //   cout << "amctest.davCnt()       " << int(amctest.davCnt()) << endl;
-
-  //   cout << "amc13->fragmentLength() " << amc13.fragmentLength() << endl;
-  //   auto amc13n = gemR2D.convertWordToGEMAMC13(words.data());
-  //   cout << "amc13n->fragmentLength() " << amc13n->fragmentLength() << endl;
-  //   cout << "amc13n->sourceId() " << amc13n->sourceId() << endl;
-  //   cout << "amc13n->nAMC() " << int(amc13n->nAMC()) << endl;
-
-  //   for (const auto& amc : *(amc13n->getAMCpayloads())) {
-  //     cout << "amc.lv1Id()         " << amc.lv1Id() << endl;
-  //     cout << "amc.orbitNumber()   " << amc.orbitNumber() << endl;
-  //     cout << "amc.bunchCrossing() " << amc.bunchCrossing() << endl;
-  //     cout << "amc.amcNum()        " << int(amc.amcNum()) << endl;
-  //     cout << "amc.boardId()       " << amc.boardId() << endl;
-  //     cout << "amc.davCnt()       " << int(amc.davCnt()) << endl;
-  //     for (const auto& optoHybrid : *amc.gebs()) {
-  //       cout << "optoHybrid.inputID() " << int(optoHybrid.inputID()) << endl;
-  //       for (auto vfat : *optoHybrid.vFATs()) {
-  //         cout << "vfat.vfatId() " << int(vfat.vfatId()) << endl;
-  //       }
-  //     }
-  //   }
 
   return words;
 }

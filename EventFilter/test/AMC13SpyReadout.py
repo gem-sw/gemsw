@@ -8,7 +8,7 @@ process = cms.Process("AMC13SpyReadout")
 
 process.maxEvents = cms.untracked.PSet(
     #input = cms.untracked.int32(options.maxEvents)
-    input=cms.untracked.int32(-1)
+    input=cms.untracked.int32(10)
 )
 
 process.options = cms.untracked.PSet(
@@ -21,7 +21,7 @@ process.MessageLogger.cout.threshold = cms.untracked.string('INFO')
 process.MessageLogger.debugModules = cms.untracked.vstring('*')
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 process.MessageLogger.cerr.threshold = "DEBUG"
-process.MessageLogger.debugModules = ["muonGEMDigis"]
+process.MessageLogger.debugModules = ["source", "muonGEMDigis"]
 
 process.source = cms.Source("GEMStreamSource",
                             fileNames=cms.untracked.vstring(
@@ -43,7 +43,7 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(1477)
 process.muonGEMDigis.fedIdEnd = cms.uint32(1478)
-process.muonGEMDigis.skipBadStatus = cms.bool(False)
+process.muonGEMDigis.skipBadStatus = cms.bool(True)
 process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -54,7 +54,8 @@ process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
 process.output = cms.OutputModule("PoolOutputModule",
                                   outputCommands=cms.untracked.vstring(
                                       "drop *",
-                                      "drop FEDRawDataCollection_source_*_*"
+                                      'keep *_muonGEMDigis_*_*',
+                                      #"drop FEDRawDataCollection_source_*_*"
                                   ),
                                   fileName=cms.untracked.string(
                                       'output_edm.root'),
