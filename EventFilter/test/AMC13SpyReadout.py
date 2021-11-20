@@ -20,6 +20,8 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cout.threshold = cms.untracked.string('INFO')
 process.MessageLogger.debugModules = cms.untracked.vstring('*')
 process.MessageLogger.cerr.FwkReport.reportEvery = 5000
+process.MessageLogger.cerr.threshold = "DEBUG"
+process.MessageLogger.debugModules = ["muonGEMDigis"]
 
 process.source = cms.Source("GEMStreamSource",
                             fileNames=cms.untracked.vstring(
@@ -41,13 +43,13 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(1477)
 process.muonGEMDigis.fedIdEnd = cms.uint32(1478)
-process.muonGEMDigis.skipBadStatus = cms.bool(options.skipBadDigi)
+process.muonGEMDigis.skipBadStatus = cms.bool(False)
 process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
                                              tag=cms.string("GEMeMapTestBeam"),
-                                             connect=cms.string("sqlite_file:../data/GEMeMap_TestBeam_simple_me0.db")))
+                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_simple_me0.db")))
 
 process.output = cms.OutputModule("PoolOutputModule",
                                   outputCommands=cms.untracked.vstring(
@@ -63,4 +65,4 @@ process.output = cms.OutputModule("PoolOutputModule",
                                   splitLevel=cms.untracked.int32(0))
 
 process.p = cms.Path(process.muonGEMDigis)
-#process.outpath = cms.EndPath(process.output)
+process.outpath = cms.EndPath(process.output)

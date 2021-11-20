@@ -217,10 +217,26 @@ std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin
 }
 
 std::vector<uint64_t> GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId) {
+
+  uint64_t* event = (uint64_t*)frdEventMsg->payload();
+  GEMAMC amc;
+  amc.setAMCheader1(*(event));
+  amc.setAMCheader2(*(event + 1));
+  cout << "amc.lv1Id()         " << amc.lv1Id() << endl;
+  cout << "amc.orbitNumber()   " << amc.orbitNumber() << endl;
+  cout << "amc.bunchCrossing() " << amc.bunchCrossing() << endl;
+  cout << "amc.amcNum()        " << int(amc.amcNum()) << endl;
+
+  //   amctest.setGEMeventHeader(*(newevent + 2));
+  //   cout << "amctest.lv1Id()         " << amctest.lv1Id() << endl;
+  //   cout << "amctest.orbitNumber()   " << amctest.orbitNumber() << endl;
+  //   cout << "amctest.bunchCrossing() " << amctest.bunchCrossing() << endl;
+  //   cout << "amctest.amcNum()        " << int(amctest.amcNum()) << endl;
+
   uint32_t eventSize = frdEventMsg->eventSize();
-  uint16_t BX_id = 0;
-  uint32_t LV1_id = frdEventMsg->event();
-  uint32_t OrN = frdEventMsg->event();
+  uint16_t BX_id = amc.bunchCrossing();
+  uint32_t LV1_id = amc.lv1Id();
+  uint32_t OrN = amc.orbitNumber();
   GEMAMC13 amc13;
   amc13.setCDFHeader(0, LV1_id, BX_id, fedId);
   amc13.setAMC13Header(0, 1, OrN);
@@ -232,7 +248,6 @@ std::vector<uint64_t> GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg, 
   words[0] = amc13.getCDFHeader();
   words[1] = amc13.getAMC13Header();
   words[2] = amc13.getAMC13Header();  // this is for AMCheader
-  uint64_t* event = (uint64_t*)frdEventMsg->payload();
   for (uint32_t i = 0; i < eventSize; i++) {
     words[i + 3] = *(event++);
   }
