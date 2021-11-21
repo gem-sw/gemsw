@@ -45,7 +45,9 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
   std::unique_ptr<FRDEventMsgView> frdEventMsg = getEventMsg(fin_);
   if (!frdEventMsg) return false;
 
-  id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
+  //id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
+  // should be set up frdEventMsg, but run is wrong and lumi is not set for DB emap
+  id = edm::EventID(id.run(), id.luminosityBlock(), frdEventMsg->event());
 
   std::vector<uint64_t>* words = makeFEDRAW(frdEventMsg.get(), fedId_);
   size_t fedSize = words->size() * sizeof(uint64_t);
@@ -161,10 +163,7 @@ std::vector<uint64_t>* GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg,
   GEMAMC amc;
   amc.setAMCheader1(*(event));
   amc.setAMCheader2(*(event + 1));
-  LogDebug("GEMStreamSource") << "amc lv1Id=" << amc.lv1Id() << " orbitNumber=" << amc.orbitNumber()
-                              << " bx=" << amc.bunchCrossing() << " amcNum=" << int(amc.amcNum());
-
-  uint32_t eventSize = frdEventMsg->eventSize();
+  uint32_t eventSize = frdEventMsg->eventSize()/8;
   uint16_t BX_id = amc.bunchCrossing();
   uint32_t LV1_id = amc.lv1Id();
   uint32_t OrN = amc.orbitNumber();
@@ -172,18 +171,22 @@ std::vector<uint64_t>* GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg,
   amc13.setCDFHeader(0x1, LV1_id, BX_id, fedId);
   amc13.setAMC13Header(0, 1, OrN);
   amc13.setAMC13Trailer(BX_id, LV1_id, BX_id);
-  uint32_t EvtLength = eventSize / 8 + 5;  // 2 header + 2 trailer + 1 AMC header
+  uint32_t EvtLength = eventSize + 5;  // 2 header + 2 trailer + 1 AMC header
   amc13.setCDFTrailer(EvtLength);
 
-  vector<uint64_t>* words = new vector<uint64_t>(EvtLength);
+  vector<uint64_t>* words = new vector<uint64_t>();
   words->push_back(amc13.getCDFHeader());
   words->push_back(amc13.getAMC13Header());
-  words->push_back(amc13.getAMC13Header());  // this is for AMCheader
+  words->push_back(amc13.getAMC13Header());// this is for AMCheader
   for (uint32_t i = 0; i < eventSize; i++) {
-    words->push_back(*(event++));
+    words->push_back(*(event+i));
   }
   words->push_back(amc13.getAMC13Trailer());
   words->push_back(amc13.getCDFTrailer());
+
+  LogDebug("GEMStreamSource") << "amc lv1Id=" << amc.lv1Id() << " orbitNumber=" << amc.orbitNumber()
+                              << " bx=" << amc.bunchCrossing() << " amcNum=" << int(amc.amcNum())
+                              << " words=" << words->size();
 
   return words;
 }
