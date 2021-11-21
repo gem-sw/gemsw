@@ -220,8 +220,8 @@ bool GEMLocalModeDataSource::setRunAndEventInfo(edm::EventID &id, edm::TimeValue
 	std::vector<uint64_t> buf;
 	const int tmpBufSize=40;
 	uint64_t tmpBuf[tmpBufSize];
-	
 	do {
+		
 		buf.clear();
 		
 		int prn=0;

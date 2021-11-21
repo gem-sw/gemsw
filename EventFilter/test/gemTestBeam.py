@@ -60,5 +60,5 @@ process.output = cms.OutputModule("PoolOutputModule",
                                       'output_edm.root'),
 )
 
-process.p = cms.Path(process.muonGEMDigis)
+#process.p = cms.Path(process.muonGEMDigis)
 process.outpath = cms.EndPath(process.output)

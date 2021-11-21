@@ -26,9 +26,6 @@ using namespace std;
 
 GEMStreamSource::GEMStreamSource(edm::ParameterSet const& pset, edm::InputSourceDescription const& desc)
     : ProducerSourceFromFiles(pset, desc, true),
-      verifyAdler32_(pset.getUntrackedParameter<bool>("verifyAdler32", true)),
-      verifyChecksum_(pset.getUntrackedParameter<bool>("verifyChecksum", true)),
-      useL1EventID_(pset.getUntrackedParameter<bool>("useL1EventID", false)),
       fedId_(pset.getUntrackedParameter<int>("fedId", 1477)),
       fedId2_(pset.getUntrackedParameter<int>("fedId2", 1478)) {
   openFile(fileNames(0)[0], fin_);
@@ -43,29 +40,22 @@ GEMStreamSource::GEMStreamSource(edm::ParameterSet const& pset, edm::InputSource
 bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
                                          edm::TimeValue_t& theTime,
                                          edm::EventAuxiliary::ExperimentType& eType) {
-  if (fin_.peek() == EOF)
-    return false;
-
   rawData_ = std::make_unique<FEDRawDataCollection>();
 
   std::unique_ptr<FRDEventMsgView> frdEventMsg = getEventMsg(fin_);
-  if (useL1EventID_)
-    id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
+  if (!frdEventMsg) return false;
 
-  std::vector<uint64_t> words = makeFEDRAW(frdEventMsg.get(), fedId_);
-  size_t fedSize = words.size() * sizeof(uint64_t);
+  id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
+
+  std::vector<uint64_t>* words = makeFEDRAW(frdEventMsg.get(), fedId_);
+  size_t fedSize = words->size() * sizeof(uint64_t);
   FEDRawData& fedData = rawData_->FEDData(fedId_);
   fedData.resize(fedSize);
-  memcpy(fedData.data(), words.data(), fedSize);
-
-  // FEDTrailer trailer(fedData.data() + fedData.size() - FEDTrailer::length);
-  // cout << "trailer.check() " << trailer.check() << " " << trailer.fragmentLength() << endl;
-  // cout << "fedData.size() " << fedData.size() << " FEDTrailer::length " << FEDTrailer::length << endl;
+  memcpy(fedData.data(), words->data(), fedSize);
 
   if (hasSecFile) {
-    if (fin2_.peek() == EOF)
-      return false;
     std::unique_ptr<FRDEventMsgView> frdEventMsg2 = getEventMsg(fin2_);
+    if (!frdEventMsg2) return false;
 
     if (frdEventMsg->event() != frdEventMsg2->event()) {
       cout << " event number does not match between files " << frdEventMsg->event() << " " << frdEventMsg2->event()
@@ -73,35 +63,16 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
       return false;
     }
 
-    std::vector<uint64_t> words2 = makeFEDRAW(frdEventMsg2.get(), fedId2_);
-    size_t fedSize2 = words2.size() * sizeof(uint64_t);
+    std::vector<uint64_t>* words2 = makeFEDRAW(frdEventMsg2.get(), fedId2_);
+    size_t fedSize2 = words2->size() * sizeof(uint64_t);
     FEDRawData& fedData2 = rawData_->FEDData(fedId2_);
     fedData2.resize(fedSize2);
-    //cout << "words2.size() " << words2.size() << endl;
-    memcpy(fedData2.data(), words2.data(), fedSize2);
+    memcpy(fedData2.data(), words2->data(), fedSize2);
   }
   return true;
 }
 
 void GEMStreamSource::produce(edm::Event& e) { e.put(std::move(rawData_)); }
-
-std::ifstream GEMStreamSource::openFile(const std::string& fileName) {
-  std::cout << " open file.. " << fileName << std::endl;
-  std::ifstream fin;
-  fin.close();
-  fin.clear();
-  size_t pos = fileName.find(':');
-  if (pos != std::string::npos) {
-    std::string prefix = fileName.substr(0, pos);
-    if (prefix != "file")
-      return fin;
-    pos++;
-  } else
-    pos = 0;
-
-  fin.open(fileName.substr(pos).c_str(), std::ios::in | std::ios::binary);
-  return fin;
-}
 
 bool GEMStreamSource::openFile(const std::string& fileName, std::ifstream& fin) {
   std::cout << " open file.. " << fileName << std::endl;
@@ -121,15 +92,8 @@ bool GEMStreamSource::openFile(const std::string& fileName, std::ifstream& fin) 
 }
 
 std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin) {
-  if (fin.peek() == EOF) {
-    if (++itFileName_ == endFileName_) {
-      fin.close();
-      return NULL;
-    }
-    if (!openFile(*itFileName_)) {
-      throw cms::Exception("GEMStreamSource::setRunAndEventInfo") << "could not open file " << *itFileName_;
-    }
-  }
+  if (fin.peek() == EOF) return NULL;
+  
   //look for FRD header at beginning of the file and skip it
   if (fin.tellg() == 0) {
     constexpr size_t buf_sz = sizeof(FRDFileHeader_v1);  //try to read v1 FRD header size
@@ -138,7 +102,7 @@ std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin
 
     if (fin.gcount() == 0)
       throw cms::Exception("GEMStreamSource::setRunAndEventInfo")
-          << "Unable to read file or empty file" << *itFileName_;
+          << "Unable to read file or empty file";
     else if (fin.gcount() < (ssize_t)buf_sz) {
       fin.seekg(0);
     } else {
@@ -146,7 +110,7 @@ std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin
       if (frd_version >= 1) {
         if (fileHead.headerSize_ < buf_sz)
           throw cms::Exception("GEMStreamSource::setRunAndEventInfo")
-              << "Invalid FRD file header (size mismatch) in file " << *itFileName_;
+              << "Invalid FRD file header (size mismatch) in file ";
         else if (fileHead.headerSize_ > buf_sz)
           fin.seekg(fileHead.headerSize_, fin.beg);
       } else
@@ -180,42 +144,25 @@ std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin
     fin.read(&buffer_[0] + FRDHeaderVersionSize[detectedFRDversion_],
              totalSize - FRDHeaderVersionSize[detectedFRDversion_]);
     if (fin.gcount() != totalSize - FRDHeaderVersionSize[detectedFRDversion_]) {
-      throw cms::Exception("GEMStreamSource::setRunAndEventInfo") << "premature end of file " << *itFileName_;
+      throw cms::Exception("GEMStreamSource::setRunAndEventInfo") << "premature end of file ";
     }
     frdEventMsg = std::make_unique<FRDEventMsgView>(&buffer_[0]);
   }
 
-  if (verifyChecksum_ && frdEventMsg->version() >= 5) {
-    uint32_t crc = 0;
-    crc = crc32c(crc, (const unsigned char*)frdEventMsg->payload(), frdEventMsg->eventSize());
-    if (crc != frdEventMsg->crc32c()) {
-      throw cms::Exception("GEMStreamSource::getNextEvent") << "Found a wrong crc32c checksum: expected 0x" << std::hex
-                                                            << frdEventMsg->crc32c() << " but calculated 0x" << crc;
-    }
-  } else if (verifyAdler32_ && frdEventMsg->version() >= 3) {
-    uint32_t adler = adler32(0L, Z_NULL, 0);
-    adler = adler32(adler, (Bytef*)frdEventMsg->payload(), frdEventMsg->eventSize());
-
-    if (adler != frdEventMsg->adler32()) {
-      throw cms::Exception("GEMStreamSource::setRunAndEventInfo")
-          << "Found a wrong Adler32 checksum: expected 0x" << std::hex << frdEventMsg->adler32() << " but calculated 0x"
-          << adler;
-    }
-  }
   LogDebug("GEMStreamSource") << "frdEventMsg run=" << frdEventMsg->run() << " lumi=" << frdEventMsg->lumi()
-                                   << " event=" << frdEventMsg->event() << " size=" << int(frdEventMsg->size())
-                                   << " eventSize=" << int(frdEventMsg->eventSize());
+                              << " event=" << frdEventMsg->event() << " size=" << int(frdEventMsg->size())
+                              << " eventSize=" << int(frdEventMsg->eventSize());
 
   return frdEventMsg;
 }
 
-std::vector<uint64_t> GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId) {
+std::vector<uint64_t>* GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId) {
   uint64_t* event = (uint64_t*)frdEventMsg->payload();
   GEMAMC amc;
   amc.setAMCheader1(*(event));
   amc.setAMCheader2(*(event + 1));
   LogDebug("GEMStreamSource") << "amc lv1Id=" << amc.lv1Id() << " orbitNumber=" << amc.orbitNumber()
-                                   << " bx=" << amc.bunchCrossing() << " amcNum=" << int(amc.amcNum());
+                              << " bx=" << amc.bunchCrossing() << " amcNum=" << int(amc.amcNum());
 
   uint32_t eventSize = frdEventMsg->eventSize();
   uint16_t BX_id = amc.bunchCrossing();
@@ -228,15 +175,15 @@ std::vector<uint64_t> GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg, 
   uint32_t EvtLength = eventSize / 8 + 5;  // 2 header + 2 trailer + 1 AMC header
   amc13.setCDFTrailer(EvtLength);
 
-  std::vector<uint64_t> words(EvtLength);
-  words[0] = amc13.getCDFHeader();
-  words[1] = amc13.getAMC13Header();
-  words[2] = amc13.getAMC13Header();  // this is for AMCheader
+  vector<uint64_t>* words = new vector<uint64_t>(EvtLength);
+  words->push_back(amc13.getCDFHeader());
+  words->push_back(amc13.getAMC13Header());
+  words->push_back(amc13.getAMC13Header());  // this is for AMCheader
   for (uint32_t i = 0; i < eventSize; i++) {
-    words[i + 3] = *(event++);
+    words->push_back(*(event++));
   }
-  words[EvtLength - 2] = amc13.getAMC13Trailer();
-  words[EvtLength - 1] = amc13.getCDFTrailer();
+  words->push_back(amc13.getAMC13Trailer());
+  words->push_back(amc13.getCDFTrailer());
 
   return words;
 }
