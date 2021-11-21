@@ -7,10 +7,9 @@ options.parseArguments()
 process = cms.Process("GEMStreamSource")
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(options.maxEvents)
+    input = cms.untracked.int32(options.maxEvents),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
-print(options.maxEvents)
 
 process.options = cms.untracked.PSet(
     wantSummary=cms.untracked.bool(True),
@@ -25,7 +24,7 @@ process.MessageLogger.debugModules = cms.untracked.vstring('*')
 if debug:
     process.MessageLogger.cerr.threshold = "DEBUG"
     process.MessageLogger.debugModules = ["source", "muonGEMDigis"]
-    process.maxEvents.input=cms.untracked.int32(100)
+    process.maxEvents.input = cms.untracked.int32(100)
 else:
     process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
