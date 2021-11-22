@@ -48,9 +48,39 @@ process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
                                              tag=cms.string("GEMeMapTestBeam"),
                                              connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_simple_me0.db")))
+
+process.load('gemsw.Geometry.GeometryTestBeam_cff')
+process.load('Configuration.StandardSequences.MagneticField_0T_cff')
+process.load('Configuration.StandardSequences.Reconstruction_cff')
+process.load('RecoMuon.TrackingTools.MuonServiceProxy_cff')
+process.MuonServiceProxy.ServiceParameters.Propagators.append('StraightLinePropagator')
+
+process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
+                                        process.MuonServiceProxy,
+                                        gemRecHitLabel = cms.InputTag("gemRecHits"),
+                                        maxClusterSize = cms.double(10),
+                                        minClusterSize = cms.double(1),
+                                        trackChi2 = cms.double(1000.0),
+                                        skipLargeChamber = cms.bool(True),
+                                        MuonSmootherParameters = cms.PSet(
+                                           PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
+                                           PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
+                                           RescalingFactor = cms.double(5.0)
+                                        ),
+                                        )
+process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
+process.GEMTrackFinder.ServiceParameters.CSCLayers = cms.untracked.bool(False)
+process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
+
+process.load("CommonTools.UtilAlgos.TFileService_cfi")
+process.TestBeamTrackAnalyzer = cms.EDAnalyzer("TestBeamTrackAnalyzer",
+                                               gemRecHitLabel = cms.InputTag("gemRecHits"),
+                                               tracks = cms.InputTag("GEMTrackFinder"),
+                                               )
 
 process.output = cms.OutputModule("PoolOutputModule",
                                   outputCommands=cms.untracked.vstring(
@@ -61,5 +91,18 @@ process.output = cms.OutputModule("PoolOutputModule",
                                       'output_edm.root'),
 )
 
-process.p = cms.Path(process.muonGEMDigis)
+process.load("DQM.Integration.config.environment_cfi")
+process.load('DQM.GEM.GEMDQM_cff')
+
+process.dqmEnv.subSystemFolder = "GEM"
+process.dqmEnv.eventInfoFolder = "EventInfo"
+process.dqmSaver.path = ""
+process.dqmSaver.tag = "GEM"
+
+process.unpack = cms.Path(process.muonGEMDigis)
+process.reco = cms.Path(process.gemRecHits * process.GEMTrackFinder)
+process.track_ana = cms.Path(process.TestBeamTrackAnalyzer)
+process.dqm = cms.Path(process.GEMDQM)
+process.dqm.remove(process.GEMDAQStatusSource)
+process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 process.outpath = cms.EndPath(process.output)
