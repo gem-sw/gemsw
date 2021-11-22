@@ -48,16 +48,17 @@ process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
                                              tag=cms.string("GEMeMapTestBeam"),
                                              connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_simple_me0.db")))
 
 process.load('gemsw.Geometry.GeometryTestBeam_cff')
-process.load('Configuration.StandardSequences.MagneticField_0T_cff')
+process.load('MagneticField.Engine.uniformMagneticField_cfi')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('RecoMuon.TrackingTools.MuonServiceProxy_cff')
 process.MuonServiceProxy.ServiceParameters.Propagators.append('StraightLinePropagator')
+process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi')
+process.SteppingHelixPropagatorAny.useMagVolumes = cms.bool(False)
 
 process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
                                         process.MuonServiceProxy,
