@@ -28,7 +28,7 @@ cmsrel CMSSW_12_2_0_pre1
 cd CMSSW_12_2_0_pre1/src
 cmsenv
 git cms-init -q
-git cms-merge-topic yeckang:mapping_update_v0.5 # Will be updated
+git cms-merge-topic jshlee:mapping_update_v0.5 # Will be updated
 git clone git@github.com:gem-sw/gemsw.git
 scram b -j 4
 cd gemsw/EventFilter/test
