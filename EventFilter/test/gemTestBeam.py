@@ -50,7 +50,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
                                              tag=cms.string("GEMeMapTestBeam"),
-                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_simple_me0.db")))
+                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_ME0.db")))
 
 process.load('gemsw.Geometry.GeometryTestBeam_cff')
 process.load('MagneticField.Engine.uniformMagneticField_cfi')
@@ -67,6 +67,7 @@ process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
                                         minClusterSize = cms.double(1),
                                         trackChi2 = cms.double(1000.0),
                                         skipLargeChamber = cms.bool(True),
+                                        excludingChambers = cms.vint32(1),
                                         MuonSmootherParameters = cms.PSet(
                                            PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
                                            PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),

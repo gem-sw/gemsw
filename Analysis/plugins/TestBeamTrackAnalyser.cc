@@ -64,18 +64,23 @@ private:
   edm::EDGetTokenT<reco::TrackCollection> tracks_;
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
 
+  TH1D* trackChi2_;
   std::map<int, TH2D*> track_occ_;
   std::map<int, TH2D*> recHit_occ_;
   std::map<int, TH1D*> residualX_;
   std::map<int, TH1D*> residualY_;
 
   std::map<int, TH2D*> tracker_occ_;
+  std::map<int, TH1D*> tracker_residual_x_;
+  std::map<int, TH1D*> tracker_residual_y_;
 };
 
 TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
 { 
   tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<InputTag>("tracks"));
   gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHitLabel"));
+
+  trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 10);
 
   residualX_[0] = fs->make<TH1D>("residual_X_GE0",  "residual X : GE0", 100, -5, 5);
   residualY_[0] = fs->make<TH1D>("residual_Y_GE0",  "residual Y : GE0", 100, -10, 10);
@@ -89,6 +94,8 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
 
   for (int i = 0; i < 4; i++) {
     tracker_occ_[i] = fs->make<TH2D>(Form("tracker_occ_ch_%d", i), Form("Occupancy from tracker chamber %d", i), 20, -10, 10, 20, -10, 10);
+    tracker_residual_x_[i] = fs->make<TH1D>(Form("residual_X_tracker_%d",i), Form("residual X : tracking chamber %d", i), 100, -5, 5);
+    tracker_residual_y_[i] = fs->make<TH1D>(Form("residual_Y_tracker_%d",i), Form("residual Y : tracking chamber %d", i), 100, -5, 5);
   }
 }
 
@@ -112,6 +119,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
   for (std::vector<reco::Track>::const_iterator track = tracks->begin(); track != tracks->end(); ++track)
   {
+    trackChi2_->Fill(track->normalizedChi2());
     for (auto hit : track->recHits()) {
       auto etaPart = GEMGeometry_->etaPartition(hit->geographicalId());
       auto etaPartId = etaPart->id();
@@ -122,7 +130,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       auto range = gemRecHits->get(etaPartId);
 
       bool hasHit = false;
-      float maxR = 500;
+      float maxR = 500000;
       float residualX = 0;
       float residualY = 0;
 
@@ -130,50 +138,57 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       int chamber = etaPartId.chamber();
       int ieta = etaPartId.ieta();
 
+      int chamber_nu = (chamber / 2 - 1)*2 + (ieta-1)/2;
       if (station == 1) {
-        if (ieta % 2 == 0) continue;
-        for (auto hit2 : track->recHits()) {
-          auto etaPart2 = GEMGeometry_->etaPartition(hit2->geographicalId());
-          auto etaPartId2 = etaPart2->id();
+        if (ieta % 2 != 0) {
+          for (auto hit2 : track->recHits()) {
+            auto etaPart2 = GEMGeometry_->etaPartition(hit2->geographicalId());
+            auto etaPartId2 = etaPart2->id();
 
-          int station2 = etaPartId2.station();
-          int chamber2 = etaPartId2.chamber();
-          int ieta2 = etaPartId2.ieta();
+            int station2 = etaPartId2.station();
+            int chamber2 = etaPartId2.chamber();
+            int ieta2 = etaPartId2.ieta();
 
-          if (station2 != station or chamber2 != chamber) continue;
-          if (ieta+1 != ieta2) continue;
+            if (station2 != station or chamber2 != chamber) continue;
+            if (ieta+1 != ieta2) continue;
 
-          auto lp_track2 = hit2->localPosition();
-          auto gp_track2 = etaPart2->toGlobal(lp_track2);
-          int chamber_nu = (chamber / 2 - 1)*2 + (ieta-1)/2;
-          tracker_occ_[chamber_nu]->Fill(gp_track.x(), gp_track2.z());
+            auto lp_track2 = hit2->localPosition();
+            auto gp_track2 = etaPart2->toGlobal(lp_track2);
+            tracker_occ_[chamber_nu]->Fill(gp_track.x(), gp_track2.z());
+          }
         }
-        continue;
+      } else {
+        track_occ_[station]->Fill(gp_track.x(), gp_track.z());
       }
 
       const GEMStripTopology* top_(dynamic_cast<const GEMStripTopology*>(&(etaPart->topology())));
       const float stripLength(top_->stripLength());
       const float stripPitch(etaPart->pitch());
 
-      track_occ_[station]->Fill(gp_track.x(), gp_track.z());
 
       for (auto rechit = range.first; rechit != range.second; ++rechit) {
         auto lp_rechit = rechit->localPosition();
+        auto gp_rechit = etaPart->toGlobal(lp_rechit);
 
-        if (abs(lp_rechit.x() - lp_track.x()) > stripPitch*30) continue;
-        if (abs(lp_rechit.y() - lp_track.y()) > stripLength*2) continue;
+        //if (abs(lp_rechit.x() - lp_track.x()) > stripPitch*30) continue;
+        //if (abs(lp_rechit.y() - lp_track.y()) > stripLength*2) continue;
         auto deltaR = (lp_rechit - lp_track).mag();
         if (deltaR < maxR) {
           hasHit = true;
           maxR = deltaR; 
-          residualX = lp_rechit.x() - lp_track.x();
-          residualY = lp_rechit.y() - lp_track.y();
+          residualX = gp_rechit.x() - gp_track.x();
+          residualY = gp_rechit.z() - gp_track.z();
         }
       }
-      if (hasHit) { 
+      if (not hasHit) continue;
+      if (station != 1) { 
         residualX_[station]->Fill(residualX);
         residualY_[station]->Fill(residualY);
         recHit_occ_[station]->Fill(gp_track.x(), gp_track.z());
+      } else if (ieta % 2 == 1) {
+        tracker_residual_x_[chamber_nu]->Fill(residualX);
+      } else if (ieta % 2 == 0) {
+        tracker_residual_y_[chamber_nu]->Fill(residualY);
       }
     }
   }

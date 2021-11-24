@@ -50,12 +50,7 @@ public:
   virtual ~GEMTrackFinder() {}
   /// Produce the GEMSegment collection
   void produce(edm::Event&, const edm::EventSetup&) override;
-  double trackChi2_;
-  bool skipLargeChamber_;
 
-  multimap<float,const GEMEtaPartition*> detLayerMap_;
-  vector<TrajectorySeed> trajectorySeedCands_;
-  
 private:
   int iev; // events through
   edm::EDGetTokenT<GEMRecHitCollection> theGEMRecHitToken_;
@@ -71,12 +66,21 @@ private:
                  MuonTransientTrackingRecHit::MuonRecHitContainer rearSeeds);
   Trajectory makeTrajectory(TrajectorySeed& seed, const GEMRecHitCollection* gemHits);
   TrackingRecHit::ConstRecHitContainer findMissingHits(Trajectory& track);
-  
+
+  bool checkExclude(int chamber);
+
+  double trackChi2_;
+  bool skipLargeChamber_;
+  vector<int> excludingChambers_;
+
+  multimap<float,const GEMEtaPartition*> detLayerMap_;
+  vector<TrajectorySeed> trajectorySeedCands_;
 };
 
 GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) : iev(0) {
   trackChi2_ = ps.getParameter<double>("trackChi2");
   skipLargeChamber_ = ps.getParameter<bool>("skipLargeChamber");
+  excludingChambers_ = ps.getParameter<vector<int>>("excludingChambers");
   theGEMRecHitToken_ = consumes<GEMRecHitCollection>(ps.getParameter<edm::InputTag>("gemRecHitLabel"));
   // register what this produces
   edm::ParameterSet serviceParameters = ps.getParameter<edm::ParameterSet>("ServiceParameters");
@@ -150,8 +154,10 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
 
   trajectorySeedCands_.clear();
   for (int i = 0; i < 2; i++) {
+    if (checkExclude(i)) continue;
     auto frontSeeds = BuildSeedHits(xChamb[i], yChamb[i], gemRecHits.product());
     for (int j = 2; j < 4; j++) {
+      if (checkExclude(j)) continue;
       auto rearSeeds = BuildSeedHits(xChamb[j], yChamb[j], gemRecHits.product());
       // Push_back trajectory candidates in trajectorySeedCands_
       findSeeds(frontSeeds, rearSeeds);
@@ -309,7 +315,16 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
       if (chmap.first != col.first) continue;      
       auto etaPart = col.second;
       GEMDetId etaPartID = etaPart->id();
-      if (skipLargeChamber_ and etaPartID.station() != 1) continue;
+      int station = etaPartID.station();
+
+      if (skipLargeChamber_ and station != 1) continue;
+
+      if (station == 1) {
+        int ieta = etaPartID.ieta();
+        int chamber = etaPartID.chamber();
+        int chamber_nu = (chamber / 2 - 1)*2 + (ieta-1)/2;
+        if (checkExclude(chamber_nu)) continue;
+      }
       
       GEMRecHitCollection::range range = gemHits->get(etaPartID);
       //cout<< "Number of GEM rechits available , from chamber: "<< etaPartID<<endl;
@@ -366,7 +381,7 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
       // cout <<" chmap.first "<< chmap.first
       //      << " -1*hit->globalPosition().y() "<< -1*hit->globalPosition().y()
       //      <<endl;
-      if (abs(chmap.first - hit->globalPosition().y()) < 1. ){
+      if (abs(chmap.first - hit->globalPosition().y()) < 0.05 ){
         hasHit = true;
         break;
       }
@@ -455,6 +470,13 @@ MuonTransientTrackingRecHit::MuonRecHitContainer GEMTrackFinder::BuildSeedHits(c
     }
   }
   return hits;
+}
+
+bool GEMTrackFinder::checkExclude(int chamber) {
+  for (auto excluding : excludingChambers_) {
+    if (excluding == chamber) return true;
+  }
+  return false;
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
