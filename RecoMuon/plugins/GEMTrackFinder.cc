@@ -336,8 +336,8 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
         LocalPoint tsosLP = etaPart->toLocal(tsosGP);
         LocalPoint rhLP = (*rechit).localPosition();
         //double y_err = (*rechit).localPositionError().yy();
-        if (abs(rhLP.x() - tsosLP.x()) > stripPitch*5) continue;
-        if (abs(rhLP.y() - tsosLP.y()) > stripLength/2) continue;
+        //if (abs(rhLP.x() - tsosLP.x()) > stripPitch*30) continue;
+        //if (abs(rhLP.y() - tsosLP.y()) > stripLength/2) continue;
         // need to find best hits per chamber
         float deltaR = (rhLP - tsosLP).mag();
         if (maxR > deltaR){
