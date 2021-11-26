@@ -845,8 +845,8 @@
   <PosPart copyNumber="1">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA101"/>
-    <Translation x="0*fm" y="-351*mm" z="0*cm" />
-  </PosPart>
+    <Translation x="0*fm" y="-351*mm" z="0*cm" /> <!-- here the 70cm distance between two chambers are specified -->
+  </PosPart>                                      <!-- measured distance = 69.7cm | for now ok to maintain 70 cm -->
   <PosPart copyNumber="2">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA102"/>
@@ -864,6 +864,13 @@
     <rRotation name="x180y90" />
     <Translation x="0*fm" y="351*mm" z="0*cm" />
   </PosPart>
+<PosPart copyNumber="5">
+    <rParent name="gem11:GSAX11L"/>
+    <rChild name="gem11:GHA105"/>
+    <Translation x="0*fm" y="352*mm" z="0*cm" />
+</PosPart>
+
+
 
   <PosPart copyNumber="1">
     <rParent name="gem11:GMAX11L"/>
