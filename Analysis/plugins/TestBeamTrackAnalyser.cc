@@ -80,6 +80,7 @@ private:
   std::map<Key3, TH1D*> residual_x_detail_;
   std::map<Key3, TH1D*> residual_y_detail_;
   std::map<Key3, TH2D*> track_rechit_detail_;
+
 };
 
 TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
@@ -87,7 +88,7 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
   tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<InputTag>("tracks"));
   gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHitLabel"));
 
-  trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 10);
+  trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 1000);
 
   int station = 0;
   int chamber = 1;
@@ -206,23 +207,21 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
                                                 Form("Occupancy from Matched RecHit : GE11 chamber %d iEta%d", ch, ieta),
                                                 20, -10, 10, 
                                                 20, -10, 10);
-      track_rechit_detail_[key3] = fs->make<TH2D>(Form("track_rechit_occ_GE21_ch%d_ieta%d", ch, ieta),
-                                                  Form("Occpancy from Track vs RecHit : GE21 chamber %d iEta%d", ch, ieta),
+      track_rechit_detail_[key3] = fs->make<TH2D>(Form("track_rechit_occ_GE11_ch%d_ieta%d", ch, ieta),
+                                                  Form("Occpancy from Track vs RecHit : GE11 chamber %d iEta%d", ch, ieta),
                                                   200, -10, 10,
                                                   200, -10, 10);
-      residual_x_detail_[key3] = fs->make<TH1D>(Form("residual_x_GE21_ch%d_ieta%d", ch, ieta),
-                                                Form("residual X : GE21 chamber %d iEta%d", ch, ieta),
-                                                1000, -5, 5);
-      residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE21_ch%d_ieta%d", ch, ieta),
-                                                Form("residual Y : GE21 chamber %d iEta%d", ch, ieta),
+      residual_x_detail_[key3] = fs->make<TH1D>(Form("residual_x_GE11_ch%d_ieta%d", ch, ieta),
+                                                Form("residual X : GE11 chamber %d iEta%d", ch, ieta),
+                                                300, -3, 3);
+      residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE11_ch%d_ieta%d", ch, ieta),
+                                                Form("residual Y : GE11 chamber %d iEta%d", ch, ieta),
                                                 10, -20, 20);
     }
   }
 }
 
-TestBeamTrackAnalyzer::~TestBeamTrackAnalyzer()
-{
-}
+TestBeamTrackAnalyzer::~TestBeamTrackAnalyzer(){}
 
 void
 TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -246,6 +245,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       auto etaPartId = etaPart->id();
 
       auto lp_track = hit->localPosition();
+      auto gp_track = etaPart->toGlobal(lp_track);
 
       auto range = gemRecHits->get(etaPartId);
 
@@ -262,7 +262,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       Key2 key2(station, chamber);
       Key3 key3(station, chamber, ieta);
 
-      track_occ_[key2]->Fill(lp_track.x(), lp_track.y());
+      track_occ_[key2]->Fill(gp_track.x(), gp_track.y());
       track_occ_detail_[key3]->Fill(lp_track.x(), lp_track.y());
 
       for (auto rechit = range.first; rechit != range.second; ++rechit) {
@@ -278,7 +278,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         }
       }
       if (hasHit) {
-        rechit_occ_[key2]->Fill(lp_track.x(), lp_track.y());
+        rechit_occ_[key2]->Fill(gp_track.x(), gp_track.y());
         track_rechit_[key2]->Fill(lp_track.x(), lp_x);
         residual_x_[key2]->Fill(residualX);
         residual_y_[key2]->Fill(residualY);
