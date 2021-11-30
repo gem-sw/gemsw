@@ -95,12 +95,12 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
   Key2 key2(station, chamber);
   track_occ_[key2]= fs->make<TH2D>("track_occ_GE0", 
                                    "Occupancy from Track : GE0",
-                                   20, -10, 10, 
-                                   20, -10, 10);
+                                   20, -60, 60, 
+                                   20, 100, 140);
   rechit_occ_[key2] = fs->make<TH2D>("rechit_occ_GE0", 
                                      "Occupancy from Matched RecHit : GE0",
-                                     20, -10, 10, 
-                                     20, -10, 10);
+                                     20, -60, 60, 
+                                     20, 100, 140);
   track_rechit_[key2] = fs->make<TH2D>("track_rechit_occ_GE0",
                                        "Occpancy from Track vs RecHit : GE0",
                                        200, -10, 10,
@@ -115,12 +115,12 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     Key3 key3(station, chamber, ieta);
     track_occ_detail_[key3]= fs->make<TH2D>(Form("track_occ_GE0_ieta%d",ieta), 
                                             Form("Occupancy from Track : GE0 iEta%d",ieta),
-                                            20, -10, 10, 
-                                            20, -10, 10);
+                                            20, -60, 60, 
+                                            20, 100, 140);
     rechit_occ_detail_[key3] = fs->make<TH2D>(Form("rechit_occ_GE0_ieta%d",ieta), 
                                               Form("Occupancy from Matched RecHit : GE0 iEta%d",ieta),
-                                              20, -10, 10, 
-                                              20, -10, 10);
+                                              20, -60, 60, 
+                                              20, 100, 140);
     track_rechit_detail_[key3] = fs->make<TH2D>(Form("track_rechit_occ_GE0_ieta%d",ieta),
                                                 Form("Occpancy from Track vs RecHit : GE0 iEta%d",ieta),
                                                 200, -10, 10,
@@ -138,16 +138,16 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
   key2 = Key2(station, chamber);
   track_occ_[key2]= fs->make<TH2D>("track_occ_GE21", 
                                    "Occupancy from Track : GE21",
-                                   20, -10, 10, 
-                                   20, -10, 10);
+                                   20, -60, 60, 
+                                   20, 100, 140);
   rechit_occ_[key2] = fs->make<TH2D>("rechit_occ_GE21", 
                                      "Occupancy from Matched RecHit : GE21",
-                                     20, -10, 10, 
-                                     20, -10, 10);
+                                     20, -60, 60, 
+                                     20, 100, 140);
   track_rechit_[key2] = fs->make<TH2D>("track_rechit_occ_GE21",
                                        "Occpancy from Track vs RecHit : GE21",
-                                       200, -10, 10,
-                                       200, -10, 10);
+                                       200, 0, 40,
+                                       200, 0, 40);
   residual_x_[key2] = fs->make<TH1D>("residual_x_GE21",
                                      "residual X : GE21",
                                      1000, -5, 5);
@@ -158,16 +158,16 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     Key3 key3(station, chamber, ieta);
     track_occ_detail_[key3]= fs->make<TH2D>(Form("track_occ_GE21_ieta%d",ieta), 
                                             Form("Occupancy from Track : GE21 iEta%d",ieta),
-                                            20, -10, 10, 
-                                            20, -10, 10);
+                                            20, -60, 60, 
+                                            20, 100, 140);
     rechit_occ_detail_[key3] = fs->make<TH2D>(Form("rechit_occ_GE21_ieta%d",ieta), 
                                               Form("Occupancy from Matched RecHit : GE21 iEta%d",ieta),
-                                              20, -10, 10, 
-                                              20, -10, 10);
+                                              20, -60, 60, 
+                                              20, 100, 140);
     track_rechit_detail_[key3] = fs->make<TH2D>(Form("track_rechit_occ_GE21_ieta%d",ieta),
                                                 Form("Occpancy from Track vs RecHit : GE21 iEta%d",ieta),
-                                                200, -10, 10,
-                                                200, -10, 10);
+                                                200, 0, 40,
+                                                200, 0, 40);
     residual_x_detail_[key3] = fs->make<TH1D>(Form("residual_x_GE21_ieta%d",ieta),
                                               Form("residual X : GE21 iEta%d",ieta),
                                               1000, -5, 5);
@@ -181,19 +181,19 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     Key2 key2(station, ch);
     track_occ_[key2]= fs->make<TH2D>(Form("track_occ_GE11_ch%d", ch), 
                                      Form("Occupancy from Track : GE11 chamber %d", ch),
-                                     20, -10, 10, 
-                                     20, -10, 10);
+                                     20, -5, 5, 
+                                     20, -5, 5);
     rechit_occ_[key2] = fs->make<TH2D>(Form("rechit_occ_GE11_ch%d", ch), 
                                        Form("Occupancy from Matched RecHit : GE11 chamber %d", ch),
-                                       20, -10, 10, 
-                                       20, -10, 10);
+                                       20, -5, 5, 
+                                       20, -5, 5);
     track_rechit_[key2] = fs->make<TH2D>(Form("track_rechit_occ_GE11_ch%d", ch),
                                          Form("Occpancy from Track vs RecHit : GE11 chamber %d", ch),
-                                         200, -10, 10,
-                                         200, -10, 10);
+                                         200, -5, 5,
+                                         200, -5, 5);
     residual_x_[key2] = fs->make<TH1D>(Form("residual_x_GE11_ch%d", ch),
                                        Form("residual X : GE11 chamber %d", ch),
-                                       1000, -5, 5);
+                                       200, -5, 5);
     residual_y_[key2] = fs->make<TH1D>(Form("residual_y_GE11_ch%d", ch),
                                        Form("residual Y : GE11 chamber %d", ch),
                                        10, -20, 20);
@@ -201,19 +201,19 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
       Key3 key3(station, ch, ieta);
       track_occ_detail_[key3]= fs->make<TH2D>(Form("track_occ_GE11_ch%d_ieta%d", ch, ieta), 
                                               Form("Occupancy from Track : GE11 chamber %d iEta%d", ch, ieta),
-                                              20, -10, 10, 
-                                              20, -10, 10);
+                                              20, -5, 5, 
+                                              20, -5, 5);
       rechit_occ_detail_[key3] = fs->make<TH2D>(Form("rechit_occ_GE11_ch%d_ieta%d", ch, ieta), 
                                                 Form("Occupancy from Matched RecHit : GE11 chamber %d iEta%d", ch, ieta),
-                                                20, -10, 10, 
-                                                20, -10, 10);
+                                                20, -5, 5, 
+                                                20, -5, 5);
       track_rechit_detail_[key3] = fs->make<TH2D>(Form("track_rechit_occ_GE11_ch%d_ieta%d", ch, ieta),
                                                   Form("Occpancy from Track vs RecHit : GE11 chamber %d iEta%d", ch, ieta),
-                                                  200, -10, 10,
-                                                  200, -10, 10);
+                                                  200, -5, 5,
+                                                  200, -5, 5);
       residual_x_detail_[key3] = fs->make<TH1D>(Form("residual_x_GE11_ch%d_ieta%d", ch, ieta),
                                                 Form("residual X : GE11 chamber %d iEta%d", ch, ieta),
-                                                300, -3, 3);
+                                                300, -5, 5);
       residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE11_ch%d_ieta%d", ch, ieta),
                                                 Form("residual Y : GE11 chamber %d iEta%d", ch, ieta),
                                                 10, -20, 20);
@@ -261,7 +261,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
       Key2 key2(station, chamber);
       Key3 key3(station, chamber, ieta);
-
+    
       track_occ_[key2]->Fill(gp_track.x(), gp_track.y());
       track_occ_detail_[key3]->Fill(lp_track.x(), lp_track.y());
 
@@ -272,7 +272,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         if (deltaR < maxR) {
           hasHit = true;
           maxR = deltaR; 
-          residualX = lp_rechit.x() - lp_track.x();
+          residualX = (lp_rechit.x() - lp_track.x())*10.;
           residualY = lp_rechit.y() - lp_track.y();
           lp_x = lp_rechit.x();
         }
