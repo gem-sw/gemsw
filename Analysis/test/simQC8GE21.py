@@ -27,7 +27,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 process.source = cms.Source("EmptySource")
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('TenMuExtendedE_0_200_pythia8_cfi nevts:10'),
+    annotation = cms.untracked.string('TenMuExtendedE_0_200_pythia8_cfi nevts:100'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
@@ -40,7 +40,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step1.root'),
+    fileName = cms.untracked.string('file:step1_scint_bf.root'),
     outputCommands = cms.untracked.vstring( (
         'drop *',
         'keep FEDRawDataCollection_rawDataCollector_*_*',
