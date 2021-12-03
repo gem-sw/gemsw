@@ -35,13 +35,17 @@ CosmicGun::~CosmicGun()
 
 bool myIsMuonPassScint(double dVx, double dVy, double dVz, double dPx, double dPy, double dPz) {
 
-  double ScintilXMin = -1000.0;
-  double ScintilXMax =  1000.0;
-  double ScintilYMin = -605.6;
-  double ScintilYMax =  950.0;
+  double ScintilXHMin = -1000.0;
+  double ScintilXHMax =  1000.0;
+  double ScintilXVMin = -1000.0;
+  double ScintilXVMax =  300.0;
+  double ScintilYHMin = -605.6;
+  double ScintilYHMax =  950.0;
+  double ScintilYVMin = -850.0; 
+  double ScintilYVMax = -450.0; 
   
-  double ScintilLowerZ = -114.85;
-  double ScintilUpperZ = 1540.15;
+  double ScintilLowerZ = 270.0; 
+  double ScintilUpperZ = 1925.0;
   
   double dTLower = ( ScintilLowerZ - dVz ) / dPz;  
   double dXLower = dVx + dTLower * dPx;
@@ -50,21 +54,20 @@ bool myIsMuonPassScint(double dVx, double dVy, double dVz, double dPx, double dP
   double dTUpper = ( ScintilUpperZ - dVz ) / dPz;
   double dXUpper = dVx + dTUpper * dPx;
   double dYUpper = dVy + dTUpper * dPy;
+ 
+  bool pass_Lower = ( ScintilXHMin <= dXLower && dXLower <= ScintilXHMax && ScintilYHMin <= dYLower && dYLower <= ScintilYHMax ) || 
+      ( ScintilXVMin <= dXLower && dXLower <= ScintilXVMax && ScintilYVMin <= dYLower && dYLower <= ScintilYVMax );
   
-  if (( ScintilXMin <= dXLower && dXLower <= ScintilXMax && ScintilYMin <= dYLower && dYLower <= ScintilYMax ) &&
-      ( ScintilXMin <= dXUpper && dXUpper <= ScintilXMax && ScintilYMin <= dYUpper && dYUpper <= ScintilYMax ))
-  {
-    return true;
-  }
+  bool pass_Upper = ( ScintilXHMin <= dXUpper && dXUpper <= ScintilXHMax && ScintilYHMin <= dYUpper && dYUpper <= ScintilYHMax ) ||
+      ( ScintilXVMin <= dXUpper && dXUpper <= ScintilXVMax && ScintilYVMin <= dYUpper && dYUpper <= ScintilYVMax );
   
-  else return false;
+  return (( pass_Lower ) && ( pass_Upper )) ; 
 }
 
 void CosmicGun::produce(Event &e, const EventSetup& es) 
 {
    edm::Service<edm::RandomNumberGenerator> rng;
    CLHEP::HepRandomEngine* engine = &rng->getEngine(e.streamID());
-
    if ( fVerbosity > 0 )
    {
       cout << " CosmicGun : Begin New Event Generation" << endl ; 
@@ -74,7 +77,7 @@ void CosmicGun::produce(Event &e, const EventSetup& es)
    
    double dVx;
    double dVy;
-   double dVz = 1540.15; // same Y as the upper scintillator
+   double dVz = 1925.0; // same Y as the upper scintillator
    HepMC::GenVertex* Vtx = NULL;
 
    // loop over particles
@@ -89,7 +92,7 @@ void CosmicGun::produce(Event &e, const EventSetup& es)
        while (j < 10000) // j < 10000 to avoid too long computational time
        {
          dVx = CLHEP::RandFlat::shoot(engine, -1000.0, 1000.0) ;
-         dVy = CLHEP::RandFlat::shoot(engine, -605.6, 950.0) ;
+         dVy = CLHEP::RandFlat::shoot(engine, -1000.0, 1000.0) ;
          
          mom   = CLHEP::RandFlat::shoot(engine, fMinPt, fMaxPt) ;
          phi   = CLHEP::RandFlat::shoot(engine, fMinPhi, fMaxPhi) ;
