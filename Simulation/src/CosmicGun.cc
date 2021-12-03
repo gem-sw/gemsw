@@ -77,7 +77,7 @@ void CosmicGun::produce(Event &e, const EventSetup& es)
    
    double dVx;
    double dVy;
-   double dVz = 1925.0; // 1540.15; // same Y as the upper scintillator
+   double dVz = 1925.0; // same Y as the upper scintillator
    HepMC::GenVertex* Vtx = NULL;
 
    // loop over particles
