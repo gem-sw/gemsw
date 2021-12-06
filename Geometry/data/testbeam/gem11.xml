@@ -233,7 +233,7 @@
 
   <!-- <Trd1 name="GB11L" dz="[dzGB11L]" dy1="[dyGB11]" dy2="[dyGB11]" dx1="[dxBotGB11]" dx2="[dxTopGB11L]" />
   <Trd1 name="GA11L" dz="[dzGA11L]" dy1="[dyGA11]" dy2="[dyGA11]" dx1="[dxBotGA11]" dx2="[dxTopGA11L]" /> -->
-  <Trd1 name="GB11L" dz="5*cm" dy1="37*cm" dy2="37*cm" dx1="5*cm" dx2="5*cm" /> 
+  <Trd1 name="GB11L" dz="5*cm" dy1="46*cm" dy2="46*cm" dx1="5*cm" dx2="5*cm" /> 
   <Trd1 name="GA11L" dz="5*cm" dy1="1*cm" dy2="1*cm" dx1="5*cm" dx2="5*cm" /> 
   <Trd1 name="GB11S" dz="5*cm" dy1="37*cm" dy2="37*cm" dx1="5*cm" dx2="5*cm" /> 
   <Trd1 name="GA11S" dz="5*cm" dy1="1*cm" dy2="1*cm" dx1="5*cm" dx2="5*cm" /> 
@@ -384,7 +384,7 @@
     <rMaterial name="materials:Air"/>
   </LogicalPart>
   <LogicalPart name="GEMBox11S" category="unspecified">
-    <rSolid name="GEMBox11S"/>
+    <rSolid name="GEMBox11L"/>
     <rMaterial name="materials:Aluminium"/>
   </LogicalPart>
   <LogicalPart name="GMAX11L" category="unspecified">
@@ -392,7 +392,7 @@
     <rMaterial name="materials:Air"/>
   </LogicalPart>
   <LogicalPart name="GMAX11S" category="unspecified">
-    <rSolid name="GMAX11S"/>
+    <rSolid name="GMAX11L"/>
     <rMaterial name="materials:Air"/>
   </LogicalPart>
   <LogicalPart name="GRAX11L" category="unspecified">
@@ -400,7 +400,7 @@
     <rMaterial name="gemf:M_Rdout_Brd"/>
   </LogicalPart>
   <LogicalPart name="GRAX11S" category="unspecified">
-    <rSolid name="GRAX11S"/>
+    <rSolid name="GRAX11L"/>
     <rMaterial name="gemf:M_Rdout_Brd"/>
   </LogicalPart>
   <LogicalPart name="GIAX11L" category="unspecified">
@@ -408,7 +408,7 @@
     <rMaterial name="materials:G10"/>
   </LogicalPart>
   <LogicalPart name="GIAX11S" category="unspecified">
-    <rSolid name="GIAX11S"/>
+    <rSolid name="GIAX11L"/>
     <rMaterial name="materials:G10"/>
   </LogicalPart>
   <LogicalPart name="GJAX11L" category="unspecified">
@@ -416,7 +416,7 @@
     <rMaterial name="materials:G10"/>
   </LogicalPart>
   <LogicalPart name="GJAX11S" category="unspecified">
-    <rSolid name="GJAX11S"/>
+    <rSolid name="GJAX11L"/>
     <rMaterial name="materials:G10"/>
   </LogicalPart>
   <LogicalPart name="GKAX11L" category="unspecified">
@@ -424,7 +424,7 @@
     <rMaterial name="gemf:M_GEM_Foil"/>
   </LogicalPart>
   <LogicalPart name="GKAX11S" category="unspecified">
-    <rSolid name="GKAX11S"/>
+    <rSolid name="GKAX11L"/>
     <rMaterial name="gemf:M_GEM_Foil"/>
   </LogicalPart>
   <LogicalPart name="GSAX11L" category="unspecified">
@@ -432,7 +432,7 @@
     <rMaterial name="materials:Air"/>
   </LogicalPart>
   <LogicalPart name="GSAX11S" category="unspecified">
-    <rSolid name="GSAX11S"/>
+    <rSolid name="GEMBox11L"/>
     <rMaterial name="materials:G10"/>
   </LogicalPart>
   <LogicalPart name="GDAX11L" category="unspecified">
@@ -440,7 +440,7 @@
     <rMaterial name="gemf:M_GEM_Gas"/>
   </LogicalPart>
   <LogicalPart name="GDAX11S" category="unspecified">
-    <rSolid name="GDAX11S"/>
+    <rSolid name="GDAX11L"/>
     <rMaterial name="gemf:M_GEM_Gas"/>
   </LogicalPart>
 
@@ -937,29 +937,29 @@
   <PosPart copyNumber="1">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA101"/>
-    <Translation x="0*fm" y="-351*mm" z="0*cm" /> <!-- here the 70cm distance between two chambers are specified -->
+    <Translation x="[shift:bari2X]" y="-351*mm" z="0*fm" /> <!-- here the 70cm distance between two chambers are specified -->
   </PosPart>                                      <!-- measured distance = 69.7cm | for now ok to maintain 70 cm -->
   <PosPart copyNumber="2">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA102"/>
     <rRotation name="x180y90" />
-    <Translation x="[shift:bari2X]" y="-350*mm" z="0*cm" />
+    <Translation x="0*fm" y="-350*mm" z="[shift:bari2Y]" />
   </PosPart>
   <PosPart copyNumber="3">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA103"/>
-    <Translation x="0*fm" y="350*mm" z="[shift:bari2Y]" />
+    <Translation x="[shift:bari3X]" y="350*mm" z="0*fm" />
   </PosPart>
   <PosPart copyNumber="4">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA104"/>
     <rRotation name="x180y90" />
-    <Translation x="[shift:bari3X]" y="351*mm" z="0*cm" />
+    <Translation x="0*cm" y="351*mm" z="[shift:bari3Y]" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="gem11:GSAX11S"/>
     <rChild name="gem11:GHA111"/>
-    <Translation x="[shift:bari0X]" y="-351*mm" z="[shift:bari3Y]" /> <!-- here the 70cm distance between two chambers are specified -->
+    <Translation x="[shift:bari0X]" y="-351*mm" z="0*cm" /> <!-- here the 70cm distance between two chambers are specified -->
   </PosPart>                                      <!-- measured distance = 69.7cm | for now ok to maintain 70 cm -->
   <PosPart copyNumber="2">
     <rParent name="gem11:GSAX11S"/>
