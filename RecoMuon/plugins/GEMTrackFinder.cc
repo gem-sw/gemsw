@@ -132,7 +132,8 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
     int ieta = et->id().ieta();
     int ch = et->id().chamber();
     int st = et->id().station();
-    if ( st == 1 ) {
+    bool isTrackingChamber = (st == 1 and ieta < 5);
+    if ( isTrackingChamber ) {
       int idx_offset = ch/2 - 1;
       if (ieta%2 == 1) {
         int local_idx = ieta/2;
@@ -316,11 +317,13 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
       auto etaPart = col.second;
       GEMDetId etaPartID = etaPart->id();
       int station = etaPartID.station();
+      int ieta = etaPartID.ieta();
+      
+      bool isTrackingChamber = (station == 1 and ieta < 5);
 
-      if (skipLargeChamber_ and station != 1) continue;
+      if (skipLargeChamber_ and !isTrackingChamber) continue;
 
-      if (station == 1) {
-        int ieta = etaPartID.ieta();
+      if (isTrackingChamber) {
         int chamber = etaPartID.chamber();
         int chamber_nu = (chamber / 2 - 1)*2 + (ieta-1)/2;
         if (checkExclude(chamber_nu)) continue;
@@ -328,9 +331,9 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
       
       GEMRecHitCollection::range range = gemHits->get(etaPartID);
       //cout<< "Number of GEM rechits available , from chamber: "<< etaPartID<<endl;
-      const GEMStripTopology* top_(dynamic_cast<const GEMStripTopology*>(&(etaPart->topology())));
-      const float stripLength(top_->stripLength());
-      const float stripPitch(etaPart->pitch());
+      //const GEMStripTopology* top_(dynamic_cast<const GEMStripTopology*>(&(etaPart->topology())));
+      //const float stripLength(top_->stripLength());
+      //const float stripPitch(etaPart->pitch());
       for (GEMRecHitCollection::const_iterator rechit = range.first; rechit!=range.second; ++rechit){
 
         LocalPoint tsosLP = etaPart->toLocal(tsosGP);

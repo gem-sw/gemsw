@@ -23,11 +23,11 @@
     </SpecPar>
     <SpecPar name="nPadsGE21" eval="true">
       <PartSelector path="//GHA2.."/>
-      <Parameter name="nPads" value="384"/>
+      <Parameter name="nPads" value="192"/>
     </SpecPar>
     <SpecPar name="dPhiGE11" eval="true">
       <PartSelector path="//GHA1.."/>
-      <Parameter name="dPhi" value="0.002564*deg"/>
+      <Parameter name="dPhi" value="0.00025645*deg"/>
     </SpecPar>
     <SpecPar name="dPhiGE21" eval="true">
       <PartSelector path="//GHA2.."/>

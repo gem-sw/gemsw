@@ -16,11 +16,11 @@ cmsrel CMSSW_12_2_0_pre1
 cd CMSSW_12_2_0_pre1/src
 cmsenv
 git cms-init -q
-git cms-merge-topic yeckang:mapping_update_v0.5 # Will be updated
+git cms-merge-topic jshlee:mapping_update_v0.5 # Will be updated
 git clone git@github.com:gem-sw/gemsw.git
 scram b -j 4
 cd gemsw/EventFilter/test
-cmsRun testbeamReadout.py inputFiles=<file path> use20x10=<True or False> skipBadDigi=False dqm=True reconstruct=True isME0data=<True or False>
+cmsRun gemTestBeam.py inputFiles=file:/store/data/testbeam/run_20211103_0159-0-0.raw include20x10=<True or False>
 ```
 # reading in dual raw files
 ```bash
@@ -32,7 +32,7 @@ git cms-merge-topic jshlee:mapping_update_v0.5 # Will be updated
 git clone git@github.com:gem-sw/gemsw.git
 scram b -j 4
 cd gemsw/EventFilter/test
-cmsRun gemTestBeam.py inputFiles=file:/store/data/testbeam/run_20211103_0159-0-0.raw,file:/store/data/testbeam/run_20211103_0159-1-0.raw
+cmsRun gemTestBeam.py inputFiles=file:/store/data/testbeam/run_20211103_0159-0-0.raw,file:/store/data/testbeam/run_20211103_0159-1-0.raw include20x10=<True or False>
 ```
 
 # fireworks

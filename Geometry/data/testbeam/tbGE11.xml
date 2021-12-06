@@ -23,7 +23,7 @@
     <!-- main Translation done in mf.xml -->
         <PosPart copyNumber="52">
             <rParent name="gem11:GEMDisk11P" />
-            <rChild name="gem11:GEMBox11L" />
+            <rChild name="gem11:GEMBox11S" />
             <Translation x="0" z="0*cm" y="0*cm" />
         </PosPart>
 
