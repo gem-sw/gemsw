@@ -219,7 +219,7 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     residual_y_[key2] = fs->make<TH1D>(Form("residual_y_GE11_ch%d", ch),
                                        Form("residual Y : GE11 chamber %d", ch),
                                        10, -20, 20);
-    for (int ieta = 1; ieta < 5; ieta++) {
+    for (int ieta = 1; ieta < 6; ieta++) {
       Key3 key3(station, ch, ieta);
       track_occ_detail_[key3]= fs->make<TH2D>(Form("track_occ_GE11_ch%d_ieta%d", ch, ieta), 
                                               Form("Occupancy from Track : GE11 chamber %d iEta%d", ch, ieta),

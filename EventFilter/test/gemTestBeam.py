@@ -2,6 +2,11 @@ import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 
 options = VarParsing.VarParsing('analysis')
+options.register('include20x10',
+                 False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Include 20x10 chamber in the geometry")
 options.parseArguments()
 
 process = cms.Process("GEMStreamSource")
@@ -43,14 +48,19 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(1477)
 process.muonGEMDigis.fedIdEnd = cms.uint32(1478)
-process.muonGEMDigis.skipBadStatus = cms.bool(False)
+process.muonGEMDigis.skipBadStatus = cms.bool(True)
 process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                             tag=cms.string("GEMeMapTestBeam"),
-                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam.db")))
+if options.include20x10 :
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
+                                                 tag=cms.string("GEMeMapTestBeam"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_with_20x10.db")))
+else :
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
+                                                 tag=cms.string("GEMeMapTestBeam"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam.db")))
 
 process.load('gemsw.Geometry.GeometryTestBeam_cff')
 process.load('MagneticField.Engine.uniformMagneticField_cfi')
