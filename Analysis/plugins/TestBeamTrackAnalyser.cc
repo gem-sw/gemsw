@@ -72,12 +72,14 @@ private:
   std::map<Key2, TH2D*> track_occ_;
   std::map<Key2, TH2D*> rechit_occ_;
   std::map<Key2, TH1D*> residual_x_;
+  std::map<Key2, TH2D*> residual_x_cls_;
   std::map<Key2, TH1D*> residual_y_;
   std::map<Key2, TH2D*> track_rechit_;
 
   std::map<Key3, TH2D*> track_occ_detail_;
   std::map<Key3, TH2D*> rechit_occ_detail_;
   std::map<Key3, TH1D*> residual_x_detail_;
+  std::map<Key3, TH2D*> residual_x_cls_detail_;
   std::map<Key3, TH1D*> residual_y_detail_;
   std::map<Key3, TH2D*> track_rechit_detail_;
 
@@ -88,7 +90,7 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
   tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<InputTag>("tracks"));
   gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHitLabel"));
 
-  trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 1000);
+  trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 10);
 
   int station = 0;
   int chamber = 1;
@@ -108,6 +110,10 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
   residual_x_[key2] = fs->make<TH1D>("residual_x_GE0",
                                      "residual X : GE0",
                                      1000, -5, 5);
+  residual_x_cls_[key2] = fs->make<TH2D>("residual_x_cls_GE0",
+                                         "residual X : GE0",
+                                         1000, -5, 5,
+                                         10, 1, 11);
   residual_y_[key2] = fs->make<TH1D>("residual_y_GE0",
                                      "residual Y : GE0",
                                      10, -20, 20);
@@ -128,6 +134,10 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     residual_x_detail_[key3] = fs->make<TH1D>(Form("residual_x_GE0_ieta%d",ieta),
                                               Form("residual X : GE0 iEta%d",ieta),
                                               1000, -5, 5);
+    residual_x_cls_detail_[key3] = fs->make<TH2D>(Form("residual_x_cls_GE0_ieta%d",ieta),
+                                                  Form("residual X : GE0 iEta%d",ieta),
+                                                  1000, -5, 5,
+                                                  10, 1, 11);
     residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE0_ieta%d",ieta),
                                               Form("residual Y : GE0 iEta%d",ieta),
                                               10, -20, 20);
@@ -151,6 +161,10 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
   residual_x_[key2] = fs->make<TH1D>("residual_x_GE21",
                                      "residual X : GE21",
                                      1000, -5, 5);
+  residual_x_cls_[key2] = fs->make<TH2D>("residual_x_cls_GE21",
+                                         "residual X : GE21",
+                                         1000, -5, 5,
+                                         10, 1, 11);
   residual_y_[key2] = fs->make<TH1D>("residual_y_GE21",
                                      "residual Y : GE21",
                                      10, -20, 20);
@@ -171,6 +185,10 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     residual_x_detail_[key3] = fs->make<TH1D>(Form("residual_x_GE21_ieta%d",ieta),
                                               Form("residual X : GE21 iEta%d",ieta),
                                               1000, -5, 5);
+    residual_x_cls_detail_[key3] = fs->make<TH2D>(Form("residual_x_cls_GE21_ieta%d",ieta),
+                                                  Form("residual X : GE21 iEta%d",ieta),
+                                                  1000, -5, 5,
+                                                  10, 1, 11);
     residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE21_ieta%d",ieta),
                                               Form("residual Y : GE21 iEta%d",ieta),
                                               10, -20, 20);
@@ -194,6 +212,10 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     residual_x_[key2] = fs->make<TH1D>(Form("residual_x_GE11_ch%d", ch),
                                        Form("residual X : GE11 chamber %d", ch),
                                        200, -5, 5);
+    residual_x_cls_[key2] = fs->make<TH2D>(Form("residual_x_cls_GE11_ch%d", ch),
+                                           Form("residual X : GE11 chamber %d", ch),
+                                           200, -5, 5,
+                                           10, 1, 11);
     residual_y_[key2] = fs->make<TH1D>(Form("residual_y_GE11_ch%d", ch),
                                        Form("residual Y : GE11 chamber %d", ch),
                                        10, -20, 20);
@@ -214,6 +236,10 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
       residual_x_detail_[key3] = fs->make<TH1D>(Form("residual_x_GE11_ch%d_ieta%d", ch, ieta),
                                                 Form("residual X : GE11 chamber %d iEta%d", ch, ieta),
                                                 300, -5, 5);
+      residual_x_cls_detail_[key3] = fs->make<TH2D>(Form("residual_x_cls_GE11_ch%d_ieta%d", ch, ieta),
+                                                    Form("residual X : GE11 chamber %d iEta%d", ch, ieta),
+                                                    300, -5, 5,
+                                                    10, 1, 11);
       residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE11_ch%d_ieta%d", ch, ieta),
                                                 Form("residual Y : GE11 chamber %d iEta%d", ch, ieta),
                                                 10, -20, 20);
@@ -252,6 +278,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       bool hasHit = false;
       float maxR = 500000;
       float lp_x = 0;
+      int cls_size=0;
       float residualX = 0;
       float residualY = 0;
 
@@ -274,6 +301,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
           maxR = deltaR; 
           residualX = (lp_rechit.x() - lp_track.x())*10.;
           residualY = lp_rechit.y() - lp_track.y();
+          cls_size = rechit->clusterSize();
           lp_x = lp_rechit.x();
         }
       }
@@ -281,11 +309,13 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         rechit_occ_[key2]->Fill(gp_track.x(), gp_track.y());
         track_rechit_[key2]->Fill(lp_track.x(), lp_x);
         residual_x_[key2]->Fill(residualX);
+        residual_x_cls_[key2]->Fill(residualX, cls_size);
         residual_y_[key2]->Fill(residualY);
 
         rechit_occ_detail_[key3]->Fill(lp_track.x(), lp_track.y());
         track_rechit_detail_[key3]->Fill(lp_track.x(), lp_x);
         residual_x_detail_[key3]->Fill(residualX);
+        residual_x_cls_detail_[key3]->Fill(residualX, cls_size);
         residual_y_detail_[key3]->Fill(residualY);
       }
     }
