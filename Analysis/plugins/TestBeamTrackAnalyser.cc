@@ -44,7 +44,6 @@
 #include "TTree.h"
 
 using namespace std;
-using namespace edm;
 
 typedef std::tuple<int, int> Key2;
 typedef std::tuple<int, int, int> Key3;
@@ -59,8 +58,8 @@ private:
   virtual void beginJob() override;
   virtual void endJob() override;
 
-  virtual void beginRun(Run const&, EventSetup const&) override;
-  virtual void endRun(Run const&, EventSetup const&) override;
+  virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
+  virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
 
   // ----------member data ---------------------------
   edm::Service<TFileService> fs;
@@ -87,7 +86,7 @@ private:
 
 TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
 { 
-  tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<InputTag>("tracks"));
+  tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("tracks"));
   gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHitLabel"));
 
   trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 10);
@@ -326,7 +325,7 @@ void TestBeamTrackAnalyzer::beginJob(){}
 void TestBeamTrackAnalyzer::endJob(){}
 
 void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup& iSetup){}
-void TestBeamTrackAnalyzer::endRun(Run const&, EventSetup const&){}
+void TestBeamTrackAnalyzer::endRun(edm::Run const&, edm::EventSetup const&){}
                    
 //define this as a plug-in
 DEFINE_FWK_MODULE(TestBeamTrackAnalyzer);
