@@ -58,9 +58,13 @@ private:
   MuonServiceProxy* theService_;
   KFUpdator* theUpdator_;
 
-  MuonTransientTrackingRecHit::MuonRecHitContainer BuildSeedHits(const GEMEtaPartition* etaPartX, 
-                                                                 const GEMEtaPartition* etaPartY, 
-                                                                 const GEMRecHitCollection* gemHits);
+  MuonTransientTrackingRecHit::MuonRecHitContainer Build2DSeedHits(const GEMEtaPartition* etaPartX, 
+                                                                   const GEMEtaPartition* etaPartY, 
+                                                                   const GEMRecHitCollection* gemHits);
+
+  MuonTransientTrackingRecHit::MuonRecHitContainer Build1DSeedHits(const GEMEtaPartition* etaPartX, 
+                                                                   const GEMEtaPartition* etaPartY, 
+                                                                   const GEMRecHitCollection* gemHits);
   
   void findSeeds(MuonTransientTrackingRecHit::MuonRecHitContainer frontSeeds,
                  MuonTransientTrackingRecHit::MuonRecHitContainer rearSeeds);
@@ -70,8 +74,9 @@ private:
   bool checkExclude(int chamber);
 
   double trackChi2_;
-  bool skipLargeChamber_;
+  bool skipLargeChamber_, use1DSeeds_;
   vector<int> excludingChambers_;
+  int maxClusterSize_, minClusterSize_;
 
   multimap<float,const GEMEtaPartition*> detLayerMap_;
   vector<TrajectorySeed> trajectorySeedCands_;
@@ -80,7 +85,10 @@ private:
 GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) : iev(0) {
   trackChi2_ = ps.getParameter<double>("trackChi2");
   skipLargeChamber_ = ps.getParameter<bool>("skipLargeChamber");
+  use1DSeeds_ = ps.getParameter<bool>("use1DSeeds");
   excludingChambers_ = ps.getParameter<vector<int>>("excludingChambers");
+  maxClusterSize_ = ps.getParameter<int>("maxClusterSize");
+  minClusterSize_ = ps.getParameter<int>("minClusterSize");
   theGEMRecHitToken_ = consumes<GEMRecHitCollection>(ps.getParameter<edm::InputTag>("gemRecHitLabel"));
   // register what this produces
   edm::ParameterSet serviceParameters = ps.getParameter<edm::ParameterSet>("ServiceParameters");
@@ -154,16 +162,30 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
   }
 
   trajectorySeedCands_.clear();
-  for (int i = 0; i < 2; i++) {
-    if (checkExclude(i)) continue;
-    auto frontSeeds = BuildSeedHits(xChamb[i], yChamb[i], gemRecHits.product());
-    for (int j = 2; j < 4; j++) {
-      if (checkExclude(j)) continue;
-      auto rearSeeds = BuildSeedHits(xChamb[j], yChamb[j], gemRecHits.product());
-      // Push_back trajectory candidates in trajectorySeedCands_
-      findSeeds(frontSeeds, rearSeeds);
+  if (use1DSeeds_) {
+    for (int i = 0; i < 2; i++) {
+      if (checkExclude(i)) continue;
+      auto frontSeeds = Build1DSeedHits(xChamb[i], yChamb[i], gemRecHits.product());
+      for (int j = 2; j < 4; j++) {
+        if (checkExclude(j)) continue;
+        auto rearSeeds = Build1DSeedHits(xChamb[j], yChamb[j], gemRecHits.product());
+        // Push_back trajectory candidates in trajectorySeedCands_
+        findSeeds(frontSeeds, rearSeeds);
+      }
+    }
+  } else {
+    for (int i = 0; i < 2; i++) {
+      if (checkExclude(i)) continue;
+      auto frontSeeds = Build2DSeedHits(xChamb[i], yChamb[i], gemRecHits.product());
+      for (int j = 2; j < 4; j++) {
+        if (checkExclude(j)) continue;
+        auto rearSeeds = Build2DSeedHits(xChamb[j], yChamb[j], gemRecHits.product());
+        // Push_back trajectory candidates in trajectorySeedCands_
+        findSeeds(frontSeeds, rearSeeds);
+      }
     }
   }
+
   //cout << "GEMTrackFinder::frontSeeds->size() " << frontSeeds.size() << endl;
   //cout << "GEMTrackFinder::trajectorySeeds->size() " << trajectorySeeds->size() << endl;
 
@@ -245,7 +267,7 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
 }
 
 void GEMTrackFinder::findSeeds(MuonTransientTrackingRecHit::MuonRecHitContainer frontSeeds,
-                                    MuonTransientTrackingRecHit::MuonRecHitContainer rearSeeds)
+                               MuonTransientTrackingRecHit::MuonRecHitContainer rearSeeds)
 {
   unique_ptr<vector<TrajectorySeed> > trajectorySeeds( new vector<TrajectorySeed>());
   if (frontSeeds.size() > 0 && rearSeeds.size() > 0){
@@ -335,7 +357,8 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
       //const float stripLength(top_->stripLength());
       //const float stripPitch(etaPart->pitch());
       for (GEMRecHitCollection::const_iterator rechit = range.first; rechit!=range.second; ++rechit){
-
+ 
+        if (rechit->clusterSize() > maxClusterSize_ or rechit->clusterSize() < minClusterSize_) continue;
         LocalPoint tsosLP = etaPart->toLocal(tsosGP);
         LocalPoint rhLP = (*rechit).localPosition();
         //double y_err = (*rechit).localPositionError().yy();
@@ -439,9 +462,9 @@ TrackingRecHit::ConstRecHitContainer GEMTrackFinder::findMissingHits(Trajectory&
   return recHits;
 }
 
-MuonTransientTrackingRecHit::MuonRecHitContainer GEMTrackFinder::BuildSeedHits(const GEMEtaPartition* etaPartX, 
-                                                                               const GEMEtaPartition* etaPartY, 
-                                                                               const GEMRecHitCollection* gemHits)
+MuonTransientTrackingRecHit::MuonRecHitContainer GEMTrackFinder::Build2DSeedHits(const GEMEtaPartition* etaPartX, 
+                                                                                 const GEMEtaPartition* etaPartY, 
+                                                                                 const GEMRecHitCollection* gemHits)
 {
   MuonTransientTrackingRecHit::MuonRecHitContainer hits;
   GEMDetId etaPartIDx = etaPartX->id();
@@ -450,10 +473,12 @@ MuonTransientTrackingRecHit::MuonRecHitContainer GEMTrackFinder::BuildSeedHits(c
   GEMRecHitCollection::range rangeX = gemHits->get(etaPartIDx);
   GEMRecHitCollection::range rangeY = gemHits->get(etaPartIDy);
   for (GEMRecHitCollection::const_iterator rechitX = rangeX.first; rechitX!=rangeX.second; ++rechitX){
+    if (rechitX->clusterSize() > maxClusterSize_ or rechitX->clusterSize() < minClusterSize_) continue;
     const GeomDet* geomDet(etaPartX);
     auto localPointX = rechitX->localPosition();
     auto localErrX = rechitX->localPositionError();
     for (GEMRecHitCollection::const_iterator rechitY = rangeY.first; rechitY!=rangeY.second; ++rechitY){
+      if (rechitY->clusterSize() > maxClusterSize_ or rechitY->clusterSize() < minClusterSize_) continue;
       auto localPointY = rechitY->localPosition();
       auto localErrY = rechitY->localPositionError();
 
@@ -471,6 +496,29 @@ MuonTransientTrackingRecHit::MuonRecHitContainer GEMTrackFinder::BuildSeedHits(c
 
       hits.push_back(MuonTransientTrackingRecHit::specificBuild(geomDet,&*rechit));
     }
+  }
+  return hits;
+}
+
+MuonTransientTrackingRecHit::MuonRecHitContainer GEMTrackFinder::Build1DSeedHits(const GEMEtaPartition* etaPartX, 
+                                                                                 const GEMEtaPartition* etaPartY, 
+                                                                                 const GEMRecHitCollection* gemHits)
+{
+  MuonTransientTrackingRecHit::MuonRecHitContainer hits;
+  GEMDetId etaPartIDx = etaPartX->id();
+  GEMDetId etaPartIDy = etaPartY->id();
+  
+  GEMRecHitCollection::range rangeX = gemHits->get(etaPartIDx);
+  GEMRecHitCollection::range rangeY = gemHits->get(etaPartIDy);
+  for (GEMRecHitCollection::const_iterator rechitX = rangeX.first; rechitX!=rangeX.second; ++rechitX){
+    if (rechitX->clusterSize() > maxClusterSize_ or rechitX->clusterSize() < minClusterSize_) continue;
+    const GeomDet* geomDet(etaPartX);
+    hits.push_back(MuonTransientTrackingRecHit::specificBuild(geomDet,&*rechitX));
+  }
+  for (GEMRecHitCollection::const_iterator rechitY = rangeY.first; rechitY!=rangeY.second; ++rechitY){
+    if (rechitY->clusterSize() > maxClusterSize_ or rechitY->clusterSize() < minClusterSize_) continue;
+    const GeomDet* geomDet(etaPartY);
+    hits.push_back(MuonTransientTrackingRecHit::specificBuild(geomDet,&*rechitY));
   }
   return hits;
 }

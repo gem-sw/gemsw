@@ -7,6 +7,11 @@ options.register('include20x10',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  "Include 20x10 chamber in the geometry")
+options.register('excludeChambers',
+                 [],
+                 VarParsing.VarParsing.multiplicity.list,
+                 VarParsing.VarParsing.varType.int,
+                 "Exclude the chamber from track reconstruction (0 to 3)")
 options.parseArguments()
 
 process = cms.Process("GEMStreamSource")
@@ -73,11 +78,12 @@ process.SteppingHelixPropagatorAny.useMagVolumes = cms.bool(False)
 process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
                                         process.MuonServiceProxy,
                                         gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                        maxClusterSize = cms.double(10),
-                                        minClusterSize = cms.double(1),
+                                        maxClusterSize = cms.int32(10),
+                                        minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
                                         skipLargeChamber = cms.bool(True),
-                                        excludingChambers = cms.vint32(0),
+                                        use1DSeeds = cms.bool(False), 
+                                        excludingChambers = cms.vint32(options.excludeChambers),
                                         MuonSmootherParameters = cms.PSet(
                                            PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
                                            PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
