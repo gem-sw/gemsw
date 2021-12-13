@@ -58,16 +58,38 @@ process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
+process.load('Geometry.GEMGeometryBuilder.gemGeometry_cff')
+process.gemGeometry.applyAlignment = cms.bool(True)
+process.load('gemsw.Geometry.GeometryTestBeam_cff')
+
 if options.include20x10 :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
                                                  tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_with_20x10.db")))
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_with_20x10.db")),
+                                        cms.PSet(
+                                            record = cms.string('GEMAlignmentRcd'),
+                                            tag = cms.string("TBGEMAlignment_test"),
+                                            connect = cms.string("sqlite_fip:gemsw/CondAli/python/MyAlignment.db")),
+                                        cms.PSet(
+                                            record = cms.string('GEMAlignmentErrorExtendedRcd'),
+                                            tag = cms.string("TBGEMAlignmentErrorExtended_test"),
+                                            connect = cms.string("sqlite_fip:gemsw/CondAli/python/MyAlignment.db")),
+                                        cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
+   )
 else :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
                                                  tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam.db")))
-
-process.load('gemsw.Geometry.GeometryTestBeam_cff')
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam.db")),
+                                        cms.PSet(
+                                            record = cms.string('GEMAlignmentRcd'),
+                                            tag = cms.string("TBGEMAlignment_test"),
+                                            connect = cms.string("sqlite_fip:gemsw/CondAli/python/MyAlignment.db")),
+                                        cms.PSet(
+                                            record = cms.string('GEMAlignmentErrorExtendedRcd'),
+                                            tag = cms.string("TBGEMAlignmentErrorExtended_test"),
+                                            connect = cms.string("sqlite_fip:gemsw/CondAli/python/MyAlignment.db")),
+                                        cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
+    )
 process.load('MagneticField.Engine.uniformMagneticField_cfi')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('RecoMuon.TrackingTools.MuonServiceProxy_cff')

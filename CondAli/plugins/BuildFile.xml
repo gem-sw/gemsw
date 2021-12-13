@@ -1,0 +1,17 @@
+<use name="DataFormats/TrackReco"/>
+<use name="FWCore/Framework"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/PluginManager"/>
+<use name="CLHEP"/>
+<use name="Geometry/GEMGeometry"/>
+<use name="Geometry/GEMGeometryBuilder"/>
+<use name="Alignment/CommonAlignment" />
+<use name="CoralBase"/>
+<use name="CondFormats/AlignmentRecord"/>
+<use name="CondFormats/Alignment"/>
+<use name="CondCore/DBOutputService"/>
+<use name="CondFormats/GeometryObjects"/>
+<use name="Geometry/Records"/>
+
+
+<flags EDM_PLUGIN="1"/>
