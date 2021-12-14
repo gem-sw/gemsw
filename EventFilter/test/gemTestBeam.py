@@ -68,11 +68,11 @@ if options.include20x10 :
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
                                             tag = cms.string("TBGEMAlignment_test"),
-                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/MyAlignment.db")),
+                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentErrorExtendedRcd'),
                                             tag = cms.string("TBGEMAlignmentErrorExtended_test"),
-                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/MyAlignment.db")),
+                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
                                         cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
    )
 else :
@@ -82,11 +82,11 @@ else :
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
                                             tag = cms.string("TBGEMAlignment_test"),
-                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/MyAlignment.db")),
+                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentErrorExtendedRcd'),
                                             tag = cms.string("TBGEMAlignmentErrorExtended_test"),
-                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/MyAlignment.db")),
+                                            connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
                                         cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
     )
 process.load('MagneticField.Engine.uniformMagneticField_cfi')
