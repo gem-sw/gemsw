@@ -23,7 +23,7 @@ process.load('gemsw.Geometry.GeometryTestBeam_cff')
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(1000),
+    input = cms.untracked.int32(100000),
 )
 process.source = cms.Source("EmptySource")
 process.configurationMetadata = cms.untracked.PSet(
@@ -118,12 +118,12 @@ process.SteppingHelixPropagatorAny.useMagVolumes = cms.bool(False)
 process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
                                         process.MuonServiceProxy,
                                         gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                        maxClusterSize = cms.double(10),
-                                        minClusterSize = cms.double(1),
+                                        maxClusterSize = cms.int32(10),
+                                        minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
                                         skipLargeChamber = cms.bool(True),
-                                        excludingChambers = cms.vint32(),
-                                        useOnlySeed = cms.bool(True),
+                                        excludingChambers = cms.vint32(1),
+                                        use1DSeeds = cms.bool(False),
                                         MuonSmootherParameters = cms.PSet(
                                            PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
                                            PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
@@ -135,6 +135,7 @@ process.GEMTrackFinder.ServiceParameters.CSCLayers = cms.untracked.bool(False)
 process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
 
 process.TestBeamTrackAnalyzer = cms.EDAnalyzer("TestBeamTrackAnalyzer",
+                                               process.MuonServiceProxy,
                                                gemRecHitLabel = cms.InputTag("gemRecHits"),
                                                tracks = cms.InputTag("GEMTrackFinder"),
                                                )
@@ -149,7 +150,7 @@ process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
 process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
-process.reconstruction_step = cms.Path(process.gemRecHits * process.gemSegments * process.GEMTrackFinder)
+process.reconstruction_step = cms.Path(process.gemRecHits * process.GEMTrackFinder)
 process.analyser_step = cms.Path(process.TestBeamTrackAnalyzer)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)

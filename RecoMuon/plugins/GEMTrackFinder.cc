@@ -234,26 +234,66 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
                     ftsAtVtx->charge(),
                     ftsAtVtx->curvilinearError());
 
-  reco::TrackExtra tx;
+  //sets the outermost and innermost TSOSs
+  TrajectoryStateOnSurface outertsos;
+  TrajectoryStateOnSurface innertsos;
+  unsigned int innerId, outerId;
+
+  if (bestTrajectory.direction() == alongMomentum) {
+    outertsos = bestTrajectory.lastMeasurement().updatedState();
+    innertsos = bestTrajectory.firstMeasurement().updatedState();
+    outerId = bestTrajectory.lastMeasurement().recHit()->geographicalId().rawId();
+    innerId = bestTrajectory.firstMeasurement().recHit()->geographicalId().rawId();
+  } else {
+    outertsos = bestTrajectory.firstMeasurement().updatedState();
+    innertsos = bestTrajectory.lastMeasurement().updatedState();
+    outerId = bestTrajectory.firstMeasurement().recHit()->geographicalId().rawId();
+    innerId = bestTrajectory.lastMeasurement().recHit()->geographicalId().rawId();
+  }
+
+  //build the TrackExtra
+  GlobalPoint gv = outertsos.globalParameters().position();
+  GlobalVector gp = outertsos.globalParameters().momentum();
+  math::XYZVector outmom(gp.x(), gp.y(), gp.z());
+  math::XYZPoint outpos(gv.x(), gv.y(), gv.z());
+  gv = innertsos.globalParameters().position();
+  gp = innertsos.globalParameters().momentum();
+  math::XYZVector inmom(gp.x(), gp.y(), gp.z());
+  math::XYZPoint inpos(gv.x(), gv.y(), gv.z());
+  
+  auto tx = reco::TrackExtra(outpos,
+                             outmom,
+                             true,
+                             inpos,
+                             inmom,
+                             true,
+                             outertsos.curvilinearError(),
+                             outerId,
+                             innertsos.curvilinearError(),
+                             innerId,
+                             bestSeed.direction(),
+                             bestTrajectory.seedRef());
   //adding rec hits
-  TrackingRecHit::ConstRecHitContainer transHits = findMissingHits(bestTrajectory);
+  Trajectory::RecHitContainer transHits = bestTrajectory.recHits();
   unsigned int nHitsAdded = 0;
-  for (Trajectory::RecHitContainer::const_iterator recHit = transHits.begin(); recHit != transHits.end(); ++recHit) {
+  for (Trajectory::RecHitContainer::const_iterator recHit = transHits.begin(); recHit != transHits.end(); ++recHit)
+  {
     TrackingRecHit *singleHit = (**recHit).hit()->clone();
-    trackingRecHitCollection->push_back( singleHit );  
+    trackingRecHitCollection->push_back( singleHit );
     ++nHitsAdded;
   }
-  tx.setHits(recHitCollectionRefProd, recHitsIndex, nHitsAdded);
-  tx.setResiduals(trajectoryToResiduals(bestTrajectory));
-  tx.setSeedRef(bestTrajectory.seedRef());
-  recHitsIndex +=nHitsAdded;
 
-  trackExtraCollection->emplace_back(tx);
+  tx.setHits(recHitCollectionRefProd, recHitsIndex, nHitsAdded);
+  recHitsIndex += nHitsAdded;
+
+  trackExtraCollection->push_back(tx);
+
   reco::TrackExtraRef trackExtraRef(trackExtraCollectionRefProd, trackExtraIndex++ );
   track.setExtra(trackExtraRef);
+
   trackCollection->emplace_back(track);
-  trajectorySeeds->emplace_back(bestSeed);
   trajectorys->emplace_back(bestTrajectory);      
+  trajectorySeeds->emplace_back(bestSeed);
   
   // fill the collection
   // put collection in event
@@ -263,7 +303,7 @@ void GEMTrackFinder::produce(edm::Event& ev, const edm::EventSetup& setup) {
   ev.put(move(trackingRecHitCollection));
   ev.put(move(trackExtraCollection));
   ev.put(move(trajectorys));
-  
+  return;
 }
 
 void GEMTrackFinder::findSeeds(MuonTransientTrackingRecHit::MuonRecHitContainer frontSeeds,
@@ -327,6 +367,8 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
     if (!tsos.isValid()){
       continue;
     }
+    //auto tsos_error = tsos.localError().positionError();
+    //cout << "tsos error " << tsos_error << endl;
     
     GlobalPoint tsosGP = tsos.globalPosition();
     //cout << "tsos gp   "<< tsosGP << refChamber->id() <<endl;

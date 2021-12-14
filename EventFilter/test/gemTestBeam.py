@@ -58,9 +58,8 @@ process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.load('Geometry.GEMGeometryBuilder.gemGeometry_cff')
-process.gemGeometry.applyAlignment = cms.bool(True)
 process.load('gemsw.Geometry.GeometryTestBeam_cff')
+process.gemGeometry.applyAlignment = cms.bool(True)
 
 if options.include20x10 :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
@@ -118,9 +117,14 @@ process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
 
 process.load("CommonTools.UtilAlgos.TFileService_cfi")
 process.TestBeamTrackAnalyzer = cms.EDAnalyzer("TestBeamTrackAnalyzer",
+                                               process.MuonServiceProxy,
                                                gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                               tracks = cms.InputTag("GEMTrackFinder"),
+                                               tracks = cms.InputTag("GEMTrackFinder", "", "GEMStreamSource"),
+                                               seeds = cms.InputTag("GEMTrackFinder", "", "GEMStreamSource"),
                                                )
+process.TestBeamTrackAnalyzer.ServiceParameters.GEMLayers = cms.untracked.bool(True)
+process.TestBeamTrackAnalyzer.ServiceParameters.CSCLayers = cms.untracked.bool(False)
+process.TestBeamTrackAnalyzer.ServiceParameters.RPCLayers = cms.bool(False)
 
 process.output = cms.OutputModule("PoolOutputModule",
                                   outputCommands=cms.untracked.vstring(
