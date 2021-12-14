@@ -15,12 +15,12 @@ process.GlobalTag.toGet = cms.VPSet(
         record = cms.string('GEMAlignmentRcd'),
         tag = cms.string("TBGEMAlignment_test"),
         #connect = cms.string("sqlite:MyAlignment.db"),
-        connect = cms.string("sqlite_fip:gemsw/CondAli/python/MyAlignment.db"),
+        connect = cms.string("sqlite_fip:gemsw/Alignment/data/MyAlignment.db"),
     ),
     cms.PSet(
         record = cms.string('GEMAlignmentErrorExtendedRcd'),
         tag = cms.string("TBGEMAlignmentErrorExtended_test"),
-        connect = cms.string("sqlite_fip:gemsw/CondAli/python/MyAlignment.db"),
+        connect = cms.string("sqlite_fip:gemsw/Alignment/data/MyAlignment.db"),
     )
 )
 
