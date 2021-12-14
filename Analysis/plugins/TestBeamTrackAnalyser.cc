@@ -12,9 +12,12 @@
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "RecoMuon/TrackingTools/interface/MuonServiceProxy.h"
+#include "TrackingTools/TrajectoryState/interface/TrajectoryStateTransform.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 // GEM
 #include "DataFormats/GEMDigi/interface/GEMDigiCollection.h"
@@ -44,7 +47,6 @@
 #include "TTree.h"
 
 using namespace std;
-using namespace edm;
 
 typedef std::tuple<int, int> Key2;
 typedef std::tuple<int, int, int> Key3;
@@ -59,13 +61,16 @@ private:
   virtual void beginJob() override;
   virtual void endJob() override;
 
-  virtual void beginRun(Run const&, EventSetup const&) override;
-  virtual void endRun(Run const&, EventSetup const&) override;
+  virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
+  virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
 
   // ----------member data ---------------------------
   edm::Service<TFileService> fs;
   edm::EDGetTokenT<reco::TrackCollection> tracks_;
+  edm::EDGetTokenT<TrajectorySeed> seeds_;
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
+
+  MuonServiceProxy* theService_;
 
   TH1D* trackChi2_;
 
@@ -74,6 +79,8 @@ private:
   std::map<Key2, TH1D*> residual_x_;
   std::map<Key2, TH2D*> residual_x_cls_;
   std::map<Key2, TH1D*> residual_y_;
+  std::map<Key2, TH1D*> trackingError_x_;
+  std::map<Key2, TH1D*> trackingError_y_;
   std::map<Key2, TH2D*> track_rechit_;
 
   std::map<Key3, TH2D*> track_occ_detail_;
@@ -81,14 +88,19 @@ private:
   std::map<Key3, TH1D*> residual_x_detail_;
   std::map<Key3, TH2D*> residual_x_cls_detail_;
   std::map<Key3, TH1D*> residual_y_detail_;
+  std::map<Key3, TH1D*> trackingError_x_detail_;
+  std::map<Key3, TH1D*> trackingError_y_detail_;
   std::map<Key3, TH2D*> track_rechit_detail_;
 
 };
 
 TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
 { 
-  tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<InputTag>("tracks"));
+  tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("tracks"));
+  //seeds_ = consumes<TrajectorySeed>(iConfig.getParameter<edm::InputTag>("seeds"));
   gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHitLabel"));
+  edm::ParameterSet serviceParameters = iConfig.getParameter<edm::ParameterSet>("ServiceParameters");
+  theService_ = new MuonServiceProxy(serviceParameters, consumesCollector(), MuonServiceProxy::UseEventSetupIn::RunAndEvent);
 
   trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 10);
 
@@ -117,6 +129,12 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
   residual_y_[key2] = fs->make<TH1D>("residual_y_GE0",
                                      "residual Y : GE0",
                                      10, -20, 20);
+  trackingError_x_[key2] = fs->make<TH1D>("trackingError_x_GE0",
+                                          "trackingError X : GE0",
+                                          20, -1, 1);
+  trackingError_y_[key2] = fs->make<TH1D>("trackingError_y_GE0",
+                                          "trackingError Y : GE0",
+                                          20, -1, 1);
   for (int ieta = 1; ieta < 9; ieta++) {
     Key3 key3(station, chamber, ieta);
     track_occ_detail_[key3]= fs->make<TH2D>(Form("track_occ_GE0_ieta%d",ieta), 
@@ -141,6 +159,12 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE0_ieta%d",ieta),
                                               Form("residual Y : GE0 iEta%d",ieta),
                                               10, -20, 20);
+    trackingError_x_detail_[key3] = fs->make<TH1D>(Form("trackingError_x_GE0_ieta%d", ieta),
+                                                   Form("trackingError X : GE0_ieta%d", ieta),
+                                                   20, -1, 1);
+    trackingError_y_detail_[key3] = fs->make<TH1D>(Form("trackingError_y_GE0_ieta%d", ieta),
+                                                   Form("trackingError Y : GE0_ieta%d", ieta),
+                                                   20, -1, 1);
   }
 
   station = 2;
@@ -168,6 +192,12 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
   residual_y_[key2] = fs->make<TH1D>("residual_y_GE21",
                                      "residual Y : GE21",
                                      10, -20, 20);
+  trackingError_x_[key2] = fs->make<TH1D>("trackingError_x_GE21",
+                                          "trackingError X : GE21",
+                                          20, -1, 1);
+  trackingError_y_[key2] = fs->make<TH1D>("trackingError_y_GE21",
+                                          "trackingError Y : GE21",
+                                          20, -1, 1);
   for (int ieta = 1; ieta < 17; ieta++) {
     Key3 key3(station, chamber, ieta);
     track_occ_detail_[key3]= fs->make<TH2D>(Form("track_occ_GE21_ieta%d",ieta), 
@@ -192,6 +222,12 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE21_ieta%d",ieta),
                                               Form("residual Y : GE21 iEta%d",ieta),
                                               10, -20, 20);
+    trackingError_x_detail_[key3] = fs->make<TH1D>(Form("trackingError_x_GE21_ieta%d", ieta),
+                                                   Form("trackingError X : GE21_ieta%d", ieta),
+                                                   20, -1, 1);
+    trackingError_y_detail_[key3] = fs->make<TH1D>(Form("trackingError_y_GE21_ieta%d", ieta),
+                                                   Form("trackingError Y : GE21_ieta%d", ieta),
+                                                   20, -1, 1);
   }
 
   station = 1;
@@ -219,6 +255,12 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
     residual_y_[key2] = fs->make<TH1D>(Form("residual_y_GE11_ch%d", ch),
                                        Form("residual Y : GE11 chamber %d", ch),
                                        10, -20, 20);
+    trackingError_x_[key2] = fs->make<TH1D>(Form("trackingError_x_GE11_ch%d", ch),
+                                            Form("trackingError X : GE11_ch%d", ch),
+                                            20, -1, 1);
+    trackingError_y_[key2] = fs->make<TH1D>(Form("trackingError_y_GE11_ch%d", ch),
+                                            Form("trackingError Y : GE11_ch%d", ch),
+                                            20, -1, 1);
     for (int ieta = 1; ieta < 6; ieta++) {
       Key3 key3(station, ch, ieta);
       track_occ_detail_[key3]= fs->make<TH2D>(Form("track_occ_GE11_ch%d_ieta%d", ch, ieta), 
@@ -235,14 +277,20 @@ TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
                                                   200, -5, 5);
       residual_x_detail_[key3] = fs->make<TH1D>(Form("residual_x_GE11_ch%d_ieta%d", ch, ieta),
                                                 Form("residual X : GE11 chamber %d iEta%d", ch, ieta),
-                                                300, -5, 5);
+                                                1000, -5, 5);
       residual_x_cls_detail_[key3] = fs->make<TH2D>(Form("residual_x_cls_GE11_ch%d_ieta%d", ch, ieta),
                                                     Form("residual X : GE11 chamber %d iEta%d", ch, ieta),
-                                                    300, -5, 5,
+                                                    1000, -5, 5,
                                                     10, 1, 11);
       residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE11_ch%d_ieta%d", ch, ieta),
                                                 Form("residual Y : GE11 chamber %d iEta%d", ch, ieta),
                                                 10, -20, 20);
+      trackingError_x_detail_[key3] = fs->make<TH1D>(Form("trackingError_x_GE11_ch%d_ieta%d", ch, ieta),
+                                                     Form("trackingError X : GE11_ch%d_ieta%d", ch, ieta),
+                                                     20, -1, 1);
+      trackingError_y_detail_[key3] = fs->make<TH1D>(Form("trackingError_y_GE11_ch%d_ieta%d", ch, ieta),
+                                                     Form("trackingError Y : GE11_ch%d_ieta%d", ch, ieta),
+                                                     20, -1, 1);
     }
   }
 }
@@ -260,15 +308,29 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   edm::Handle<vector<reco::Track>> tracks;
   iEvent.getByToken(tracks_, tracks);
 
+  //edm::Handle<vector<TrajectorySeed>> seeds;
+  //iEvent.getByToken(seeds_, seeds);
+
   edm::Handle<GEMRecHitCollection> gemRecHits;
   iEvent.getByToken(gemRecHits_,gemRecHits);
 
   for (std::vector<reco::Track>::const_iterator track = tracks->begin(); track != tracks->end(); ++track)
   {
     trackChi2_->Fill(track->normalizedChi2());
+    //auto seed = track->seedRef();
+    //auto seed = seeds->begin();
+    //auto ptsd1 = seed->startingState();
+    //DetId did(ptsd1.detId());
+    //const BoundPlane& bp = theService_->trackingGeometry()->idToDet(did)->surface();
+    //TrajectoryStateOnSurface tsos = trajectoryStateTransform::transientState(ptsd1,&bp,&*theService_->magneticField());
+
     for (auto hit : track->recHits()) {
       auto etaPart = GEMGeometry_->etaPartition(hit->geographicalId());
       auto etaPartId = etaPart->id();
+
+      //tsos = theService_->propagator("StraightLinePropagator")->propagate(tsos,etaPart->surface());
+      //if (!tsos.isValid()) continue;
+      //auto tsos_error = tsos.localError().positionError();
 
       auto lp_track = hit->localPosition();
       auto gp_track = etaPart->toGlobal(lp_track);
@@ -291,6 +353,10 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     
       track_occ_[key2]->Fill(gp_track.x(), gp_track.y());
       track_occ_detail_[key3]->Fill(lp_track.x(), lp_track.y());
+      //trackingError_x_[key2]->Fill(tsos_error.xx());
+      //trackingError_y_[key2]->Fill(tsos_error.yy());
+      //trackingError_x_detail_[key3]->Fill(tsos_error.xx());
+      //trackingError_y_detail_[key3]->Fill(tsos_error.yy());
 
       for (auto rechit = range.first; rechit != range.second; ++rechit) {
         auto lp_rechit = rechit->localPosition();
@@ -326,7 +392,7 @@ void TestBeamTrackAnalyzer::beginJob(){}
 void TestBeamTrackAnalyzer::endJob(){}
 
 void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup& iSetup){}
-void TestBeamTrackAnalyzer::endRun(Run const&, EventSetup const&){}
+void TestBeamTrackAnalyzer::endRun(edm::Run const&, edm::EventSetup const&){}
                    
 //define this as a plug-in
 DEFINE_FWK_MODULE(TestBeamTrackAnalyzer);

@@ -937,46 +937,46 @@
   <PosPart copyNumber="1">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA101"/>
-    <Translation x="[shift:bari2X]" y="-351*mm" z="0*fm" /> <!-- here the 70cm distance between two chambers are specified -->
+    <Translation x="0*mm" y="-351*mm" z="0*mm" /> <!-- here the 70cm distance between two chambers are specified -->
   </PosPart>                                      <!-- measured distance = 69.7cm | for now ok to maintain 70 cm -->
   <PosPart copyNumber="2">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA102"/>
     <rRotation name="x180y90" />
-    <Translation x="0*fm" y="-350*mm" z="[shift:bari2Y]" />
+    <Translation x="0*mm" y="-350*mm" z="0*mm" />
   </PosPart>
   <PosPart copyNumber="3">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA103"/>
-    <Translation x="[shift:bari3X]" y="350*mm" z="0*fm" />
+    <Translation x="0*mm" y="350*mm" z="0*mm" />
   </PosPart>
   <PosPart copyNumber="4">
     <rParent name="gem11:GSAX11L"/>
     <rChild name="gem11:GHA104"/>
     <rRotation name="x180y90" />
-    <Translation x="0*cm" y="351*mm" z="[shift:bari3Y]" />
+    <Translation x="0*mm" y="351*mm" z="0*mm" />
   </PosPart>
   <PosPart copyNumber="1">
     <rParent name="gem11:GSAX11S"/>
     <rChild name="gem11:GHA111"/>
-    <Translation x="[shift:bari0X]" y="-351*mm" z="0*cm" /> <!-- here the 70cm distance between two chambers are specified -->
+    <Translation x="0*mm" y="-351*mm" z="0*mm" /> <!-- here the 70cm distance between two chambers are specified -->
   </PosPart>                                      <!-- measured distance = 69.7cm | for now ok to maintain 70 cm -->
   <PosPart copyNumber="2">
     <rParent name="gem11:GSAX11S"/>
     <rChild name="gem11:GHA112"/>
     <rRotation name="x180y90" />
-    <Translation x="0*fm" y="-350*mm" z="[shift:bari0Y]" />
+    <Translation x="0*mm" y="-350*mm" z="0*mm" />
   </PosPart>
   <PosPart copyNumber="3">
     <rParent name="gem11:GSAX11S"/>
     <rChild name="gem11:GHA113"/>
-    <Translation x="[shift:bari1X]" y="350*mm" z="0*cm" />
+    <Translation x="0*mm" y="350*mm" z="0*mm" />
   </PosPart>
   <PosPart copyNumber="4">
     <rParent name="gem11:GSAX11S"/>
     <rChild name="gem11:GHA114"/>
     <rRotation name="x180y90" />
-    <Translation x="0*fm" y="351*mm" z="[shift:bari1Y]" />
+    <Translation x="0*mm" y="351*mm" z="0*mm" />
   </PosPart>
   <PosPart copyNumber="5">
       <rParent name="gem11:GSAX11L"/>

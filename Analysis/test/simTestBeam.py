@@ -7,7 +7,6 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
-process.load('Configuration.StandardSequences.MagneticField_0T_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedGauss_cfi')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
@@ -19,12 +18,12 @@ process.load("Configuration.StandardSequences.Reconstruction_cff")
 # test beam detectors at y-axis - GE21 at (0,110*cm,0), GE0 at (0,120*cm,0)
 process.load('gemsw.Geometry.GeometryTestBeam_cff')
 
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
+#process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+#from Configuration.AlCa.GlobalTag import GlobalTag
+#process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100),
+    input = cms.untracked.int32(100000),
 )
 process.source = cms.Source("EmptySource")
 process.configurationMetadata = cms.untracked.PSet(
@@ -53,9 +52,12 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         'keep *_genParticles_*_*',
         'keep *_g4SimHits_MuonGEMHits_*',
         'keep *_g4SimHits__*',
+        'keep *_GEMTrackFinder__*',
     )),
     splitLevel = cms.untracked.int32(0)
 )
+
+process.TFileService = cms.Service("TFileService",fileName = cms.string("histo.root"))
 
 # test beam detectors at y-axis
 process.generator = cms.EDFilter("Pythia8EGun",
@@ -63,10 +65,10 @@ process.generator = cms.EDFilter("Pythia8EGun",
         AddAntiParticle = cms.bool(False),
         MaxE = cms.double(20.0),
         MinE = cms.double(9.0),
-        MaxEta = cms.double(0.001),
+        MaxEta = cms.double(0.002),
         MinEta = cms.double(0.00),        
-        MaxPhi = cms.double(1.58),
-        MinPhi = cms.double(1.57),
+        MaxPhi = cms.double(1.56),
+        MinPhi = cms.double(1.58),
         ParticleID = cms.vint32(13)#211
     ),
     PythiaParameters = cms.PSet(
@@ -101,20 +103,27 @@ process.mix = cms.EDProducer("MixingModule",
     ),
 )
 
+process.g4SimHits.UseMagneticField = cms.bool(False)
 process.gemPacker.useDBEMap = False
 
 process.rawDataCollector.RawCollectionList = cms.VInputTag(cms.InputTag("gemPacker"))
 
+process.load('MagneticField.Engine.uniformMagneticField_cfi')
+process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('RecoMuon.TrackingTools.MuonServiceProxy_cff')
 process.MuonServiceProxy.ServiceParameters.Propagators.append('StraightLinePropagator')
+process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi')
+process.SteppingHelixPropagatorAny.useMagVolumes = cms.bool(False)
 
 process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
                                         process.MuonServiceProxy,
                                         gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                        maxClusterSize = cms.double(10),
-                                        minClusterSize = cms.double(1),
+                                        maxClusterSize = cms.int32(10),
+                                        minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
-                                        skipLargeChamber = cms.bool(False),
+                                        skipLargeChamber = cms.bool(True),
+                                        excludingChambers = cms.vint32(1),
+                                        use1DSeeds = cms.bool(False),
                                         MuonSmootherParameters = cms.PSet(
                                            PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
                                            PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
@@ -125,6 +134,13 @@ process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
 process.GEMTrackFinder.ServiceParameters.CSCLayers = cms.untracked.bool(False)
 process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
 
+process.TestBeamTrackAnalyzer = cms.EDAnalyzer("TestBeamTrackAnalyzer",
+                                               process.MuonServiceProxy,
+                                               gemRecHitLabel = cms.InputTag("gemRecHits"),
+                                               tracks = cms.InputTag("GEMTrackFinder"),
+                                               )
+                                                  
+
 process.muonGEMDigis.readMultiBX = True
 process.muonGEMDigis.useDBEMap = process.gemPacker.useDBEMap
 process.muonGEMDigis.keepDAQStatus = True
@@ -133,9 +149,9 @@ process.gemRecHits.gemDigiLabel = cms.InputTag('simMuonGEMDigis')
 process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
-#process.digi2raw_step = cms.Path(process.gemRecHits)
-#process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
+process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
 process.reconstruction_step = cms.Path(process.gemRecHits * process.GEMTrackFinder)
+process.analyser_step = cms.Path(process.TestBeamTrackAnalyzer)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
@@ -143,6 +159,7 @@ process.schedule = cms.Schedule(process.generation_step,process.simulation_step,
 process.digitisation_step,
 #process.digi2raw_step,
 process.reconstruction_step,
+process.analyser_step,
 process.endjob_step,process.FEVTDEBUGoutput_step)
 
 process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGeneratorService.generator
