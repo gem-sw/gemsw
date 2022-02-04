@@ -6,6 +6,7 @@
 //#include "IOMC/ParticleGuns/interface/FlatEGunASCIIWriter.h"
 
 #include "gemsw/Simulation/interface/CosmicGun.h"
+#include "gemsw/Simulation/interface/TestbeamGun.h"
 
 
 // particle gun prototypes
@@ -19,4 +20,7 @@ DEFINE_FWK_MODULE(FlatEGunASCIIWriter);
 
 using edm::CosmicGun;
 DEFINE_FWK_MODULE(CosmicGun);
+
+using edm::TestbeamGun;
+DEFINE_FWK_MODULE(TestbeamGun);
 

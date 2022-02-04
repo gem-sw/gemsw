@@ -21,9 +21,10 @@ process.load('gemsw.Geometry.GeometryTestBeam_cff')
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #from Configuration.AlCa.GlobalTag import GlobalTag
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:phase1_2021_realistic', '')
+process.VtxSmeared.SigmaZ = cms.double(0.0015)
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100000),
+    input = cms.untracked.int32(100),
 )
 process.source = cms.Source("EmptySource")
 process.configurationMetadata = cms.untracked.PSet(
@@ -40,7 +41,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step1.root'),
+    fileName = cms.untracked.string('file:step1_test.root'),
     outputCommands = cms.untracked.vstring( (
         'drop *',
         'keep FEDRawDataCollection_rawDataCollector_*_*',
@@ -60,19 +61,17 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
 process.TFileService = cms.Service("TFileService",fileName = cms.string("histo.root"))
 
 # test beam detectors at y-axis
-process.generator = cms.EDFilter("Pythia8EGun",
+process.generator = cms.EDProducer("TestbeamGun",
+    AddAntiParticle = cms.bool(False),
     PGunParameters = cms.PSet(
-        AddAntiParticle = cms.bool(False),
-        MaxE = cms.double(20.0),
-        MinE = cms.double(9.0),
-        MaxEta = cms.double(0.002),
-        MinEta = cms.double(0.00),        
-        MaxPhi = cms.double(1.56),
-        MinPhi = cms.double(1.58),
-        ParticleID = cms.vint32(13)#211
-    ),
-    PythiaParameters = cms.PSet(
-        parameterSets = cms.vstring()
+        MinPt = cms.double(99.99),
+        MaxPt = cms.double(100.01),
+        MinPhi = cms.double(1.570796),
+        MaxPhi = cms.double(1.570796),
+        MinTheta = cms.double(1.570796),
+        MaxTheta = cms.double(1.570796),
+        IsThetaFlat = cms.bool(True), # If 'True': theta distribution is flat. If 'False': theta distribution is a cos^2
+        PartID = cms.vint32(211) # muon: 13, pion :211
     ),
     Verbosity = cms.untracked.int32(0),
     firstRun = cms.untracked.uint32(1),
