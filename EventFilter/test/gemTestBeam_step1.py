@@ -7,11 +7,6 @@ options.register('include20x10',
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  "Include 20x10 chamber in the geometry")
-options.register('excludeTrackers',
-                 [],
-                 VarParsing.VarParsing.multiplicity.list,
-                 VarParsing.VarParsing.varType.int,
-                 "Exclude the trackers from track reconstruction (0 to 3)")
 options.parseArguments()
 
 process = cms.Process("GEMStreamSource")
@@ -22,7 +17,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 
 process.options = cms.untracked.PSet(
-    wantSummary=cms.untracked.bool(True),
+    wantSummary=cms.untracked.bool(False),
     SkipEvent=cms.untracked.vstring('ProductNotFound'),
 )
 
@@ -39,7 +34,8 @@ else:
     process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 process.source = cms.Source("GEMStreamSource",
-                            fileNames=cms.untracked.vstring(options.inputFiles),
+                            fileNames=cms.untracked.vstring(
+                                options.inputFiles),
                             firstLuminosityBlockForEachRun=cms.untracked.VLuminosityBlockID({}))
 
 print(options.inputFiles)
@@ -88,59 +84,22 @@ else :
                                             connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
                                         cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
     )
-process.load('MagneticField.Engine.uniformMagneticField_cfi')
+
 process.load('Configuration.StandardSequences.Reconstruction_cff')
-process.load('RecoMuon.TrackingTools.MuonServiceProxy_cff')
-process.MuonServiceProxy.ServiceParameters.Propagators.append('StraightLinePropagator')
-process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi')
-process.SteppingHelixPropagatorAny.useMagVolumes = cms.bool(False)
-
-process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderTB",
-                                        process.MuonServiceProxy,
-                                        gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                        maxClusterSize = cms.int32(6),
-                                        minClusterSize = cms.int32(1),
-                                        trackChi2 = cms.double(1000.0),
-                                        skipLargeChamber = cms.bool(True),
-                                        use1DSeeds = cms.bool(True), 
-                                        requireUniqueHit = cms.bool(True),
-                                        excludingTrackers = cms.vint32(options.excludeTrackers),
-                                        doFit = cms.bool(True),
-                                        direction = cms.vdouble(0,1,0),
-                                        MuonSmootherParameters = cms.PSet(
-                                           #Propagator = cms.string('SteppingHelixPropagatorAny'),
-                                           Propagator = cms.string('StraightLinePropagator'),
-                                           ErrorRescalingFactor = cms.double(5.0),
-                                           MaxChi2 = cms.double(1000.0),
-                                           NumberOfSigma = cms.double(3),
-                                        ),
-                                        )
-process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
-process.GEMTrackFinder.ServiceParameters.CSCLayers = cms.untracked.bool(False)
-process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
-
-process.load("CommonTools.UtilAlgos.TFileService_cfi")
-process.TestBeamTrackAnalyzer = cms.EDAnalyzer("TestBeamTrackAnalyzer",
-                                               gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                               tracks = cms.InputTag("GEMTrackFinder", "", "GEMStreamSource"),
-                                               trajs = cms.InputTag("GEMTrackFinder", "", "GEMStreamSource"),
-                                               )
-process.TestBeamHitAnalyzer = cms.EDAnalyzer("TestBeamHitAnalyzer",
-                                             gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                             gemDigiLabel = cms.InputTag("muonGEMDigis"),
-                                             )
 
 process.output = cms.OutputModule("PoolOutputModule",
+                                  dataset = cms.untracked.PSet(
+                                      dataTier = cms.untracked.string('RECO'),
+                                      filterName = cms.untracked.string('')
+                                  ),
                                   outputCommands=cms.untracked.vstring(
                                       "keep *",
-                                      "drop FEDRawDataCollection_source_*_*"
+                                      "drop FEDRawDataCollection_*_*_*"
                                   ),
-                                  fileName=cms.untracked.string(
-                                      'output_edm.root'),
+                                  fileName=cms.untracked.string('output_step1.root'),
+                                  splitLevel = cms.untracked.int32(0)
 )
 
 process.unpack = cms.Path(process.muonGEMDigis)
-process.reco = cms.Path(process.gemRecHits * process.GEMTrackFinder)
-process.hit_ana = cms.Path(process.TestBeamHitAnalyzer)
-process.track_ana = cms.Path(process.TestBeamTrackAnalyzer)
+process.reco = cms.Path(process.gemRecHits)
 process.outpath = cms.EndPath(process.output)

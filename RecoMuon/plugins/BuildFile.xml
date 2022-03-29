@@ -8,6 +8,7 @@
 <use name="FWCore/ParameterSet"/>
 <use name="RecoMuon/TrackingTools"/>
 <use name="RecoMuon/TransientTrackingRecHit"/>
+<use name="RecoMuon/StandAloneTrackFinder"/>
 <use name="TrackingTools/PatternTools"/>
 <use name="TrackingTools/KalmanUpdators"/>
 <use name="TrackingTools/TrajectoryState"/>
