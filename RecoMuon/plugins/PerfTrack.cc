@@ -1,3 +1,5 @@
+#ifndef PerfTrack_H
+#define PerfTrack_H
 // -*- C++ -*-
 //
 // Package:    TB2021/PerfTrack
@@ -54,6 +56,7 @@ private:
   unsigned int nHitSel;
 };
 
+#endif
 
 PerfTrack::PerfTrack(const edm::ParameterSet& iConfig) {
   theGEMRecHitToken_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("recHitLabel"));

@@ -1,3 +1,5 @@
+#ifndef QC8TrackAnalyzer_H
+#define QC8TrackAnalyzer_H
 // cd /cms/ldap_home/iawatson/scratch/GEM/CMSSW_10_1_5/src/ && eval `scramv1 runtime -sh` && eval `scramv1 runtime -sh` && scram b -j 10
 // cd ../../.. && source /cvmfs/cms.cern.ch/cmsset_default.sh && eval `scramv1 runtime -sh` && eval `scramv1 runtime -sh` && scram b -j 10
 // system include files
@@ -74,8 +76,6 @@ private:
   edm::EDGetTokenT<vector<Trajectory>> trajs_;
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
 
-  MuonServiceProxy* theService_;
-
   TH1D* trackChi2_;
 
   std::map<Key2, TH2D*> track_occ_;
@@ -88,8 +88,9 @@ QC8TrackAnalyzer::QC8TrackAnalyzer(const edm::ParameterSet& iConfig)
   trajs_ = consumes<vector<Trajectory>>(iConfig.getParameter<edm::InputTag>("trajs"));
   gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHitLabel"));
   edm::ParameterSet serviceParameters = iConfig.getParameter<edm::ParameterSet>("ServiceParameters");
-  theService_ = new MuonServiceProxy(serviceParameters, consumesCollector(), MuonServiceProxy::UseEventSetupIn::RunAndEvent);
 }
+
+#endif
 
 QC8TrackAnalyzer::~QC8TrackAnalyzer(){}
 
@@ -136,8 +137,6 @@ void QC8TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
   
   edm::Handle<GEMRecHitCollection> gemRecHits;
   iEvent.getByToken(gemRecHits_,gemRecHits);
-
-  theService_->update(iSetup);
 
   std::map<GEMDetId, TrajectoryStateOnSurface> tsosMap;
   for (std::vector<reco::Track>::const_iterator track = tracks->begin(); track != tracks->end(); ++track)

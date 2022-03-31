@@ -1,3 +1,5 @@
+#ifndef GEMTrkAlign_H
+#define GEMTrkAlign_H
 // -*- C++ -*-
 //
 // Package:    TB2021/GEMTrkAlign
@@ -81,6 +83,8 @@ private:
   std::map<ClsTrChView, TH1F*> h_res_cl,h_rec_cl,h_pre_cl;
 
 };
+
+#endif
 
 //
 // constants, enums and typedefs

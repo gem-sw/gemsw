@@ -4,6 +4,9 @@
  * \author Jason Lee
  */
 
+#ifndef GEMTrackFinderQC8_H
+#define GEMTrackFinderQC8_H
+
 #include "gemsw/RecoMuon/interface/GEMTrackFinder.h"
 
 using namespace std;
@@ -31,6 +34,8 @@ GEMTrackFinderQC8::GEMTrackFinderQC8(const edm::ParameterSet& ps) : GEMTrackFind
   if (useModuleColumns_) nColumns_ = 4;
   else nColumns_ = 1;
 }
+
+#endif
 
 void GEMTrackFinderQC8::setSeedingLayers() {
   float hTop = 0;

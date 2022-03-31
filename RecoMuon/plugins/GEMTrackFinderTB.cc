@@ -4,6 +4,9 @@
  * \author Jason Lee
  */
 
+#ifndef GEMTrackFinderTB_H
+#define GEMTrackFinderTB_H
+
 #include "gemsw/RecoMuon/interface/GEMTrackFinder.h"
 
 using namespace std;
@@ -33,6 +36,8 @@ private:
 
   array<const GEMEtaPartition*, 4> xChamb_, yChamb_;
 };
+
+#endif
 
 GEMTrackFinderTB::GEMTrackFinderTB(const edm::ParameterSet& ps) : GEMTrackFinder(ps) {
   skipLargeChamber_ = ps.getParameter<bool>("skipLargeChamber");

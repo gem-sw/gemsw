@@ -1,3 +1,5 @@
+#ifndef GEMTrackExtrapoler_H
+#define GEMTrackExtrapoler_H
 // -*- C++ -*-
 //
 // Package:    TB2021/GEMTrakExtrapoler
@@ -82,6 +84,8 @@ private:
   edm::ESGetToken<GEMGeometry, MuonGeometryRecord> geometry_token_;
 
 };
+
+#endif
 
 //
 // constants, enums and typedefs

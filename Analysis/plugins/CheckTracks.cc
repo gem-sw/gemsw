@@ -1,3 +1,5 @@
+#ifndef CheckTracks_H
+#define CheckTracks_H
 // -*- C++ -*-
 //
 // Package:    TB2021/CheckTracks
@@ -84,6 +86,7 @@ private:
   bool first;
 };
 
+#endif
 
 CheckTracks::CheckTracks(const edm::ParameterSet& iConfig) : first(true){
   fout.open("GEMRecHit.output");

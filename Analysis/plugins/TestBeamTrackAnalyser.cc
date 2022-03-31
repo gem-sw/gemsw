@@ -1,3 +1,5 @@
+#ifndef TestBeamTrackAnalyzer_H
+#define TestBeamTrackAnalyzer_H
 // cd /cms/ldap_home/iawatson/scratch/GEM/CMSSW_10_1_5/src/ && eval `scramv1 runtime -sh` && eval `scramv1 runtime -sh` && scram b -j 10
 // cd ../../.. && source /cvmfs/cms.cern.ch/cmsset_default.sh && eval `scramv1 runtime -sh` && eval `scramv1 runtime -sh` && scram b -j 10
 // system include files
@@ -107,6 +109,8 @@ private:
   std::map<Key3, TH2D*> prop_residual_y_detail_;
 
 };
+
+#endif
 
 TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
 { 

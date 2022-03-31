@@ -1,3 +1,5 @@
+#ifndef TestBeamHitAnalyzer_H
+#define TestBeamHitAnalyzer_H
 // cd /cms/ldap_home/iawatson/scratch/GEM/CMSSW_10_1_5/src/ && eval `scramv1 runtime -sh` && eval `scramv1 runtime -sh` && scram b -j 10
 // cd ../../.. && source /cvmfs/cms.cern.ch/cmsset_default.sh && eval `scramv1 runtime -sh` && eval `scramv1 runtime -sh` && scram b -j 10
 // system include files
@@ -83,6 +85,8 @@ TestBeamHitAnalyzer::TestBeamHitAnalyzer(const edm::ParameterSet& iConfig)
   gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHitLabel"));
   gemDigis_ = consumes<GEMDigiCollection>(iConfig.getParameter<edm::InputTag>("gemDigiLabel"));
 }
+
+#endif
 
 TestBeamHitAnalyzer::~TestBeamHitAnalyzer(){}
 

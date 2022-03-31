@@ -1,4 +1,6 @@
-gi// -*- C++ -*-
+#ifndef ExtraPGE21_H
+#define ExtraPGE21_H
+// -*- C++ -*-
 //
 // Package:    TB2021/ExtraPGE21
 // Class:      ExtraPGE21
@@ -64,6 +66,7 @@ private:
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
 
 };
+#endif
 
 //
 // constants, enums and typedefs
