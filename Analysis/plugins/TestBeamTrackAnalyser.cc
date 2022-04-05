@@ -82,31 +82,24 @@ private:
   std::map<int, TH1D*> residual_x_;
   std::map<int, TH1D*> residual_strip_;
   std::map<int, TH1D*> residual_eta_;
-  std::map<int, TH1D*> pull_x_;
   std::map<int, TH2D*> residual_x_cls_;
   std::map<int, TH1D*> residual_y_;
   std::map<int, TH2D*> residual_;
   std::map<int, TH1D*> trackingError_x_;
   std::map<int, TH1D*> trackingError_y_;
-  std::map<int, TH2D*> track_rechit_;
-  std::map<int, TH2D*> prop_residual_x_;
-  std::map<int, TH2D*> prop_residual_y_;
-  std::map<int, TH2D*> chi_residual_x_;
+  std::map<int, TH2D*> track_rechit_x_;
+  std::map<int, TH2D*> track_rechit_y_;
 
   std::map<Key3, TH2D*> track_occ_detail_;
   std::map<Key3, TH2D*> rechit_occ_detail_;
   std::map<Key3, TH2D*> rechit_pos_detail_;
   std::map<Key3, TH1D*> residual_x_detail_;
   std::map<Key3, TH2D*> residual_detail_;
-  std::map<Key3, TH1D*> pull_x_detail_;
-  std::map<Key3, TH1D*> pull_y_detail_;
   std::map<Key3, TH2D*> residual_x_cls_detail_;
   std::map<Key3, TH1D*> residual_y_detail_;
   std::map<Key3, TH1D*> trackingError_x_detail_;
   std::map<Key3, TH1D*> trackingError_y_detail_;
   std::map<Key3, TH2D*> track_rechit_detail_;
-  std::map<Key3, TH2D*> prop_residual_x_detail_;
-  std::map<Key3, TH2D*> prop_residual_y_detail_;
 
 };
 
@@ -145,7 +138,7 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     auto traj = trajs->begin();
     for (auto trajMeas : traj->measurements()) {
       auto tsos = trajMeas.predictedState();
-      auto tsos_error = tsos.localError().positionError();
+      auto tsos_error = tsos.cartesianError().position();
       auto rechit = trajMeas.recHit();
       auto gemId = GEMDetId(rechit->geographicalId());
       tsosMap[gemId] = tsos;
@@ -156,10 +149,10 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
       Key3 key3(station, chamber, ieta);
 
-      trackingError_x_[station]->Fill(tsos_error.xx()*1e+3);
-      trackingError_y_[station]->Fill(tsos_error.yy()*1e+3);
-      trackingError_x_detail_[key3]->Fill(tsos_error.xx()*1e+3);
-      trackingError_y_detail_[key3]->Fill(tsos_error.yy()*1e+3);
+      trackingError_x_[station]->Fill(tsos_error.cxx()*1e+3);
+      trackingError_y_[station]->Fill(tsos_error.czz()*1e+3);
+      trackingError_x_detail_[key3]->Fill(tsos_error.cxx()*1e+3);
+      trackingError_y_detail_[key3]->Fill(tsos_error.czz()*1e+3);
     }
 
     for (auto hit : track->recHits()) {
@@ -220,33 +213,28 @@ TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         float lp_residualX = (lp_rechit.x() - lp_track.x()) * 10;
         float residualStrip = strip_rechit - strip;
         float residualY = (gp_rechit.z() - gp_track.z()) * 10.;
-        float pullX = lp_residualX / lp_error.xx();
-        float pullY = lp_residualX / lp_error.yy();
+
         rechit_occ_[station]->Fill(gp_track.x(), gp_track.z());
         rechit_pos_[station]->Fill(gp_rechit.x(), gp_rechit.z());
-        if (station != 0) track_rechit_[station]->Fill(gp_track.x(), gp_rechit.x());
-        else track_rechit_[station]->Fill(gp_track.z(), gp_rechit.z());
+
+        if (station != 0) track_rechit_x_[station]->Fill(gp_track.x(), gp_rechit.x());
+        else track_rechit_x_[station]->Fill(gp_track.z(), gp_rechit.z());
+        if (station != 0) track_rechit_y_[station]->Fill(gp_track.z(), gp_rechit.z());
+        else track_rechit_x_[station]->Fill(gp_track.x(), gp_rechit.x());
+
         residual_x_[station]->Fill(residualX);
+        residual_y_[station]->Fill(residualY);
         residual_strip_[station]->Fill(residualStrip);
         residual_eta_[station]->Fill(residual_eta);
-        pull_x_[station]->Fill(pullX);
-        residual_y_[station]->Fill(residualY);
         residual_[station]->Fill(residualX, residualY);
-        prop_residual_x_[station]->Fill(gp_track.x(), residualX);
-        prop_residual_y_[station]->Fill(gp_track.y(), residualY);
-        chi_residual_x_[station]->Fill(track->normalizedChi2(), residualX);
 
         rechit_occ_detail_[key3]->Fill(lp_track.x(), lp_track.y());
         rechit_pos_detail_[key3]->Fill(lp_rechit.x(), lp_rechit.y());
         track_rechit_detail_[key3]->Fill(gp_track.x(), gp_rechit.x());
         residual_x_detail_[key3]->Fill(lp_residualX);
         residual_detail_[key3]->Fill(residualX, residualY);
-        pull_x_detail_[key3]->Fill(pullX);
-        pull_y_detail_[key3]->Fill(pullY);
         residual_y_detail_[key3]->Fill(residualY);
         residual_x_cls_detail_[key3]->Fill(lp_residualX, cls_size);
-        prop_residual_x_detail_[key3]->Fill(lp_track.x(), residualX);
-        prop_residual_y_detail_[key3]->Fill(lp_track.y(), residualY);
       }
       else continue;
     }
@@ -278,10 +266,14 @@ void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup&
                                      Form("Position from Matched RecHit : GE%d", st),
                                      800, -10, 10,
                                      800, -10, 10);
-    track_rechit_[st] = fs->make<TH2D>(Form("track_rechit_occ_GE%d", st),
-                                       Form("Occpancy from Track vs RecHit : GE%d", st),
-                                       200, -10, 10,
-                                       200, -10, 10);
+    track_rechit_x_[st] = fs->make<TH2D>(Form("track_rechit_occ_x_GE%d", st),
+                                         Form("Occpancy from Track vs RecHit : GE%d", st),
+                                         200, -10, 10,
+                                         200, -10, 10);
+    track_rechit_y_[st] = fs->make<TH2D>(Form("track_rechit_occ_y_GE%d", st),
+                                         Form("Occpancy from Track vs RecHit : GE%d", st),
+                                         200, -10, 10,
+                                         200, -10, 10);
     residual_x_[st] = fs->make<TH1D>(Form("residual_x_GE%d", st),
                                      Form("residual X : GE%d", st),
                                      400, -20, 20);
@@ -295,9 +287,6 @@ void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup&
                                          Form("residual X : GE%d", st),
                                          400, -1, 1,
                                          10, 1, 11);
-    pull_x_[st] = fs->make<TH1D>(Form("pull_x_GE%d", st),
-                                 Form("pull X : GE%d", st),
-                                 400, -0.5, 0.5);
     residual_y_[st] = fs->make<TH1D>(Form("residual_y_GE%d", st),
                                      Form("residual Y : GE%d", st),
                                      10, -20, 20);
@@ -311,18 +300,6 @@ void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup&
     trackingError_y_[st] = fs->make<TH1D>(Form("trackingError_y_GE%d", st),
                                           Form("trackingError Y : GE%d", st),
                                           1000, 0, 10);
-    prop_residual_x_[st] = fs->make<TH2D>(Form("prop_residual_x_GE%d", st),
-                                          Form("Propagated hit vs Residual X : GE%d", st),
-                                          100, -5, 5,
-                                          100, -1, 1);
-    prop_residual_y_[st] = fs->make<TH2D>(Form("prop_residual_y_GE%d", st),
-                                          Form("Propagated hit vs Residual Y : GE%d", st),
-                                          100, -5, 5,
-                                          100, -6, 6);
-    chi_residual_x_[st] = fs->make<TH2D>(Form("chi_residual_x_GE%d", st),
-                                         Form("Chi2 vs Residual X : GE%d", st),
-                                         100, 0, 200,
-                                         400, -10, 10);
             
     for (auto superChamber : station->superChambers()) {
       for (auto chamber : superChamber->chambers()) {
@@ -360,26 +337,12 @@ void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup&
           residual_y_detail_[key3] = fs->make<TH1D>(Form("residual_y_GE%d1_ch%d_ieta%d", st, ch, ieta),
                                                     Form("residual Y : GE%d1 chamber %d iEta%d", st, ch, ieta),
                                                     10, -20, 20);
-          pull_x_detail_[key3] = fs->make<TH1D>(Form("pull_x_GE%d1_ch%d_ieta%d", st, ch, ieta),
-                                                Form("pull X : GE%d1 chamber %d iEta%d", st, ch, ieta),
-                                                4000, -5, 5);
-          pull_y_detail_[key3] = fs->make<TH1D>(Form("pull_y_GE%d1_ch%d_ieta%d", st, ch, ieta),
-                                                Form("pull Y : GE%d1 chamber %d iEta%d", st, ch, ieta),
-                                                4000, -5, 5);
           trackingError_x_detail_[key3] = fs->make<TH1D>(Form("trackingError_x_GE%d1_ch%d_ieta%d", st, ch, ieta),
                                                          Form("trackingError X : GE%d1_ch%d_ieta%d", st, ch, ieta),
                                                          1000, 0, 10);
           trackingError_y_detail_[key3] = fs->make<TH1D>(Form("trackingError_y_GE%d1_ch%d_ieta%d", st, ch, ieta),
                                                          Form("trackingError Y : GE%d1_ch%d_ieta%d", st, ch, ieta),
                                                          1000, 0, 10);
-          prop_residual_x_detail_[key3] = fs->make<TH2D>(Form("prop_residual_x_GE%d1_ch%d_ieta%d", st, ch, ieta),
-                                                         Form("Propagated hit vs Residual X : GE%d1 chamber %d iEta%d", st, ch, ieta),
-                                                         100, -5, 5,
-                                                         100, -1, 1);
-          prop_residual_y_detail_[key3] = fs->make<TH2D>(Form("prop_residual_y_GE%d1_ch%d_ieta%d", st, ch, ieta),
-                                                         Form("Propagated hit vs Residual Y : GE%d1 chamber %d iEta%d", st, ch, ieta),
-                                                         100, -5, 5,
-                                                         100, -6, 6);
         }
       }
     }
