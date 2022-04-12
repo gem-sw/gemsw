@@ -18,6 +18,7 @@
 <use name="RecoMuon/TrackingTools"/>
 <use name="RecoMuon/GlobalTrackingTools"/>
 <use name="RecoMuon/TransientTrackingRecHit"/>
+<use name="RecoMuon/StandAloneTrackFinder"/>
 <use name="TrackingTools/DetLayers"/>
 <use name="TrackingTools/GeomPropagators"/>
 <use name="TrackingTools/KalmanUpdators"/>

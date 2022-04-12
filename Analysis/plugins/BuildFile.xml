@@ -6,12 +6,13 @@
 <use name="FWCore/Framework"/>
 <use name="FWCore/MessageLogger"/>
 <use name="FWCore/ParameterSet"/>
+<use name="FWCore/PluginManager"/>
 <use name="RecoMuon/TrackingTools"/>
 <use name="RecoMuon/TransientTrackingRecHit"/>
-<use name="TrackingTools/KalmanUpdators"/>
 <use name="TrackingTools/TrajectoryState"/>
-<use name="RecoTracker/TrackProducer"/>
 <use name="CommonTools/UtilAlgos"/>
+<use name="Geometry/Records"/>
+<use name="Geometry/GEMGeometry"/>
 <use name="root"/>
 <use name="rootcore"/>
 <lib name="EG"/>
