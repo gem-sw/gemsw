@@ -75,7 +75,7 @@
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:ME2RingP" />
-      <Translation x="-[gem21:dx132F]/2" z="70.44*cm" y="120*cm" />
+      <Translation x="-[gem21:dx132B]/2" z="72.465*cm" y="120*cm" />
   </PosPart>
   </PosPartSection>
 
