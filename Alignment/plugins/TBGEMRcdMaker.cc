@@ -296,9 +296,9 @@ TBGEMRcdMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::sort(TBGEMAlignmentErrorExtended->m_alignError.begin(), TBGEMAlignmentErrorExtended->m_alignError.end(), [](auto a, auto b){return a.rawId() < b.rawId();});
   edm::Service<cond::service::PoolDBOutputService> poolDbService;
   if( poolDbService.isAvailable() ) {
-    poolDbService->writeOne<Alignments>(TBGEMAlignment, poolDbService->currentTime(),
+    poolDbService->writeOneIOV<Alignments>(TBGEMAlignment, poolDbService->currentTime(),
                                         "GEMAlignmentRcd"  );
-    poolDbService->writeOne<AlignmentErrorsExtended>(TBGEMAlignmentErrorExtended, poolDbService->currentTime(),
+    poolDbService->writeOneIOV<AlignmentErrorsExtended>(TBGEMAlignmentErrorExtended, poolDbService->currentTime(),
                                                      "GEMAlignmentErrorExtendedRcd"  );
   }
   else
