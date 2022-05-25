@@ -10,7 +10,9 @@
 
 using namespace std;
 
-GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) {
+GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) 
+  : gemg_(esConsumes<edm::Transition::BeginRun>())
+{
   trackChi2_ = ps.getParameter<double>("trackChi2");
   direction_ = ps.getParameter<vector<double>>("direction");
   doFit_ = ps.getParameter<bool>("doFit");
@@ -31,8 +33,8 @@ GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) {
 }
 
 void GEMTrackFinder::beginRun(const edm::Run& run, const edm::EventSetup& setup) {
-  edm::ESHandle<GEMGeometry> gemg;
-  setup.get<MuonGeometryRecord>().get(gemg);
+  edm::ESHandle<GEMGeometry> gemg = setup.getHandle(gemg_);
+//  setup.get<MuonGeometryRecord>().get(gemg);
   const GEMGeometry* mgeom = &*gemg;
 
   detLayerMap_.clear();

@@ -77,6 +77,7 @@ private:
   edm::EDGetTokenT<reco::TrackCollection> tracks3_;
   edm::EDGetTokenT<reco::TrackCollection> tracks4_;
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeom_;
   std::map<TrChView, TH1F*> h_res,h_rec,h_pre;
   std::map<TrChView, TH2F*> h_resVspre;
   std::map<ClsTrChView, TH1F*> h_res_cl,h_rec_cl,h_pre_cl;
@@ -88,7 +89,10 @@ private:
 
 #endif
 
-CheckTracks::CheckTracks(const edm::ParameterSet& iConfig) : first(true){
+CheckTracks::CheckTracks(const edm::ParameterSet& iConfig) 
+  : hGEMGeom_(esConsumes()),
+    first(true)
+{
   fout.open("GEMRecHit.output");
   tracks1_ = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("track1"));
   tracks2_ = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("track2"));
@@ -154,9 +158,8 @@ void CheckTracks::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     std::cout << " Event process " << iEvent.id().event() << std::endl;
   /* GEM Geometry */
 
-
-  edm::ESHandle<GEMGeometry> hGEMGeom;
-  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
+  edm::ESHandle<GEMGeometry> hGEMGeom = iSetup.getHandle(hGEMGeom_);
+//  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
   std::vector<edm::Handle<std::vector<reco::Track>>> tracks(4);

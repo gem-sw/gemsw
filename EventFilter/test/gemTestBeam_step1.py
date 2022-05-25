@@ -48,7 +48,7 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(1477)
 process.muonGEMDigis.fedIdEnd = cms.uint32(1478)
-process.muonGEMDigis.skipBadStatus = cms.bool(True)
+# process.muonGEMDigis.skipBadStatus = cms.bool(True)
 process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')

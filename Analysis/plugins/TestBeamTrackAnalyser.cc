@@ -74,6 +74,9 @@ private:
   edm::EDGetTokenT<vector<Trajectory>> trajs_;
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
 
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeom_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeomBeginRun_;
+
   TH1D* trackChi2_;
 
   std::map<int, TH2D*> track_occ_;
@@ -106,6 +109,8 @@ private:
 #endif
 
 TestBeamTrackAnalyzer::TestBeamTrackAnalyzer(const edm::ParameterSet& iConfig)
+ : hGEMGeom_(esConsumes()),
+   hGEMGeomBeginRun_(esConsumes<edm::Transition::BeginRun>())
 { 
   tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("tracks"));
   trajs_ = consumes<vector<Trajectory>>(iConfig.getParameter<edm::InputTag>("trajs"));
@@ -118,8 +123,8 @@ void
 TestBeamTrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   /* GEM Geometry */
-  edm::ESHandle<GEMGeometry> hGEMGeom;
-  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
+  edm::ESHandle<GEMGeometry> hGEMGeom = iSetup.getHandle(hGEMGeom_);
+//  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
   edm::Handle<vector<reco::Track>> tracks;
@@ -248,8 +253,8 @@ void TestBeamTrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup&
   trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 200);
   
   /* GEM Geometry */
-  edm::ESHandle<GEMGeometry> hGEMGeom;
-  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
+  edm::ESHandle<GEMGeometry> hGEMGeom = iSetup.getHandle(hGEMGeomBeginRun_);
+//  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
   for (auto station : GEMGeometry_->stations()) {

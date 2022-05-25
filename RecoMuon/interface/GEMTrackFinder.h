@@ -69,8 +69,10 @@ private:
   bool doFit_;
   vector<double> direction_;
 
+
 protected:
   edm::EDGetTokenT<GEMRecHitCollection> theGEMRecHitToken_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> gemg_;
 
   void makeSeedsFromHits(MuonTransientTrackingRecHit::MuonRecHitContainer frontHits,
                          MuonTransientTrackingRecHit::MuonRecHitContainer rearHits);

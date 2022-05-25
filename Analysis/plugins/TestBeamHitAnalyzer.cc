@@ -72,6 +72,8 @@ private:
   edm::Service<TFileService> fs;
   edm::EDGetTokenT<GEMDigiCollection> gemDigis_;
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeom_; 
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeomBeginRun_; 
 
   std::map<int, TH2D*> digi_occ_;
   std::map<int, TH2D*> rechit_occ_;
@@ -81,9 +83,13 @@ private:
 };
 
 TestBeamHitAnalyzer::TestBeamHitAnalyzer(const edm::ParameterSet& iConfig)
+  : hGEMGeom_(esConsumes()),
+    hGEMGeomBeginRun_(esConsumes<edm::Transition::BeginRun>())
 { 
   gemRecHits_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("gemRecHitLabel"));
   gemDigis_ = consumes<GEMDigiCollection>(iConfig.getParameter<edm::InputTag>("gemDigiLabel"));
+//  hGEMGeomBegin_ = esConsumes<GEMGeometry, MuonGeometryRecord>(); 
+//  hGEMGeom_ = esConsumes<GEMGeometry, MuonGeometryRecord>(); 
 }
 
 #endif
@@ -95,7 +101,11 @@ TestBeamHitAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 {
   /* GEM Geometry */
   edm::ESHandle<GEMGeometry> hGEMGeom;
-  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
+  hGEMGeom = iSetup.getHandle(hGEMGeom_);
+//  iSetup.getByToken(hGEMGeom_, hGEMGeom);
+
+//  edm::ESHandle<GEMGeometry> hGEMGeom;
+//  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
   edm::Handle<GEMRecHitCollection> gemRecHits;
@@ -137,7 +147,9 @@ void TestBeamHitAnalyzer::endJob(){}
 void TestBeamHitAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup& iSetup) { 
   /* GEM Geometry */
   edm::ESHandle<GEMGeometry> hGEMGeom;
-  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
+  hGEMGeom = iSetup.getHandle(hGEMGeomBeginRun_);
+
+//  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
   for (auto station : GEMGeometry_->stations()) {

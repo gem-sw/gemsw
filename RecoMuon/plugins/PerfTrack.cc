@@ -53,12 +53,14 @@ private:
 
   // ----------member data ---------------------------
   edm::EDGetTokenT<GEMRecHitCollection> theGEMRecHitToken_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> gemgToken_;
   unsigned int nHitSel;
 };
 
 #endif
 
 PerfTrack::PerfTrack(const edm::ParameterSet& iConfig) {
+  gemgToken_ = esConsumes();
   theGEMRecHitToken_ = consumes<GEMRecHitCollection>(iConfig.getParameter<edm::InputTag>("recHitLabel"));
   nHitSel=iConfig.getParameter<unsigned int>("nHitmin");
 }
@@ -73,8 +75,8 @@ PerfTrack::~PerfTrack() {
 // ------------ method called on each new Event  ------------
 bool PerfTrack::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
  
-  edm::ESHandle<GEMGeometry> gemg;
-  iSetup.get<MuonGeometryRecord>().get(gemg);
+  edm::ESHandle<GEMGeometry> gemg = iSetup.getHandle(gemgToken_);
+//  iSetup.get<MuonGeometryRecord>().get(gemg);
   const GEMGeometry* mgeom = &*gemg;
   GEMRecHitCollection rechits=iEvent.get(theGEMRecHitToken_);
 

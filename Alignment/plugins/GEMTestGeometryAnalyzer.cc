@@ -43,12 +43,15 @@ private:
   const std::string dashedLine_;
   const std::string myName_;
   std::ofstream ofos;
+  
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> pDD_;
 };
 
 using namespace std;
 GEMTestGeometryAnalyzer::GEMTestGeometryAnalyzer( const edm::ParameterSet& /*iConfig*/ )
   : dashedLineWidth_(104), dashedLine_( std::string(dashedLineWidth_, '-') ), 
-    myName_( "GEMTestGeometryAnalyzer" ) 
+    myName_( "GEMTestGeometryAnalyzer" ),
+    pDD_(esConsumes()) 
 { 
   ofos.open("GEMtestOutput.out"); 
   ofos <<"======================== Opening output file"<< std::endl;
@@ -66,9 +69,10 @@ GEMTestGeometryAnalyzer::analyze( const edm::Event& /*iEvent*/, const edm::Event
 {
   ofos << myName() << ": Analyzer..." << std::endl;
   
-  edm::ESHandle<GEMGeometry> pDD;
-  iSetup.get<MuonGeometryRecord>().get(pDD);     
-  
+  edm::ESHandle<GEMGeometry> pDDHandle = iSetup.getHandle(pDD_);
+//  iSetup.get<MuonGeometryRecord>().get(pDD);     
+  const GEMGeometry* pDD = &*pDDHandle;  
+
   ofos << "start " << dashedLine_ << std::endl;
   
   ofos << " Geometry node for GEMGeom is  " << &(*pDD) << endl;   
