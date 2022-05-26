@@ -167,6 +167,7 @@ std::vector<uint64_t>* GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg,
   uint16_t BX_id = amc.bunchCrossing();
   uint32_t LV1_id = amc.lv1Id();
   uint32_t OrN = amc.orbitNumber();
+  if (amc.formatVer() == 1) fedId = int(amc.softSrcId());
   GEMAMC13 amc13;
   amc13.setCDFHeader(0x1, LV1_id, BX_id, fedId);
   amc13.setAMC13Header(0, 1, OrN);
