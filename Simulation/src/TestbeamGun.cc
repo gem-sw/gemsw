@@ -46,8 +46,8 @@ void TestbeamGun::produce(Event &e, const EventSetup& es)
    
    fEvt = new HepMC::GenEvent() ;
    
-   double dVx;  // uninitialized warning
-   double dVz;  // uninitialized warning
+   double dVx = 0.0; 
+   double dVz = 0.0; 
    double dVy = 0.0;
    HepMC::GenVertex* Vtx = NULL;
 
