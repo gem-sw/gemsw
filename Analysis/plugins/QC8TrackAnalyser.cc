@@ -10,7 +10,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -56,7 +56,7 @@ using namespace std;
 typedef std::tuple<int, int> Key2;
 typedef std::tuple<int, int, int> Key3;
 
-class QC8TrackAnalyzer : public edm::EDAnalyzer {
+class QC8TrackAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns> { 
 public:
   explicit QC8TrackAnalyzer(const edm::ParameterSet&);
   ~QC8TrackAnalyzer();

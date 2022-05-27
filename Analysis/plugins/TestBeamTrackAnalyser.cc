@@ -10,7 +10,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -55,7 +55,7 @@ using namespace std;
 
 typedef std::tuple<int, int, int> Key3;
 
-class TestBeamTrackAnalyzer : public edm::EDAnalyzer {
+class TestBeamTrackAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns> {  
 public:
   explicit TestBeamTrackAnalyzer(const edm::ParameterSet&);
   ~TestBeamTrackAnalyzer();

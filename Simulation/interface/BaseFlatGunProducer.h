@@ -19,6 +19,8 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/Run.h"
 
+#include "FWCore/Utilities/interface/ESGetToken.h"
+
 #include <memory>
 #include "boost/shared_ptr.hpp"
 
@@ -66,6 +68,7 @@ namespace edm
     // DefaultConfig::ParticleDataTable* fTestTable ;
     // ESHandle<DefaultConfig::ParticleDataTable> fPDGTable ;
     ESHandle<HepPDT::ParticleDataTable> fPDGTable ;
+    ESGetToken<HepPDT::ParticleDataTable, edm::DefaultRecord> fPDGTableBeginRun_; 
             	    	
     int              fVerbosity ;
 
