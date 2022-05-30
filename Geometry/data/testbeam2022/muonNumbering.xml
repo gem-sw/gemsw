@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<DDDefinition>
+ <ConstantsSection label="muonconstants" eval="true">
+  <Constant name="xml_starts_with_copyno" value="1"/>
+  <Constant name="level" value="1000"/>
+  <Constant name="super" value="100"/>
+  <Constant name="base" value="1"/>
+  <Constant name="mb_region" value="1*[level]"/>
+  <Constant name="mb_wheel" value="2*[level]"/>
+  <Constant name="mb_station" value="3*[level]"/>
+  <Constant name="mb_superlayer" value="4*[level]"/>
+  <Constant name="mb_layer" value="5*[level]"/>
+  <Constant name="mb_wire" value="6*[level]"/>
+  <Constant name="me_region" value="[mb_region]"/>
+  <Constant name="me_station" value="2*[level]"/>
+  <Constant name="me_subring" value="3*[level]"/>
+  <Constant name="me_sector" value="4*[level]"/>
+  <Constant name="me_ring" value="5*[level]"/>
+  <Constant name="me_layer" value="6*[level]"/>
+  <Constant name="mr_region" value="[mb_region]"/>
+  <Constant name="mr_bwheel" value="[mb_wheel]"/>
+  <Constant name="mr_bstation" value="[mb_station]"/>
+  <Constant name="mr_bplane" value="4*[level]"/>
+  <Constant name="mr_bchamber" value="5*[level]"/>
+  <Constant name="mr_estation" value="[me_station]"/>
+  <Constant name="mr_eplane" value="3*[level]"/>
+  <Constant name="mr_esector" value="4*[level]"/>
+  <Constant name="mr_eroll" value="5*[level]"/>
+  <Constant name="mg_region" value="[mb_region]"/>
+  <Constant name="mg_station" value="[me_station]"/>
+  <Constant name="mg_ring" value="3*[level]"/>
+  <Constant name="mg_sector" value="4*[level]"/>
+  <Constant name="mg_roll" value="5*[level]"/>
+  <Constant name="m0_region" value="[me_region]"/>
+  <Constant name="m0_sector" value="3*[level]"/>
+  <Constant name="m0_layer" value="4*[level]"/>
+  <Constant name="m0_roll" value="5*[level]"/>
+  <Constant name="m0_nroll" value="10"/>            <!-- m0_nroll = 1 for 1 etapart geometry, = 10 for 10 etapart geometry -->
+ </ConstantsSection>
+ <SpecParSection label="muonregionnumbering" eval="true">
+  <SpecPar name="MuonCommonNumbering">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep0" eval="false"/>
+   <PartSelector path="//MUON"/>
+   <Parameter name="xml_starts_with_copyno" value="[xml_starts_with_copyno]"/>
+   <Parameter name="level" value="[level]"/>
+   <Parameter name="super" value="[super]"/>
+   <Parameter name="base" value="[base]"/>
+   <Parameter name="mb_region" value="[mb_region]"/>
+   <Parameter name="mb_wheel"      value="[mb_wheel]"/>
+   <Parameter name="mb_station"    value="[mb_station]"/>
+   <Parameter name="mb_superlayer" value="[mb_superlayer]"/>
+   <Parameter name="mb_layer"      value="[mb_layer]"/>
+   <Parameter name="mb_wire"       value="[mb_wire]"/>
+   <Parameter name="me_region"     value="[me_region]"/>
+   <Parameter name="me_station"    value="[me_station]"/>
+   <Parameter name="me_subring"    value="[me_subring]"/>
+   <Parameter name="me_sector"     value="[me_sector]"/>
+   <Parameter name="me_ring"       value="[me_ring]"/>
+   <Parameter name="me_layer"      value="[me_layer]"/>
+   <Parameter name="mr_region"     value="[mr_region]"/>
+   <Parameter name="mr_bwheel"     value="[mr_bwheel]"/>
+   <Parameter name="mr_bstation"   value="[mr_bstation]"/>
+   <Parameter name="mr_bplane"     value="[mr_bplane]"/>
+   <Parameter name="mr_bchamber"   value="[mr_bchamber]"/>
+   <Parameter name="mr_estation"   value="[mr_estation]"/>
+   <Parameter name="mr_eplane"     value="[mr_eplane]"/>
+   <Parameter name="mr_esector"    value="[mr_esector]"/>
+   <Parameter name="mr_eroll"      value="[mr_eroll]"/>
+   <Parameter name="mg_region"     value="[mg_region]"/>
+   <Parameter name="mg_station"    value="[mg_station]"/>
+   <Parameter name="mg_ring"       value="[mg_ring]"/>
+   <Parameter name="mg_sector"     value="[mg_sector]"/>
+   <Parameter name="mg_roll"       value="[mg_roll]"/>
+   <Parameter name="m0_region"     value="[m0_region]"/>
+   <Parameter name="m0_layer"      value="[m0_layer]"/>
+   <Parameter name="m0_sector"     value="[m0_sector]"/>
+   <Parameter name="m0_roll"       value="[m0_roll]"/>
+   <Parameter name="m0_nroll"      value="[m0_nroll]"/>
+  </SpecPar>
+  <SpecPar name="MuonEndcap">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep2" eval="false"/>
+   <PartSelector path="//MEP"/>
+   <!-- <PartSelector path="//MEN"/> -->
+   <Parameter name="CopyNoTag" value="[me_region]"/>
+   <Parameter name="CopyNoOffset" value="2*[super]"/>
+  </SpecPar>
+ </SpecParSection>
+ <SpecParSection label="muonendcapnumbering" eval="true">
+  <SpecPar name="MuonEndcapStation1">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep39" eval="false"/>
+   <PartSelector path="//GE0RingP"/>
+   <!-- <PartSelector path="//GE0RingN"/> -->
+   <PartSelector path="//ME1RingP"/>
+   <PartSelector path="//ME1RingN"/>
+   <!-- <PartSelector path="//ME12RingP"/>
+   <PartSelector path="//ME12RingN"/>
+   <PartSelector path="//ME13RingP"/>
+   <PartSelector path="//ME13RingN"/> -->
+   <Parameter name="CopyNoTag" value="[me_station]"/>
+   <Parameter name="CopyNoOffset" value="1*[super]"/>
+  </SpecPar>
+  <SpecPar name="MuonEndcapStation2">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep40" eval="false"/>
+   <PartSelector path="//ME2RingP"/>
+   <!-- <PartSelector path="//ME2RingN"/> -->
+   <Parameter name="CopyNoTag" value="[me_station]"/>
+   <Parameter name="CopyNoOffset" value="2*[super]"/>
+  </SpecPar>
+  <!-- <SpecPar name="MuonEndcapStation3">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep41" eval="false"/>
+   <PartSelector path="//ME3RingP"/>
+   <PartSelector path="//ME3RingN"/>
+   <Parameter name="CopyNoTag" value="[me_station]"/>
+   <Parameter name="CopyNoOffset" value="3*[super]"/>
+  </SpecPar>
+  <SpecPar name="MuonEndcapStation4">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep42" eval="false"/>
+   <PartSelector path="//ME4RingP"/>
+   <PartSelector path="//ME4RingN"/>
+   <Parameter name="CopyNoTag" value="[me_station]"/>
+   <Parameter name="CopyNoOffset" value="4*[super]"/>
+  </SpecPar> -->
+ </SpecParSection>
+ <SpecParSection label="muonGEMnumbering" eval="true">
+  <SpecPar name="MuonGEMEndcap">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep50" eval="false"/>
+   <PartSelector path="//GEMDisk11."/>
+   <Parameter name="CopyNoTag" value="[mg_ring]"/>
+   <Parameter name="CopyNoOffset" value="1*[super]"/>
+  </SpecPar>
+  <SpecPar name="MuonGEMEndcap2">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep51" eval="false"/>
+   <PartSelector path="//GEMDisk21L."/>
+   <Parameter name="CopyNoTag" value="[mg_ring]"/>
+   <Parameter name="CopyNoOffset" value="2*[super]"/>
+  </SpecPar>
+  <SpecPar name="MuonGEMSector">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep52" eval="false"/>
+   <PartSelector path="//GEMBox11."/> 
+   <PartSelector path="//GEMBox21."/>
+   <Parameter name="CopyNoTag" value="[mg_sector]"/>
+   <Parameter name="CopyNoOffset" value="3*[super]"/>
+  </SpecPar>
+  <SpecPar name="MuonGEMChamber">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep53" eval="false"/>
+   <PartSelector path="//GHA1.*"/>
+   <PartSelector path="//GHA2.*"/>
+   <Parameter name="CopyNoTag" value="[mg_roll]"/>
+   <Parameter name="CopyNoOffset" value="4*[super]"/>
+  </SpecPar>
+ </SpecParSection>
+ <SpecParSection label="muonGE0Numbering" eval="true">
+   <SpecPar name="MuonGE0Sector">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep54" eval="false"/>
+   <PartSelector path="//GE0Box"/>
+   <Parameter name="CopyNoTag" value="[mg_sector]"/>
+   <Parameter name="CopyNoOffset" value="1*[super]"/>
+  </SpecPar>
+  <SpecPar name="MuonGE0Layer">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep55" eval="false"/>
+   <PartSelector path="//GE0L.*"/>
+   <Parameter name="CopyNoTag" value="[mg_ring]"/>
+   <Parameter name="CopyNoOffset" value="3*[super]+1"/>
+  </SpecPar>
+  <SpecPar name="MuonGE0Chamber">
+   <Parameter name="OnlyForMuonNumbering" value="muonstep56" eval="false"/>
+   <PartSelector path="//GHA0.*"/>
+   <Parameter name="CopyNoTag" value="[mg_roll]"/>
+   <Parameter name="CopyNoOffset" value="4*[super]"/>
+  </SpecPar>
+ </SpecParSection>
+</DDDefinition>

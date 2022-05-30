@@ -52,6 +52,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         'keep *_genParticles_*_*',
         'keep *_g4SimHits_MuonGEMHits_*',
         'keep *_g4SimHits__*',
+        'keep *_GEMTrackFinder__*',
     )),
     splitLevel = cms.untracked.int32(0)
 )

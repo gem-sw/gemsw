@@ -41,7 +41,7 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
         dataTier = cms.untracked.string('GEN-SIM'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:step1_test.root'),
+    fileName = cms.untracked.string('file:step1.root'),
     outputCommands = cms.untracked.vstring( (
         'drop *',
         'keep FEDRawDataCollection_rawDataCollector_*_*',
@@ -114,19 +114,24 @@ process.MuonServiceProxy.ServiceParameters.Propagators.append('StraightLinePropa
 process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi')
 process.SteppingHelixPropagatorAny.useMagVolumes = cms.bool(False)
 
-process.GEMTrackFinder = cms.EDProducer("GEMTrackFinder",
+process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderTB",
                                         process.MuonServiceProxy,
                                         gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                        maxClusterSize = cms.int32(10),
+                                        maxClusterSize = cms.int32(6),
                                         minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
                                         skipLargeChamber = cms.bool(True),
-                                        excludingChambers = cms.vint32(1),
-                                        use1DSeeds = cms.bool(False),
+                                        use1DSeeds = cms.bool(False), 
+                                        requireUniqueHit = cms.bool(True),
+                                        excludingTrackers = cms.vint32(),
+                                        doFit = cms.bool(True),
+                                        direction = cms.vdouble(0,1,0),
                                         MuonSmootherParameters = cms.PSet(
-                                           PropagatorAlong = cms.string('SteppingHelixPropagatorAny'),
-                                           PropagatorOpposite = cms.string('SteppingHelixPropagatorAny'),
-                                           RescalingFactor = cms.double(5.0)
+                                           #Propagator = cms.string('SteppingHelixPropagatorAny'),
+                                           Propagator = cms.string('StraightLinePropagator'),
+                                           ErrorRescalingFactor = cms.double(5.0),
+                                           MaxChi2 = cms.double(1000.0),
+                                           NumberOfSigma = cms.double(3),
                                         ),
                                         )
 process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
@@ -156,9 +161,9 @@ process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
 process.schedule = cms.Schedule(process.generation_step,process.simulation_step,
 process.digitisation_step,
-#process.digi2raw_step,
+process.digi2raw_step,
 process.reconstruction_step,
-process.analyser_step,
+#process.analyser_step,
 process.endjob_step,process.FEVTDEBUGoutput_step)
 
 process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGeneratorService.generator
