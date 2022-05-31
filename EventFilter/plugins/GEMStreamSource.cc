@@ -51,7 +51,9 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
 
   std::vector<uint64_t>* words = makeFEDRAW(frdEventMsg.get(), fedId_);
   size_t fedSize = words->size() * sizeof(uint64_t);
-  FEDRawData& fedData = rawData_->FEDData(fedId_);
+  GEMAMC13::CDFHeader cdfh;
+  cdfh.word = uint64_t(words->at(0));
+  FEDRawData& fedData = rawData_->FEDData(GEMAMC13::CDFHeader{cdfh}.sourceId);
   fedData.resize(fedSize);
   memcpy(fedData.data(), words->data(), fedSize);
 
@@ -67,7 +69,9 @@ bool GEMStreamSource::setRunAndEventInfo(edm::EventID& id,
 
     std::vector<uint64_t>* words2 = makeFEDRAW(frdEventMsg2.get(), fedId2_);
     size_t fedSize2 = words2->size() * sizeof(uint64_t);
-    FEDRawData& fedData2 = rawData_->FEDData(fedId2_);
+    GEMAMC13::CDFHeader cdfh2;
+    cdfh2.word = uint64_t(words2->at(0));
+    FEDRawData& fedData2 = rawData_->FEDData(GEMAMC13::CDFHeader{cdfh2}.sourceId);
     fedData2.resize(fedSize2);
     memcpy(fedData2.data(), words2->data(), fedSize2);
   }
@@ -167,9 +171,9 @@ std::vector<uint64_t>* GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg,
   uint16_t BX_id = amc.bunchCrossing();
   uint32_t LV1_id = amc.lv1Id();
   uint32_t OrN = amc.orbitNumber();
-  if (amc.formatVer() == 1) fedId = int(amc.softSrcId());
   GEMAMC13 amc13;
-  amc13.setCDFHeader(0x1, LV1_id, BX_id, fedId);
+  if (amc.formatVer() != 0) amc13.setCDFHeader(0x1, LV1_id, BX_id, amc.softSrcId());
+  else amc13.setCDFHeader(0x1, LV1_id, BX_id, fedId);
   amc13.setAMC13Header(0, 1, OrN);
   amc13.setAMC13Trailer(BX_id, LV1_id, BX_id);
   uint32_t EvtLength = eventSize + 5;  // 2 header + 2 trailer + 1 AMC header
