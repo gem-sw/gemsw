@@ -2,6 +2,11 @@ import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 
 options = VarParsing.VarParsing('analysis')
+options.register('saveEDM',
+                 False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Save EDM file")
 options.register('include20x10',
                  False,
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -14,11 +19,11 @@ options.register('excludeTrackers',
                  "Exclude the trackers from track reconstruction (0 to 3)")
 options.parseArguments()
 
-process = cms.Process("GEMStreamSource")
+process = cms.Process("GEMTrackFinder")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(options.maxEvents),
-    output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
+    output = cms.optional.untracked.allowed(cms.int32,cms.PSet),
 )
 
 process.options = cms.untracked.PSet(
@@ -38,33 +43,21 @@ if debug:
 else:
     process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
-process.source = cms.Source("GEMStreamSource",
-                            fileNames=cms.untracked.vstring(options.inputFiles),
-                            firstLuminosityBlockForEachRun=cms.untracked.VLuminosityBlockID({}))
-
-print(options.inputFiles)
+process.source = cms.Source("PoolSource",
+    fileNames = cms.untracked.vstring(options.inputFiles),
+    secondaryFileNames = cms.untracked.vstring(),
+    labelRawDataLikeMC = cms.untracked.bool(False)
+)
 
 # this block ensures that the output collection is named rawDataCollector, not source
-process.rawDataCollector = cms.EDAlias(source=cms.VPSet(
-    cms.PSet(type=cms.string('FEDRawDataCollection'))))
-
-process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
-process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
-process.muonGEMDigis.fedIdStart = cms.uint32(1477)
-process.muonGEMDigis.fedIdEnd = cms.uint32(1478)
-process.muonGEMDigis.skipBadStatus = cms.bool(True)
-process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.load('gemsw.Geometry.GeometryTestBeam_cff')
+process.load('gemsw.Geometry.GeometryTestBeam2021_cff')
 process.gemGeometry.applyAlignment = cms.bool(True)
 
 if options.include20x10 :
-    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                                 tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_with_20x10.db")),
-                                        cms.PSet(
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
                                             tag = cms.string("TBGEMAlignment_test"),
                                             connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
@@ -75,10 +68,7 @@ if options.include20x10 :
                                         cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
    )
 else :
-    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                                 tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam.db")),
-                                        cms.PSet(
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
                                             tag = cms.string("TBGEMAlignment_test"),
                                             connect = cms.string("sqlite_fip:gemsw/Alignment/data/Alignment_Standalone_2021.db")),
@@ -102,7 +92,7 @@ process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderTB",
                                         minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
                                         skipLargeChamber = cms.bool(True),
-                                        use1DSeeds = cms.bool(True), 
+                                        use1DSeeds = cms.bool(False), 
                                         requireUniqueHit = cms.bool(True),
                                         excludingTrackers = cms.vint32(options.excludeTrackers),
                                         doFit = cms.bool(True),
@@ -122,8 +112,8 @@ process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
 process.load("CommonTools.UtilAlgos.TFileService_cfi")
 process.TestBeamTrackAnalyzer = cms.EDAnalyzer("TestBeamTrackAnalyzer",
                                                gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                               tracks = cms.InputTag("GEMTrackFinder", "", "GEMStreamSource"),
-                                               trajs = cms.InputTag("GEMTrackFinder", "", "GEMStreamSource"),
+                                               tracks = cms.InputTag("GEMTrackFinder"),
+                                               trajs = cms.InputTag("GEMTrackFinder"),
                                                )
 process.TestBeamHitAnalyzer = cms.EDAnalyzer("TestBeamHitAnalyzer",
                                              gemRecHitLabel = cms.InputTag("gemRecHits"),
@@ -136,11 +126,10 @@ process.output = cms.OutputModule("PoolOutputModule",
                                       "drop FEDRawDataCollection_source_*_*"
                                   ),
                                   fileName=cms.untracked.string(
-                                      'output_edm.root'),
+                                      'output_track.root'),
 )
 
-process.unpack = cms.Path(process.muonGEMDigis)
-process.reco = cms.Path(process.gemRecHits * process.GEMTrackFinder)
+process.reco = cms.Path(process.GEMTrackFinder)
 process.hit_ana = cms.Path(process.TestBeamHitAnalyzer)
 process.track_ana = cms.Path(process.TestBeamTrackAnalyzer)
-process.outpath = cms.EndPath(process.output)
+if options.saveEDM : process.outpath = cms.EndPath(process.output)
