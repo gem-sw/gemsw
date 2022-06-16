@@ -61,13 +61,13 @@
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:ME1RingN" />
-      <Translation x="0" z="0*cm" y="185*cm" />
+      <Translation x="0" z="0*cm" y="189*cm" />
     </PosPart>
 
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:GE0RingP" />
-      <Translation x="-([ge0:dzS1]+[ge0:dzS2]+[ge0:dzS3]+[ge0:dzS4])" z="0*cm" y="110*cm" />
+      <Translation x="-([ge0:dzS1]+[ge0:dzS2]+[ge0:dzS3]+[ge0:dzS4])" z="0*cm" y="105*cm" />
       <!--<Translation x="0*cm" z="0*cm" y="110*cm" />-->
       <rRotation name="y90" />
     </PosPart>
@@ -75,7 +75,7 @@
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:ME2RingP" />
-      <Translation x="-[gem21:dx132B]/2" z="72.465*cm" y="120*cm" />
+      <Translation x="-[gem21:dx132B]/2" z="72.465*cm" y="135*cm" />
   </PosPart>
   </PosPartSection>
 

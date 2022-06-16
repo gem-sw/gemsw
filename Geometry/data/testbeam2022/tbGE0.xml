@@ -18,6 +18,15 @@
         <PosPart copyNumber="1">
             <rParent name="ge0:GE0P" />
             <rChild name="ge0:GE0Box" />
+            <Translation x="0*cm" z="0*cm" y="0*cm" />
+        </PosPart>
+    </PosPartSection>
+    <PosPartSection label="ge0.xml">
+    <!-- main Translation done in mf.xml -->
+        <PosPart copyNumber="2">
+            <rParent name="ge0:GE0P" />
+            <rChild name="ge0:GE0Box" />
+            <Translation x="0*cm" z="0*cm" y="7*cm" />
         </PosPart>
     </PosPartSection>
 </DDDefinition>
