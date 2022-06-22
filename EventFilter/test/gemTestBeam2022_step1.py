@@ -44,7 +44,7 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(10)
 process.muonGEMDigis.fedIdEnd = cms.uint32(12)
-process.muonGEMDigis.skipBadStatus = cms.bool(False)
+#process.muonGEMDigis.skipBadStatus = cms.bool(False)
 process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -68,7 +68,7 @@ process.output = cms.OutputModule("PoolOutputModule",
                                       "keep *",
                                       "drop FEDRawDataCollection_*_*_*"
                                   ),
-                                  fileName=cms.untracked.string('output_step1.root'),
+                                  fileName=cms.untracked.string('output2022_step1.root'),
                                   splitLevel = cms.untracked.int32(0)
 )
 

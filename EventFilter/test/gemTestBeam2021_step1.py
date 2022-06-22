@@ -53,7 +53,7 @@ process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.load('gemsw.Geometry.GeometryTestBeam_cff')
+process.load('gemsw.Geometry.GeometryTestBeam2021_cff')
 process.gemGeometry.applyAlignment = cms.bool(True)
 
 if options.include20x10 :
@@ -96,7 +96,7 @@ process.output = cms.OutputModule("PoolOutputModule",
                                       "keep *",
                                       "drop FEDRawDataCollection_*_*_*"
                                   ),
-                                  fileName=cms.untracked.string('output_step1.root'),
+                                  fileName=cms.untracked.string('output2021_step1.root'),
                                   splitLevel = cms.untracked.int32(0)
 )
 
