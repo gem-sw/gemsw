@@ -62,7 +62,7 @@ process.gemGeometry.applyAlignment = cms.bool(True)
 
 if options.include20x10 :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
-                                                 tag=cms.string("GEMChMap"),
+                                                 tag=cms.string("GEMChMapRcd"),
                                                  connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2021_fall_20x10.db")),
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
@@ -76,7 +76,7 @@ if options.include20x10 :
    )
 else :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
-                                                 tag=cms.string("GEMChMap"),
+                                                 tag=cms.string("GEMChMapRcd"),
                                                  connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2021_fall.db")),
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),

@@ -59,12 +59,12 @@ process.load('gemsw.Geometry.GeometryTestBeam2022_cff')
 
 if options.early :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
-                                                 tag=cms.string("GEMChMapTestBeam"),
+                                                 tag=cms.string("GEMChMapRcd"),
                                                  connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2022_spring_early.db")),
     )
 else :
     process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
-                                                 tag=cms.string("GEMChMapTestBeam"),
+                                                 tag=cms.string("GEMChMapRcd"),
                                                  connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2022_spring_late.db")),
     )
 
