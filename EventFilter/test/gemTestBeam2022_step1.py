@@ -2,6 +2,11 @@ import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 
 options = VarParsing.VarParsing('analysis')
+options.register('early',
+                 False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Use mapping before changing OH connector")
 options.parseArguments()
 
 process = cms.Process("GEMStreamSource")
@@ -52,10 +57,16 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.load('gemsw.Geometry.GeometryTestBeam2022_cff')
 #process.gemGeometry.applyAlignment = cms.bool(True)
 
-process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                             tag=cms.string("GEMeMapTestBeam"),
-                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_2022.db")),
-)
+if options.early :
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                                 tag=cms.string("GEMChMapTestBeam"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2022_spring_early.db")),
+    )
+else :
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                                 tag=cms.string("GEMChMapTestBeam"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2022_spring_late.db")),
+    )
 
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 
