@@ -80,6 +80,8 @@ private:
 
   TH1D* trackChi2_;
 
+  std::map<int, TH2D*> track_ch_occ_;
+  std::map<int, TH2D*> rechit_ch_occ_;
   std::map<Key2, TH2D*> track_occ_;
   std::map<Key2, TH2D*> rechit_occ_;
 };
@@ -110,6 +112,14 @@ void QC8TrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup& iSet
     auto ch = chamberId.chamber();
     auto ly = chamberId.layer();
 
+    track_ch_occ_[ch] = fs->make<TH2D>(Form("track_occ_ch%d", ch),
+                                       Form("track_occ_ch%d", ch),
+                                       6, 0, 6,
+                                       8, 1, 17);
+    rechit_ch_occ_[ch] = fs->make<TH2D>(Form("rechit_occ_ch%d", ch),
+                                        Form("rechit_occ_ch%d", ch),
+                                        6, 0, 6,
+                                        8, 1, 17);
     for (int idx_mod = 0; idx_mod < 4; idx_mod++) {
       int module = idx_mod + (2 -ly) * 4 + 1;
       Key2 key(ch, module);
@@ -174,10 +184,12 @@ void QC8TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       Key2 key(ch, module);
 
       track_occ_[key]->Fill(strip / 64, sector);
+      track_ch_occ_[ch]->Fill(strip / 64, ieta);
 
       if (!hit->isValid()) continue;
 
       rechit_occ_[key]->Fill(strip / 64, sector);
+      rechit_ch_occ_[ch]->Fill(strip / 64, ieta);
     }
   }
 }

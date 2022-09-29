@@ -248,15 +248,19 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
     
     float maxR = 5000;
     // find best in all layers
+    float maxDist = 500000;
     for (auto col : detLayerMap_){
       // only look in same layer
-      if (chmap.first != col.first) continue;      
+      if (chmap.first != col.first) continue;
       auto etaPart = col.second;
-      
+
       LocalPoint tsosLP = etaPart->toLocal(tsosGP);
-      if (etaPart->surface().bounds().inside(tsosLP)) {
+      float tsosLP_strip = etaPart->strip(tsosLP);
+      LocalPoint stripCentre = etaPart->centreOfStrip(tsosLP_strip);
+      float dist = (stripCentre - tsosLP).mag();
+      if (dist < maxDist) {
         refChamber = etaPart;
-        break;
+        maxDist = dist;
       }
     }
     for (auto col : detLayerMap_){
