@@ -9,6 +9,19 @@ git clone git@github.com:gem-sw/gemsw.git
 scram b -j10
 ```
 
+# GE21 QC8 simulation
+instruction for GE21 QC8 simulation
+```bash
+cmsrel CMSSW_12_5_2
+cd CMSSW_12_5_2/src
+cmsenv
+git clone git@github.com:gem-sw/gemsw.git
+scram b -j10
+cd gemsw/Analysis/test
+cmsRun simQC8GE21.py
+cmsRun qc8_HARVESTING.py
+```
+
 # testbeam unpacking
 instructions for unpacking the data from testbeam set up
 ```bash
