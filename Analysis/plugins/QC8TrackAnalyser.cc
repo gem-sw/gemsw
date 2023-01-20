@@ -10,7 +10,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -56,7 +56,7 @@ using namespace std;
 typedef std::tuple<int, int> Key2;
 typedef std::tuple<int, int, int> Key3;
 
-class QC8TrackAnalyzer : public edm::EDAnalyzer {
+class QC8TrackAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns> { 
 public:
   explicit QC8TrackAnalyzer(const edm::ParameterSet&);
   ~QC8TrackAnalyzer();
@@ -75,14 +75,20 @@ private:
   edm::EDGetTokenT<reco::TrackCollection> tracks_;
   edm::EDGetTokenT<vector<Trajectory>> trajs_;
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeom_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeomBeginRun_;
 
   TH1D* trackChi2_;
 
+  std::map<int, TH2D*> track_ch_occ_;
+  std::map<int, TH2D*> rechit_ch_occ_;
   std::map<Key2, TH2D*> track_occ_;
   std::map<Key2, TH2D*> rechit_occ_;
 };
 
 QC8TrackAnalyzer::QC8TrackAnalyzer(const edm::ParameterSet& iConfig)
+  : hGEMGeom_(esConsumes()),
+    hGEMGeomBeginRun_(esConsumes<edm::Transition::BeginRun>())
 { 
   tracks_ = consumes<reco::TrackCollection>(iConfig.getParameter<edm::InputTag>("tracks"));
   trajs_ = consumes<vector<Trajectory>>(iConfig.getParameter<edm::InputTag>("trajs"));
@@ -95,8 +101,8 @@ QC8TrackAnalyzer::QC8TrackAnalyzer(const edm::ParameterSet& iConfig)
 QC8TrackAnalyzer::~QC8TrackAnalyzer(){}
 
 void QC8TrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup& iSetup) {
-  edm::ESHandle<GEMGeometry> hGEMGeom;
-  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
+  edm::ESHandle<GEMGeometry> hGEMGeom = iSetup.getHandle(hGEMGeomBeginRun_);
+//  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
   trackChi2_ = fs->make<TH1D>("track_chi2", "Normalized Track Chi2", 100, 0, 10);
@@ -106,6 +112,14 @@ void QC8TrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup& iSet
     auto ch = chamberId.chamber();
     auto ly = chamberId.layer();
 
+    track_ch_occ_[ch] = fs->make<TH2D>(Form("track_occ_ch%d", ch),
+                                       Form("track_occ_ch%d", ch),
+                                       6, 0, 6,
+                                       8, 1, 17);
+    rechit_ch_occ_[ch] = fs->make<TH2D>(Form("rechit_occ_ch%d", ch),
+                                        Form("rechit_occ_ch%d", ch),
+                                        6, 0, 6,
+                                        8, 1, 17);
     for (int idx_mod = 0; idx_mod < 4; idx_mod++) {
       int module = idx_mod + (2 -ly) * 4 + 1;
       Key2 key(ch, module);
@@ -125,8 +139,8 @@ void QC8TrackAnalyzer::beginRun(const edm::Run& run, const edm::EventSetup& iSet
 void QC8TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   /* GEM Geometry */
-  edm::ESHandle<GEMGeometry> hGEMGeom;
-  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
+  edm::ESHandle<GEMGeometry> hGEMGeom = iSetup.getHandle(hGEMGeom_);
+//  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
   edm::Handle<vector<reco::Track>> tracks;
@@ -170,10 +184,12 @@ void QC8TrackAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& 
       Key2 key(ch, module);
 
       track_occ_[key]->Fill(strip / 64, sector);
+      track_ch_occ_[ch]->Fill(strip / 64, ieta);
 
       if (!hit->isValid()) continue;
 
       rechit_occ_[key]->Fill(strip / 64, sector);
+      rechit_ch_occ_[ch]->Fill(strip / 64, ieta);
     }
   }
 }

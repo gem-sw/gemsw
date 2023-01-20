@@ -67,7 +67,7 @@
     <PosPart copyNumber="1">
       <rParent name="mf:MEP" />
       <rChild name="mf:GE0RingP" />
-      <Translation x="-([ge0:dzS1]+[ge0:dzS2]+[ge0:dzS3]+[ge0:dzS4])" z="0*cm" y="105*cm" />
+      <Translation x="([ge0:dzS5]+[ge0:dzS6]+[ge0:dzS7]+[ge0:dzS8])" z="0*cm" y="105*cm" />
       <!--<Translation x="0*cm" z="0*cm" y="110*cm" />-->
       <rRotation name="y90" />
     </PosPart>

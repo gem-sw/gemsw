@@ -10,7 +10,9 @@
 
 using namespace std;
 
-GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) {
+GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) 
+  : gemg_(esConsumes<edm::Transition::BeginRun>())
+{
   trackChi2_ = ps.getParameter<double>("trackChi2");
   direction_ = ps.getParameter<vector<double>>("direction");
   doFit_ = ps.getParameter<bool>("doFit");
@@ -31,8 +33,8 @@ GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps) {
 }
 
 void GEMTrackFinder::beginRun(const edm::Run& run, const edm::EventSetup& setup) {
-  edm::ESHandle<GEMGeometry> gemg;
-  setup.get<MuonGeometryRecord>().get(gemg);
+  edm::ESHandle<GEMGeometry> gemg = setup.getHandle(gemg_);
+//  setup.get<MuonGeometryRecord>().get(gemg);
   const GEMGeometry* mgeom = &*gemg;
 
   detLayerMap_.clear();
@@ -246,15 +248,19 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
     
     float maxR = 5000;
     // find best in all layers
+    float maxDist = 500000;
     for (auto col : detLayerMap_){
       // only look in same layer
-      if (chmap.first != col.first) continue;      
+      if (chmap.first != col.first) continue;
       auto etaPart = col.second;
-      
+
       LocalPoint tsosLP = etaPart->toLocal(tsosGP);
-      if (etaPart->surface().bounds().inside(tsosLP)) {
+      float tsosLP_strip = etaPart->strip(tsosLP);
+      LocalPoint stripCentre = etaPart->centreOfStrip(tsosLP_strip);
+      float dist = (stripCentre - tsosLP).mag();
+      if (dist < maxDist) {
         refChamber = etaPart;
-        break;
+        maxDist = dist;
       }
     }
     for (auto col : detLayerMap_){

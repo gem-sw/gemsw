@@ -28,7 +28,8 @@ using namespace std;
 using namespace CLHEP;
 
 BaseFlatGunProducer::BaseFlatGunProducer( const ParameterSet& pset ) :
-   fEvt(nullptr)
+   fEvt(nullptr),
+   fPDGTableBeginRun_(esConsumes<edm::Transition::BeginRun>())
 {
    Service<RandomNumberGenerator> rng;
    if(!rng.isAvailable()) {
@@ -62,7 +63,9 @@ BaseFlatGunProducer::~BaseFlatGunProducer()
 
 void BaseFlatGunProducer::beginRun(const edm::Run & r, const EventSetup& es )
 {
-   es.getData( fPDGTable ) ;
+    edm::ESHandle<HepPDT::ParticleDataTable> fPDGTable_ = es.getHandle(fPDGTableBeginRun_) ; 
+    fPDGTable = &* fPDGTable_;
+//   es.getData( fPDGTable ) ;
    return ;
 
 }

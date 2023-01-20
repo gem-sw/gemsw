@@ -64,6 +64,7 @@ private:
   // ----------member data ---------------------------
   edm::EDGetTokenT<TrackCollection> tracksToken_;  //used to select what tracks to read from configuration file
   edm::EDGetTokenT<GEMRecHitCollection> gemRecHits_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeom_;
 
 };
 #endif
@@ -81,8 +82,11 @@ private:
 //
 ExtraPGE21::ExtraPGE21(const edm::ParameterSet& iConfig)
   : tracksToken_(consumes<reco::TrackCollection>(iConfig.getUntrackedParameter<edm::InputTag>("track4"))) ,
-    gemRecHits_(consumes<GEMRecHitCollection>(iConfig.getUntrackedParameter<edm::InputTag>("gemRecHitLabel")))
-{}
+    gemRecHits_(consumes<GEMRecHitCollection>(iConfig.getUntrackedParameter<edm::InputTag>("gemRecHitLabel"))),
+    hGEMGeom_(esConsumes<GEMGeometry, MuonGeometryRecord>())
+{
+
+}
 
 ExtraPGE21::~ExtraPGE21() {
 
@@ -96,8 +100,8 @@ ExtraPGE21::~ExtraPGE21() {
 void ExtraPGE21::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   if (iEvent.id().event()%1 == 0 ) std::cout << " Event process " << iEvent.id().event() << std::endl;
 
-  edm::ESHandle<GEMGeometry> hGEMGeom;
-  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
+  edm::ESHandle<GEMGeometry> hGEMGeom = iSetup.getHandle(hGEMGeom_);
+//  iSetup.get<MuonGeometryRecord>().get(hGEMGeom);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
   edm::Handle<GEMRecHitCollection> gemRecHits;

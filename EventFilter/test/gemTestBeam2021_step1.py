@@ -48,7 +48,7 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(1477)
 process.muonGEMDigis.fedIdEnd = cms.uint32(1478)
-process.muonGEMDigis.skipBadStatus = cms.bool(True)
+# process.muonGEMDigis.skipBadStatus = cms.bool(True) # CMSSW_12_3_2 does not have skipBadStatus option 
 process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -57,9 +57,9 @@ process.load('gemsw.Geometry.GeometryTestBeam2021_cff')
 process.gemGeometry.applyAlignment = cms.bool(True)
 
 if options.include20x10 :
-    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                                 tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_with_20x10.db")),
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                                 tag=cms.string("GEMChMapRcd"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2021_fall_20x10.db")),
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
                                             tag = cms.string("TBGEMAlignment_test"),
@@ -71,9 +71,9 @@ if options.include20x10 :
                                         cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
    )
 else :
-    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                                 tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam.db")),
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                                 tag=cms.string("GEMChMapRcd"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2021_fall.db")),
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
                                             tag = cms.string("TBGEMAlignment_test"),
@@ -96,7 +96,7 @@ process.output = cms.OutputModule("PoolOutputModule",
                                       "keep *",
                                       "drop FEDRawDataCollection_*_*_*"
                                   ),
-                                  fileName=cms.untracked.string('output_step1.root'),
+                                  fileName=cms.untracked.string('output2021_step1.root'),
                                   splitLevel = cms.untracked.int32(0)
 )
 

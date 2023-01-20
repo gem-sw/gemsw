@@ -2,6 +2,11 @@ import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 
 options = VarParsing.VarParsing('analysis')
+options.register('early',
+                 False,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Use mapping before changing OH connector")
 options.parseArguments()
 
 process = cms.Process("GEMStreamSource")
@@ -44,7 +49,7 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(10)
 process.muonGEMDigis.fedIdEnd = cms.uint32(12)
-process.muonGEMDigis.skipBadStatus = cms.bool(False)
+#process.muonGEMDigis.skipBadStatus = cms.bool(False)
 process.muonGEMDigis.useDBEMap = True
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -52,10 +57,16 @@ from Configuration.AlCa.GlobalTag import GlobalTag
 process.load('gemsw.Geometry.GeometryTestBeam2022_cff')
 #process.gemGeometry.applyAlignment = cms.bool(True)
 
-process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                             tag=cms.string("GEMeMapTestBeam"),
-                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_2022.db")),
-)
+if options.early :
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                                 tag=cms.string("GEMChMapRcd"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2022_spring_early.db")),
+    )
+else :
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                                 tag=cms.string("GEMChMapRcd"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2022_spring_late.db")),
+    )
 
 process.load('Configuration.StandardSequences.Reconstruction_cff')
 
@@ -68,7 +79,7 @@ process.output = cms.OutputModule("PoolOutputModule",
                                       "keep *",
                                       "drop FEDRawDataCollection_*_*_*"
                                   ),
-                                  fileName=cms.untracked.string('output_step1.root'),
+                                  fileName=cms.untracked.string('output2022_step1.root'),
                                   splitLevel = cms.untracked.int32(0)
 )
 

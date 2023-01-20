@@ -1,6 +1,8 @@
 import FWCore.ParameterSet.Config as cms
+from DQMServices.Core.DQMEDAnalyzer import DQMEDAnalyzer
+from DQMServices.Core.DQMEDHarvester import DQMEDHarvester
 from Configuration.StandardSequences.Eras import eras
-process = cms.Process('tb',eras.phase2_muon)
+process = cms.Process('qc8',eras.phase2_muon)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -56,6 +58,17 @@ process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
     )),
     splitLevel = cms.untracked.int32(0)
 )
+
+process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string('DQMIO'),
+        filterName = cms.untracked.string('')
+    ),
+    fileName = cms.untracked.string('file:step1_inDQM.root'),
+    outputCommands = process.DQMEventContent.outputCommands,
+    splitLevel = cms.untracked.int32(0)
+)
+
 
 # Cosmic Muon generator
 process.generator = cms.EDProducer("CosmicGun",
@@ -143,6 +156,12 @@ process.TrackAnalyzer = cms.EDAnalyzer("QC8TrackAnalyzer",
                                        tracks = cms.InputTag("GEMTrackFinder"),
                                        trajs = cms.InputTag("GEMTrackFinder"),
                                        )
+process.Validation = DQMEDAnalyzer("QC8Validation",
+                                   process.MuonServiceProxy,
+                                   gemRecHitLabel = cms.InputTag("gemRecHits"),
+                                   tracks = cms.InputTag("GEMTrackFinder"),
+                                   trajs = cms.InputTag("GEMTrackFinder"),
+                                   )
 
 process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
@@ -151,6 +170,8 @@ process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
 process.localreco_step = cms.Path(process.gemRecHits)
 process.reco_step = cms.Path(process.GEMTrackFinder)
 process.analyzer_step = cms.Path(process.TrackAnalyzer)
+process.validation_step = cms.Path(process.Validation)
+process.DQMoutput_step = cms.EndPath(process.DQMoutput)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 
@@ -160,6 +181,8 @@ process.digitisation_step,
 process.localreco_step,
 process.reco_step,
 process.analyzer_step,
+process.validation_step,
+process.DQMoutput_step,
 process.endjob_step,
 process.FEVTDEBUGoutput_step)
 

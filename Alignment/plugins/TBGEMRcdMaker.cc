@@ -96,6 +96,7 @@ class TBGEMRcdMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
       float pShift4;
 
       // ----------member data ---------------------------
+      edm::ESGetToken<GEMGeometry, MuonGeometryRecord> gemGeoToken_; 
 };
 
 //
@@ -110,6 +111,7 @@ class TBGEMRcdMaker : public edm::one::EDAnalyzer<edm::one::SharedResources>  {
 // constructors and destructor
 //
 TBGEMRcdMaker::TBGEMRcdMaker(const edm::ParameterSet& p)
+  : gemGeoToken_(esConsumes())
 {
   xShift1 = p.getParameter<double>("xShift1");
   yShift1 = p.getParameter<double>("yShift1");
@@ -145,8 +147,11 @@ void
 TBGEMRcdMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   // Get the GEM Geometry
-  edm::ESHandle<GEMGeometry> gemGeo;
-  iSetup.get<MuonGeometryRecord>().get(gemGeo);
+  edm::ESHandle<GEMGeometry> gemGeoHandle = iSetup.getHandle(gemGeoToken_);
+  const GEMGeometry* gemGeo = &*gemGeoHandle;
+
+//  edm::ESHandle<GEMGeometry> gemGeo;
+//  iSetup.get<MuonGeometryRecord>().get(gemGeo);
 
 
   Alignments* TBGEMAlignment = new Alignments();
@@ -296,9 +301,9 @@ TBGEMRcdMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::sort(TBGEMAlignmentErrorExtended->m_alignError.begin(), TBGEMAlignmentErrorExtended->m_alignError.end(), [](auto a, auto b){return a.rawId() < b.rawId();});
   edm::Service<cond::service::PoolDBOutputService> poolDbService;
   if( poolDbService.isAvailable() ) {
-    poolDbService->writeOne<Alignments>(TBGEMAlignment, poolDbService->currentTime(),
+    poolDbService->writeOneIOV<Alignments>(*TBGEMAlignment, poolDbService->currentTime(),
                                         "GEMAlignmentRcd"  );
-    poolDbService->writeOne<AlignmentErrorsExtended>(TBGEMAlignmentErrorExtended, poolDbService->currentTime(),
+    poolDbService->writeOneIOV<AlignmentErrorsExtended>(*TBGEMAlignmentErrorExtended, poolDbService->currentTime(),
                                                      "GEMAlignmentErrorExtendedRcd"  );
   }
   else

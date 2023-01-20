@@ -66,6 +66,7 @@ private:
   //  edm::ESGetToken<Alignments, GlobalPositionRcd> globalPositionToken_;
   edm::ESGetToken<Alignments, GEMAlignmentRcd> alignmentsToken_;
   edm::ESGetToken<AlignmentErrorsExtended, GEMAlignmentErrorExtendedRcd> alignmentErrorsToken_;
+  edm::ESGetToken<GEMGeometry, MuonGeometryRecord> gemgToken_;
 
   // ----------member data ---------------------------
 };
@@ -85,6 +86,7 @@ ReadAli::ReadAli(const edm::ParameterSet& iConfig){
 
   alignmentsToken_ = esConsumes<Alignments, GEMAlignmentRcd>();
   alignmentErrorsToken_ = esConsumes<AlignmentErrorsExtended, GEMAlignmentErrorExtendedRcd>();
+  gemgToken_ = esConsumes<GEMGeometry, MuonGeometryRecord>();
 }
 
 ReadAli::~ReadAli() {
@@ -105,7 +107,8 @@ void ReadAli::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
   std::cout <<" ESHandle Geo " <<std::endl;
   edm::ESHandle<GEMGeometry> gemg;
   std::cout <<" GET " <<std::endl;
-  iSetup.get<MuonGeometryRecord>().get(gemg);
+  gemg = iSetup.getHandle(gemgToken_);
+//  iSetup.get<MuonGeometryRecord>().get(gemg);
   std::cout <<" Geo "<<std::endl;
   const GEMGeometry* mgeom = &*gemg;
   std::cout <<" Geo ok "<<std::endl;

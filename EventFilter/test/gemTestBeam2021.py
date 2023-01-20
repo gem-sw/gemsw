@@ -61,9 +61,9 @@ process.load('gemsw.Geometry.GeometryTestBeam2021_cff')
 process.gemGeometry.applyAlignment = cms.bool(True)
 
 if options.include20x10 :
-    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                                 tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam_with_20x10.db")),
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                                 tag=cms.string("GEMChMapRcd"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2021_fall_20x10.db")),
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
                                             tag = cms.string("TBGEMAlignment_test"),
@@ -75,9 +75,9 @@ if options.include20x10 :
                                         cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
    )
 else :
-    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMeMapRcd"),
-                                                 tag=cms.string("GEMeMapTestBeam"),
-                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMeMap_TestBeam.db")),
+    process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                                 tag=cms.string("GEMChMapRcd"),
+                                                 connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_testbeam_2021_fall.db")),
                                         cms.PSet(
                                             record = cms.string('GEMAlignmentRcd'),
                                             tag = cms.string("TBGEMAlignment_test"),
