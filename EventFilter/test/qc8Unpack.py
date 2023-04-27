@@ -16,8 +16,8 @@ process.options = cms.untracked.PSet(
     SkipEvent=cms.untracked.vstring('ProductNotFound'),
 )
 
-debug = False
-#debug = True
+#debug = False
+debug = True
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cout.threshold = cms.untracked.string('INFO')
 process.MessageLogger.debugModules = cms.untracked.vstring('*')
@@ -46,6 +46,7 @@ process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
 process.muonGEMDigis.fedIdStart = cms.uint32(1479)
 process.muonGEMDigis.fedIdEnd = cms.uint32(1479)
+process.muonGEMDigis.skipBadStatus = cms.bool(True)
 # process.muonGEMDigis.skipBadStatus = cms.bool(True) # CMSSW_12_3_2 does not have skipBadStatus option 
 process.muonGEMDigis.useDBEMap = True
 
