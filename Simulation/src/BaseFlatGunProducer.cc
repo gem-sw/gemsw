@@ -49,6 +49,9 @@ BaseFlatGunProducer::BaseFlatGunProducer(const ParameterSet& pset)
   fMaxEta = pgun_params.getParameter<double>("MaxEta");
   fMinPhi = pgun_params.getParameter<double>("MinPhi");
   fMaxPhi = pgun_params.getParameter<double>("MaxPhi");
+  fMinTheta    = pgun_params.getParameter<double>("MinTheta");
+  fMaxTheta    = pgun_params.getParameter<double>("MaxTheta");
+  fIsThetaFlat = pgun_params.getParameter<bool>("IsThetaFlat"); // If 'True': theta distribution is flat. If 'False': theta distribution is a cos^2
 
   //
   //fPDGTablePath = "/afs/cern.ch/sw/lcg/external/clhep/1.9.2.1/slc3_ia32_gcc323/data/HepPDT/" ;

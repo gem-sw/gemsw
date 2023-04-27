@@ -45,6 +45,9 @@ namespace edm {
     double fMaxEta;
     double fMinPhi;
     double fMaxPhi;
+    double fMinTheta;
+    double fMaxTheta;
+    bool fIsThetaFlat;
 
     // the event format itself
     HepMC::GenEvent* fEvt;
