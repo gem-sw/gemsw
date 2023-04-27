@@ -172,7 +172,10 @@ std::vector<uint64_t>* GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg,
   uint32_t LV1_id = amc.lv1Id();
   uint32_t OrN = amc.orbitNumber();
   GEMAMC13 amc13;
-  if (amc.formatVer() != 0) amc13.setCDFHeader(0x1, LV1_id, BX_id, amc.softSrcId());
+  if (amc.formatVer() != 0) {
+    amc13.setCDFHeader(0x1, LV1_id, BX_id, amc.softSrcId());
+    OrN += 1;
+  }
   else amc13.setCDFHeader(0x1, LV1_id, BX_id, fedId);
   amc13.setAMC13Header(0, 1, OrN);
   amc13.setAMC13Trailer(BX_id, LV1_id, BX_id);
@@ -192,7 +195,6 @@ std::vector<uint64_t>* GEMStreamSource::makeFEDRAW(FRDEventMsgView* frdEventMsg,
   LogDebug("GEMStreamSource") << "amc lv1Id=" << amc.lv1Id() << " orbitNumber=" << amc.orbitNumber()
                               << " bx=" << amc.bunchCrossing() << " amcNum=" << int(amc.amcNum())
                               << " words=" << words->size();
-
   return words;
 }
 DEFINE_FWK_INPUT_SOURCE(GEMStreamSource);
