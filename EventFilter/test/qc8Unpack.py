@@ -49,6 +49,7 @@ process.muonGEMDigis.fedIdEnd = cms.uint32(1479)
 process.muonGEMDigis.skipBadStatus = cms.bool(True)
 # process.muonGEMDigis.skipBadStatus = cms.bool(True) # CMSSW_12_3_2 does not have skipBadStatus option 
 process.muonGEMDigis.useDBEMap = True
+process.load('RecoLocalMuon.GEMRecHit.gemRecHits_cfi')
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
@@ -58,6 +59,13 @@ process.gemGeometry.applyAlignment = cms.bool(True)
 process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
                                              tag=cms.string("GEMChMapQC8_v0"),
                                              connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_qc8.db")),
+                                    cms.PSet(record = cms.string('GEMAlignmentRcd'),
+                                             tag = cms.string("QC8GEMAlignment_test"),
+                                             connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
+                                    cms.PSet(record = cms.string('GEMAlignmentErrorExtendedRcd'),
+                                             tag = cms.string("QC8GEMAlignmentErrorExtended_test"),
+                                             connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
+                                    cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
 )
 
 process.output = cms.OutputModule("PoolOutputModule",
@@ -74,4 +82,5 @@ process.output = cms.OutputModule("PoolOutputModule",
 )
 
 process.unpack = cms.Path(process.muonGEMDigis)
+process.localreco = cms.Path(process.gemRecHits)
 process.outpath = cms.EndPath(process.output)
