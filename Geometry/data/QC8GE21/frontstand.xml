@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<DDDefinition xmlns="http://www.cern.ch/cms/DDL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.cern.ch/cms/DDL ../../../../DetectorDescription/Schema/DDLSchema.xsd">
+    <ConstantsSection label="gem21.xml" eval="true">
+        <Constant name="layers"       value="7"/>
+        <Constant name="dxSC"         value="0.0*cm"/>
+        <Constant name="dySC"         value="30.0*cm"/>
+        <Constant name="dzSC"         value="20.0*cm"/>
+        <Constant name="separationSC" value="3.47*cm"/>
+        <Constant name="dyBox"        value="150*cm"/>
+        <Constant name="dxBox"        value="200*cm"/>
+        <Constant name="dzBox"        value="200*cm"/>
+        <Constant name="dx"           value="0.0*cm"/>
+        <Constant name="rz"           value="0.0*deg"/>
+    </ConstantsSection>
+    
+    <RotationSection label="gem21.xml">
+          <RotationSequence name="x90">
+            <RotationByAxis axis="x" angle="90*deg"/>
+          </RotationSequence>
+    </RotationSection>
+
+    <PosPartSection label="gem21.xml">
+        <PosPart copyNumber="1">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21F"/>
+            <Translation x="0*cm" y="0*cm" z="0*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="3">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21F"/>
+            <Translation x="0*cm" y="0*cm" z="20*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+
+        <PosPart copyNumber="5">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21F"/>
+            <Translation x="0*cm" y="0*cm" z="40*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="7">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21F"/>
+            <Translation x="0*cm" y="0*cm" z="60*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+
+        <PosPart copyNumber="9">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21F"/>
+            <Translation x="0*cm" y="0*cm" z="80*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+        <PosPart copyNumber="11">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21F"/>
+            <Translation x="0*cm" y="0*cm" z="100*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+
+        <PosPart copyNumber="13">
+            <rParent name="gem21:GEMDisk21LP"/>
+            <rChild name="gem21:GEMBox21F"/>
+            <Translation x="0*cm" y="0*cm" z="120*cm" />
+            <rRotation name="x90" />
+        </PosPart>
+       
+        
+    </PosPartSection>
+    
+</DDDefinition>

@@ -17,8 +17,9 @@ process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.DigiToRaw_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
+process.load("DQM.Integration.config.environment_cfi")
 # test beam detectors at y-axis - GE21 at (0,110*cm,0), GE0 at (0,120*cm,0)
-process.load('gemsw.Geometry.GeometryQC8GE21_cff')
+process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
 
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #from Configuration.AlCa.GlobalTag import GlobalTag
@@ -156,12 +157,23 @@ process.TrackAnalyzer = cms.EDAnalyzer("QC8TrackAnalyzer",
                                        tracks = cms.InputTag("GEMTrackFinder"),
                                        trajs = cms.InputTag("GEMTrackFinder"),
                                        )
-process.Validation = DQMEDAnalyzer("QC8Validation",
-                                   process.MuonServiceProxy,
-                                   gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                   tracks = cms.InputTag("GEMTrackFinder"),
-                                   trajs = cms.InputTag("GEMTrackFinder"),
-                                   )
+process.HitValidation = DQMEDAnalyzer("QC8HitValidation",
+                                      gemSimHitLabel = cms.InputTag("g4SimHits", "MuonGEMHits"),
+                                      gemRecHitLabel = cms.InputTag("gemRecHits"),
+                                      )
+process.TrackValidation = DQMEDAnalyzer("QC8TrackValidation",
+                                        process.MuonServiceProxy,
+                                        gemRecHitLabel = cms.InputTag("gemRecHits"),
+                                        tracks = cms.InputTag("GEMTrackFinder"),
+                                        trajs = cms.InputTag("GEMTrackFinder"),
+                                        )
+
+process.Harvester = DQMEDHarvester("QC8Harvestor")
+
+process.dqmEnv.subSystemFolder = "GEM"
+process.dqmEnv.eventInfoFolder = "EventInfo"
+process.dqmSaver.path = ""
+process.dqmSaver.tag = "GEM"
 
 process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
@@ -170,21 +182,23 @@ process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
 process.localreco_step = cms.Path(process.gemRecHits)
 process.reco_step = cms.Path(process.GEMTrackFinder)
 process.analyzer_step = cms.Path(process.TrackAnalyzer)
-process.validation_step = cms.Path(process.Validation)
+process.validation_step = cms.Path(process.HitValidation*process.TrackValidation+process.Harvester)
 process.DQMoutput_step = cms.EndPath(process.DQMoutput)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
+process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 
 process.schedule = cms.Schedule(process.generation_step,
 process.simulation_step,
 process.digitisation_step,
 process.localreco_step,
 process.reco_step,
-process.analyzer_step,
+#process.analyzer_step,
 process.validation_step,
-process.DQMoutput_step,
-process.endjob_step,
-process.FEVTDEBUGoutput_step)
+#process.DQMoutput_step,
+process.dqmout,
+process.endjob_step,)
+#process.FEVTDEBUGoutput_step)
 
 process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGeneratorService.generator
 

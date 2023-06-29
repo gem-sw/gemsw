@@ -45,8 +45,6 @@ BaseFlatGunProducer::BaseFlatGunProducer(const ParameterSet& pset)
   // before trying to extract parameters - if it is empty,
   // the default values seem to be taken
   fPartIDs = pgun_params.getParameter<vector<int> >("PartID");
-  fMinEta = pgun_params.getParameter<double>("MinEta");
-  fMaxEta = pgun_params.getParameter<double>("MaxEta");
   fMinPhi = pgun_params.getParameter<double>("MinPhi");
   fMaxPhi = pgun_params.getParameter<double>("MaxPhi");
   fMinTheta    = pgun_params.getParameter<double>("MinTheta");

@@ -1,6 +1,6 @@
-#include "gemsw/Validation/plugins/QC8Validation.h"
+#include "gemsw/Validation/plugins/QC8TrackValidation.h"
 
-QC8Validation::QC8Validation(const edm::ParameterSet& iConfig)
+QC8TrackValidation::QC8TrackValidation(const edm::ParameterSet& iConfig)
   : hGEMGeom_(esConsumes()),
     hGEMGeomBeginRun_(esConsumes<edm::Transition::BeginRun>())
 {
@@ -10,16 +10,16 @@ QC8Validation::QC8Validation(const edm::ParameterSet& iConfig)
   edm::ParameterSet serviceParameters = iConfig.getParameter<edm::ParameterSet>("ServiceParameters");
 }
 
-QC8Validation::~QC8Validation(){}
+QC8TrackValidation::~QC8TrackValidation(){}
 
-void QC8Validation::bookHistograms(DQMStore::IBooker& booker,
+void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
                                    const edm::Run& run,
                                    const edm::EventSetup& iSetup) {
 
   edm::ESHandle<GEMGeometry> hGEMGeom = iSetup.getHandle(hGEMGeomBeginRun_);
   const GEMGeometry* GEMGeometry_ = &*hGEMGeom;
 
-  booker.setCurrentFolder("GEM/QC8");
+  booker.setCurrentFolder("GEM/QC8Track");
   trackChi2_ = booker.book1D("track_chi2", "Normalized Track Chi2", 100, 0, 10);
 
   for (auto chamber : GEMGeometry_->chambers()) {
@@ -27,12 +27,12 @@ void QC8Validation::bookHistograms(DQMStore::IBooker& booker,
     auto ch = chamberId.chamber();
     auto ly = chamberId.layer();
 
-    booker.setCurrentFolder("GEM/QC8/track");
+    booker.setCurrentFolder("GEM/QC8Track/track");
     track_ch_occ_[ch] = booker.book2D(Form("track_occ_ch%d", ch),
                                       Form("track_occ_ch%d", ch),
                                       6, 0, 6,
                                       8, 1, 17);
-    booker.setCurrentFolder("GEM/QC8/rechit");
+    booker.setCurrentFolder("GEM/QC8Track/rechit");
     rechit_ch_occ_[ch] = booker.book2D(Form("rechit_occ_ch%d", ch),
                                        Form("rechit_occ_ch%d", ch),
                                        6, 0, 6,
@@ -42,12 +42,12 @@ void QC8Validation::bookHistograms(DQMStore::IBooker& booker,
     for (int idx_mod = 0; idx_mod < 4; idx_mod++) {
       int module = idx_mod + (2 -ly) * 4 + 1;
       Key2 key(ch, module);
-      booker.setCurrentFolder("GEM/QC8/track");
+      booker.setCurrentFolder("GEM/QC8Track/track");
       track_occ_[key] = booker.book2D(Form("track_occ_ch%d_module%d", ch, module),
                                       Form("track_occ_ch%d_module%d", ch, module),
                                       6, 0, 6,
                                       2, 0, 2);
-      booker.setCurrentFolder("GEM/QC8/rechit");
+      booker.setCurrentFolder("GEM/QC8Track/rechit");
       rechit_occ_[key] = booker.book2D(Form("rechit_occ_ch%d_module%d", ch, module),
                                        Form("rechit_occ_ch%d_module%d", ch, module),
                                        6, 0, 6,
@@ -58,7 +58,7 @@ void QC8Validation::bookHistograms(DQMStore::IBooker& booker,
   }
 }
 
-void QC8Validation::setBinLabelAndTitle(TH2F* hist, int module) {
+void QC8TrackValidation::setBinLabelAndTitle(TH2F* hist, int module) {
   hist->GetXaxis()->SetTitle("ix");
   hist->GetYaxis()->SetTitle("i#eta");
 
@@ -78,7 +78,7 @@ void QC8Validation::setBinLabelAndTitle(TH2F* hist, int module) {
   }
 }
 
-void QC8Validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
+void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   /* GEM Geometry */
   edm::ESHandle<GEMGeometry> hGEMGeom = iSetup.getHandle(hGEMGeom_);
@@ -136,7 +136,7 @@ void QC8Validation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }
 }
 
-std::pair<int, int> QC8Validation::getModuleVfat(int ieta, int strip) {
+std::pair<int, int> QC8TrackValidation::getModuleVfat(int ieta, int strip) {
   ieta = 16 - ieta;
   int module = ieta / 4 + 1;
   int sector = (ieta % 4) / 2;
@@ -146,4 +146,4 @@ std::pair<int, int> QC8Validation::getModuleVfat(int ieta, int strip) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(QC8Validation);
+DEFINE_FWK_MODULE(QC8TrackValidation);
