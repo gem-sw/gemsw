@@ -25,12 +25,15 @@ private:
   MuonTransientTrackingRecHit::MuonRecHitContainer BuildSeedHits(const GEMEtaPartition* etaPart,
                                                                  const GEMRecHitCollection* gemHits);
   bool useModuleColumns_;
+  int topSeedingChamber_, botSeedingChamber_;
   array<const GEMEtaPartition*, 16> topChamb_, botChamb_;
   int nColumns_;
 };
 
 GEMTrackFinderQC8::GEMTrackFinderQC8(const edm::ParameterSet& ps) : GEMTrackFinder(ps) {
   useModuleColumns_ = ps.getParameter<bool>("useModuleColumns");
+  topSeedingChamber_ = ps.getParameter<int>("topSeedingChamber");
+  botSeedingChamber_ = ps.getParameter<int>("botSeedingChamber");
   if (useModuleColumns_) nColumns_ = 4;
   else nColumns_ = 1;
 }
@@ -38,25 +41,32 @@ GEMTrackFinderQC8::GEMTrackFinderQC8(const edm::ParameterSet& ps) : GEMTrackFind
 #endif
 
 void GEMTrackFinderQC8::setSeedingLayers() {
-  float hTop = 0;
-  float hBot = 999999;
-  for (auto chmap : detLayerMap_) {
-    auto h = chmap.first;
-    hTop = h>hTop?h:hTop;
-    hBot = h<hBot?h:hBot;
-  }
+  //float hTop = 0;
+  //float hBot = 999999;
+  //for (auto chmap : detLayerMap_) {
+  //  auto h = chmap.first;
+  //  hTop = h>hTop?h:hTop;
+  //  hBot = h<hBot?h:hBot;
+  //}
 
   for (auto chmap : detLayerMap_){    
     auto etaPart = chmap.second;
     auto etaPartId = etaPart->id();
     int ieta = etaPartId.ieta();
+    int chamberNu = etaPartId.chamber();
     int ietaIdx = 16 - ieta;
-    if (chmap.first == hTop) {
+    if (chamberNu == topSeedingChamber_) {
       topChamb_[ietaIdx] = etaPart;
     }
-    if (chmap.first == hBot) {
+    if (chamberNu == botSeedingChamber_) {
       botChamb_[ietaIdx] = etaPart;
     }
+    //if (chmap.first == hTop) {
+    //  topChamb_[ietaIdx] = etaPart;
+    //}
+    //if (chmap.first == hBot) {
+    //  botChamb_[ietaIdx] = etaPart;
+    //}
   } 
 }
 

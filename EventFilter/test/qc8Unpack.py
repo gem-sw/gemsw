@@ -72,6 +72,36 @@ process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
 process.DQMDAQ = DQMEDAnalyzer("QC8DAQStatusSource")
 process.DQMRecHit = DQMEDAnalyzer("QC8RecHitSource")
 
+process.load('MagneticField.Engine.uniformMagneticField_cfi')
+process.load('Configuration.StandardSequences.Reconstruction_cff')
+process.load('RecoMuon.TrackingTools.MuonServiceProxy_cff')
+process.MuonServiceProxy.ServiceParameters.Propagators.append('StraightLinePropagator')
+process.load('TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi')
+process.SteppingHelixPropagatorAny.useMagVolumes = cms.bool(False)
+
+process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderQC8",
+                                        process.MuonServiceProxy,
+                                        gemRecHitLabel = cms.InputTag("gemRecHits"),
+                                        maxClusterSize = cms.int32(10),
+                                        minClusterSize = cms.int32(1),
+                                        trackChi2 = cms.double(1000.0),
+                                        direction = cms.vdouble(0,0,1),
+                                        topSeedingChamber = cms.int32(11),
+                                        botSeedingChamber = cms.int32(1),
+                                        useModuleColumns = cms.bool(True),
+                                        doFit = cms.bool(True),
+                                        MuonSmootherParameters = cms.PSet(
+                                           #Propagator = cms.string('SteppingHelixPropagatorAny'),
+                                           Propagator = cms.string('StraightLinePropagator'),
+                                           ErrorRescalingFactor = cms.double(5.0),
+                                           MaxChi2 = cms.double(1000.0),
+                                           NumberOfSigma = cms.double(3),
+                                        ),
+                                        )
+process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
+process.GEMTrackFinder.ServiceParameters.CSCLayers = cms.untracked.bool(False)
+process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
+
 process.output = cms.OutputModule("PoolOutputModule",
                                   dataset = cms.untracked.PSet(
                                       dataTier = cms.untracked.string('RECO'),
@@ -93,6 +123,8 @@ process.dqmSaver.tag = "GEM"
 
 process.unpack = cms.Path(process.muonGEMDigis)
 process.localreco = cms.Path(process.gemRecHits)
+process.reco_step = cms.Path(process.GEMTrackFinder)
+process.validation_step = cms.Path(process.HitValidation*process.TrackValidation)
 process.DQM_step = cms.Path(process.DQMDAQ*process.DQMRecHit)
 process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 #process.outpath = cms.EndPath(process.output)
