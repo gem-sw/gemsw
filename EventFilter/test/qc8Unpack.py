@@ -1,4 +1,6 @@
 import FWCore.ParameterSet.Config as cms
+from DQMServices.Core.DQMEDAnalyzer import DQMEDAnalyzer
+from DQMServices.Core.DQMEDHarvester import DQMEDHarvester
 import FWCore.ParameterSet.VarParsing as VarParsing
 
 options = VarParsing.VarParsing('analysis')
@@ -8,6 +10,7 @@ process = cms.Process("GEMStreamSource")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(options.maxEvents),
+    #input = cms.untracked.int32(10000),
     output = cms.optional.untracked.allowed(cms.int32,cms.PSet)
 )
 
@@ -16,8 +19,7 @@ process.options = cms.untracked.PSet(
     SkipEvent=cms.untracked.vstring('ProductNotFound'),
 )
 
-#debug = False
-debug = True
+debug = False
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 process.MessageLogger.cout.threshold = cms.untracked.string('INFO')
 process.MessageLogger.debugModules = cms.untracked.vstring('*')
@@ -44,10 +46,9 @@ process.rawDataCollector = cms.EDAlias(source=cms.VPSet(
 
 process.load('EventFilter.GEMRawToDigi.muonGEMDigis_cfi')
 process.muonGEMDigis.InputLabel = cms.InputTag("rawDataCollector")
-process.muonGEMDigis.fedIdStart = cms.uint32(1479)
-process.muonGEMDigis.fedIdEnd = cms.uint32(1479)
-process.muonGEMDigis.skipBadStatus = cms.bool(True)
-# process.muonGEMDigis.skipBadStatus = cms.bool(True) # CMSSW_12_3_2 does not have skipBadStatus option 
+process.muonGEMDigis.fedIdStart = cms.uint32(10)
+process.muonGEMDigis.fedIdEnd = cms.uint32(11)
+process.muonGEMDigis.isP5data = False
 process.muonGEMDigis.useDBEMap = True
 process.load('RecoLocalMuon.GEMRecHit.gemRecHits_cfi')
 
@@ -57,8 +58,8 @@ process.load('gemsw.Geometry.GeometryQC8GE21_cff')
 process.gemGeometry.applyAlignment = cms.bool(True)
 
 process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
-                                             tag=cms.string("GEMChMapQC8_v0"),
-                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_qc8.db")),
+                                             tag=cms.string("GEMChMapRcd"),
+                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_QC8.db")),
                                     cms.PSet(record = cms.string('GEMAlignmentRcd'),
                                              tag = cms.string("QC8GEMAlignment_test"),
                                              connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
@@ -67,6 +68,9 @@ process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
                                              connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
                                     cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
 )
+
+process.DQMDAQ = DQMEDAnalyzer("QC8DAQStatusSource")
+process.DQMRecHit = DQMEDAnalyzer("QC8RecHitSource")
 
 process.output = cms.OutputModule("PoolOutputModule",
                                   dataset = cms.untracked.PSet(
@@ -81,6 +85,14 @@ process.output = cms.OutputModule("PoolOutputModule",
                                   splitLevel = cms.untracked.int32(0)
 )
 
+process.load("DQM.Integration.config.environment_cfi")
+process.dqmEnv.subSystemFolder = "GEM"
+process.dqmEnv.eventInfoFolder = "EventInfo"
+process.dqmSaver.path = ""
+process.dqmSaver.tag = "GEM"
+
 process.unpack = cms.Path(process.muonGEMDigis)
 process.localreco = cms.Path(process.gemRecHits)
-process.outpath = cms.EndPath(process.output)
+process.DQM_step = cms.Path(process.DQMDAQ*process.DQMRecHit)
+process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
+#process.outpath = cms.EndPath(process.output)
