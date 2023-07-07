@@ -78,9 +78,15 @@ run-test:
     - *cmssw-run-area
     - cd gemsw/Analysis/test
     - cmsRun simQC8GE21.py maxEvents=10000
+    - cp -v *.root ${CI_PROJECT_DIR}
   needs:
     - job: cmssw_build
       artifacts: true
+  artifacts:
+    untracked: true
+    expire_in: 20 minutes
+    paths:
+      - ${CI_PROJECT_DIR}/*.root
 
 build-docker:
   stage: registry
