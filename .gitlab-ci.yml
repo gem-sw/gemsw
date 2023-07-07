@@ -1,0 +1,106 @@
+stages:
+  - build
+  - test
+  - registry
+
+variables:
+  CMS_PATH: /cvmfs/cms.cern.ch
+  CMSSW_RELEASE: CMSSW_13_0_9
+  SCRAM_ARCH: slc7_amd64_gcc10
+
+.fix-scram: &fix-scram
+  # From CMSSW_12_0_0 SCRAMV3 is used which needs python3 from system
+  - yum install -y python3
+  - which python3
+  - ln -s /usr/lib64/libssl.so.10 /usr/lib/libssl.so
+  - ln -s /usr/lib64/libcrypto.so.10 /usr/lib/libcrypto.so
+    
+.cmssw-run-area: &cmssw-run-area
+  - mkdir run
+  - cp -r ${CMSSW_RELEASE} run/
+  - chmod -R +w run/${CMSSW_RELEASE}/
+  - cd run/${CMSSW_RELEASE}/src
+  - cmsenv
+
+.test-template: &tests
+  tags:
+    - cvmfs
+  before_script:
+    - *fix-scram
+    - shopt -s expand_aliases
+    - set +u && source ${CMS_PATH}/cmsset_default.sh; set -u
+    - *cmssw-run-area
+
+cmssw_build:
+  stage: build
+  tags:
+    - cvmfs
+  before_script:
+    - *fix-scram
+  script:
+    - shopt -s expand_aliases
+    - set +u && source ${CMS_PATH}/cmsset_default.sh; set -u
+    - cmsrel ${CMSSW_RELEASE}
+    - cd ${CMSSW_RELEASE}/src
+    - cmsenv
+    # If within CERN, we can speed up interaction with CMSSW:
+    - export CMSSW_MIRROR=https://:@git.cern.ch/kerberos/CMSSW.git
+    # This is another trick to speed things up independent of your location:
+    - export CMSSW_GIT_REFERENCE=/cvmfs/cms.cern.ch/cmssw.git.daily
+    # Important: run git cms-init with --upstream-only flag to not run into
+    # problems with git config
+    - git cms-init --upstream-only
+    - git config --global user.name 'Raul Rabadan'
+    - git config --global user.email 'raul.iraq.rabadan.trejo@cern.ch'
+    - git config --global user.github rrabadan
+    - git cms-merge-topic yeckang:QC8Unpacker_13_0_X -q 
+#    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.cern.ch/rrabadan/gemsw.git
+    - mkdir gemsw
+    - cp -r ${CI_PROJECT_DIR}/Alignment ${CI_PROJECT_DIR}/Analysis ${CI_PROJECT_DIR}/EventFilter gemsw
+    - cp -r ${CI_PROJECT_DIR}/Geometry ${CI_PROJECT_DIR}/RecoMuon ${CI_PROJECT_DIR}/Simulation gemsw
+    - cp -r ${CI_PROJECT_DIR}/Validation ${CI_PROJECT_DIR}/DQM gemsw
+    - scram build -j 4
+  artifacts:
+    untracked: true
+    expire_in: 20 minutes
+    paths:
+      - ${CMSSW_RELEASE}
+
+run-test:
+  stage: test
+  tags:
+    - cvmfs
+  before_script:
+    - *fix-scram
+  script:
+    - shopt -s expand_aliases
+    - set +u && source ${CMS_PATH}/cmsset_default.sh; set -u
+    - *cmssw-run-area
+    - cd gemsw/Analysis/test
+    - cmsRun simQC8GE21.py maxEvents=10000
+  needs:
+    - job: cmssw_build
+      artifacts: true
+
+build-docker:
+  stage: registry
+  when: manual
+  tags:
+    - docker-privileged
+  image: docker:20.10.6
+  services:
+    - docker:20.10.6-dind
+  variables:
+    DOCKER_TLS_CERTDIR: "/certs"
+    FROM: gitlab-registry.cern.ch/cms-cloud/cmssw-docker/cc7-cms:latest
+    TO: ${CI_REGISTRY_IMAGE}/ge21qc8
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker run -d --name cvmfs --pid=host --user 0 --privileged --restart always -v /shared-mounts:/cvmfsmounts:rshared gitlab-registry.cern.ch/vcs/cvmfs-automounter:master
+  script:
+    - docker run -v /shared-mounts/cvmfs:/cvmfs:rslave -v $(pwd):$(pwd) -w $(pwd) --name ${CI_PROJECT_NAME} ${FROM} /bin/bash ./.gitlab/build.sh
+    - SHA256=$(docker commit ${CI_PROJECT_NAME})
+    - TAG=$(date -Is -u | sed 's/[:]/-/g' | cut -c -19)
+    - docker tag ${SHA256} ${TO}:${TAG}
+    - docker push ${TO}:${TAG}
+  dependencies: []
