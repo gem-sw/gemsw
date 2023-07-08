@@ -25,12 +25,12 @@ void QC8RecHitSource::bookHistograms(DQMStore::IBooker &booker, edm::Run const &
     auto chamberId = chamber->id();
     auto ch = chamberId.chamber();
 
-    booker.setCurrentFolder("GEM/Digi");
+    booker.setCurrentFolder("GE21QC8/Digi");
     mapDigiOcc_[ch] = booker.book2D(Form("digi_occ_ch%d", ch),
                                     Form("Digi Occupancy Chamber %d;strip;i#eta", ch),
                                     384, -0.5, 383.5,
                                     16, 0.5, 16.5);
-    booker.setCurrentFolder("GEM/RecHit");
+    booker.setCurrentFolder("GE21QC8/RecHit");
     mapRecHitOcc_[ch] = booker.book2D(Form("rechit_occ_ch%d", ch),
                                       Form("Rechit Occupancy Chamber %d;x [cm]; y [cm]", ch),
                                       600, -60, 60,
