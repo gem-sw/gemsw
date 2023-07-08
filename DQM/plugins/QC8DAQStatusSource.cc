@@ -91,7 +91,7 @@ void QC8DAQStatusSource::bookHistograms(DQMStore::IBooker &ibooker, edm::Run con
   const auto &chMap = iSetup.getData(gemChMapToken_);
   auto gemChMap = std::make_unique<GEMChMap>(chMap);
 
-  std::string daqFolder = "GEM/DAQStatus";
+  std::string daqFolder = "GE21QC8/DAQStatus";
   ibooker.cd();
   ibooker.setCurrentFolder(daqFolder);
   for (auto const &[ec, dc] : gemChMap->chamberMap()) {
