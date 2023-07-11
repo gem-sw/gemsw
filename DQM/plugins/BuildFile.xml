@@ -18,6 +18,15 @@
 <use name="DQM/GEM"/>
 <use name="stdcxx-fs"/>
 <use name="boost_regex"/>
+<use name="CondFormats/DataRecord"/>
+<use name="CondFormats/GEMObjects"/>
+<use name="EventFilter/GEMRawToDigi"/>
+<use name="EventFilter/Utilities"/>
+<use name="DataFormats/FEDRawData"/>
+<use name="DataFormats/GEMDigi"/>
+<use name="Utilities/StorageFactory"/>
+<use name="FWCore/Sources"/>
+<use name="IOPool/Streamer"/>
 <use name="root"/>
 <use name="rootcore"/>
 <lib name="EG"/>
