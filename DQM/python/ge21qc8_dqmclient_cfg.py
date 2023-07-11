@@ -99,14 +99,12 @@ process.TrackValidation = DQMEDAnalyzer("QC8TrackValidation",
                                         trajs = cms.InputTag("GEMTrackFinder"),
                                         )
 
-updir = "./upload"
-
 process.load("DQM.Integration.config.environment_cfi")
 process.dqmEnv.subSystemFolder = "GE21QC8"
 process.dqmEnv.eventInfoFolder = "EventInfo"
 process.dqmSaver.tag = "GE21QC8"
 process.dqmSaver.runNumber = options.runNumber
-process.dqmSaver.path = updir
+process.dqmSaver.path = options.updir
 
 process.unpack = cms.Path(process.muonGEMDigis)
 process.localreco = cms.Path(process.gemRecHits)
