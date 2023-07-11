@@ -26,13 +26,15 @@ class RawEntryIterator {
 
       unsigned int entry_number;
       bool sec_file;
+      std::string rawfile;
+      std::string secrawfile;
 
       static Entry load_entry(const std::string& run_path,
                               const std::string& filename,
                               const unsigned int entryNumber,
                               bool secFile);
 
-      std::string get_data_path() const;
+      std::string get_json_file() const;
       std::string state;
     };
     
