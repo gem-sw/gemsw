@@ -47,13 +47,11 @@ private:
   bool prepareNextFile();
   void openNextFile();
   void closeFile();
-  bool isFileOpen();
   std::unique_ptr<FRDEventMsgView> prepareNextEvent();
 
   // member data
   RawEntryIterator fIterator_;
   bool hasSecFile_;
-  
   std::ifstream fin_;
   std::ifstream fin2_;
   GEMRawToDigi gemR2D;
