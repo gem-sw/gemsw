@@ -7,8 +7,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
 #include <boost/regex.hpp>
 
 #include <fmt/printf.h>
@@ -20,22 +18,11 @@ RawEntryIterator::Entry::load_entry(const std::string& run_path,
                                    const std::string& filename,
                                    const unsigned int entryNumber,
                                    bool sec_file) {
-  
+
   Entry entry;
   entry.filename = filename;
   entry.run_path = run_path;
   entry.sec_file =  sec_file;
-
-  boost::property_tree::ptree pt;
-  read_json(filename, pt);
-
-  entry.rawfile = pt.get<std::string>("rawfile", 0);
-
-  if (sec_file) {
-    entry.secrawfile = pt.get<std::string>("secrawfile", 0);
-  } else {
-    entry.secrawfile = "";
-  }
   
   entry.entry_number = entryNumber;
   
@@ -43,8 +30,13 @@ RawEntryIterator::Entry::load_entry(const std::string& run_path,
 }
 
 std::string 
-RawEntryIterator::Entry::get_json_file() const {
-  return filename;
+RawEntryIterator::Entry::get_data_path() const {
+  // if (boost::starts_with(datafn, "/"))
+  //  return datafn;
+
+  std::filesystem::path p(run_path);
+  p /= filename;
+  return p.string();
 }
 
 RawEntryIterator::EorEntry
@@ -192,16 +184,9 @@ void RawEntryIterator::collect(bool ignoreTimers) {
         continue;
       }
 
-      try {
-        Entry entry = Entry::load_entry(runPath_, filename, fragment, secFile_);
-        entrySeen_.emplace(fragment, entry);
-        logFileAction("Found file: ", filename);
-      } catch (const std::exception& e) {
-        filesSeen_.erase(filename);
-        std::string msg("Failed reading json file ");
-        msg += e.what();
-        logFileAction(msg, filename);
-      }
+      Entry entry = Entry::load_entry(runPath_, filename, fragment, secFile_);
+      entrySeen_.emplace(fragment, entry);
+      logFileAction("Found file: ", filename);
     }
 
     // check if file is EoR

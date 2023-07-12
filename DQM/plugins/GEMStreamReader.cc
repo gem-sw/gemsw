@@ -53,7 +53,7 @@ void GEMStreamReader::init() {
     }
 
     // check if we have a file opened
-    if (isFileOpen()) {
+    if (fin_.is_open()) {
       break;
     }
     fIterator_.delay();
@@ -73,7 +73,7 @@ bool GEMStreamReader::prepareNextFile() {
       return false;
     }
 
-    if ((!isFileOpen()) && (!fIterator_.entryReady()) && (fIterator_.state() == State::EOR)) {
+    if ((!fin_.is_open()) && (!fIterator_.entryReady()) && (fIterator_.state() == State::EOR)) {
       return false;
     }
 
@@ -82,8 +82,13 @@ bool GEMStreamReader::prepareNextFile() {
       return false;
     }
 
+    if (fIterator_.entryReady() && (procEventsFile_ >= minEventsFile_)) {
+      openNextFile();
+      continue;
+    }
+
     // Open next file
-    if (!isFileOpen()) {
+    if (!fin_.is_open()) {
       if (fIterator_.entryReady()) {
         openNextFile();
         continue;
@@ -92,33 +97,19 @@ bool GEMStreamReader::prepareNextFile() {
     else {
       return true;
     }
-
-    if (fIterator_.entryReady() && (procEventsFile_ >= minEventsFile_)) {
-      openNextFile();
-      continue;
-    }
   }
 
   return true;
-}
-
-bool GEMStreamReader::isFileOpen() {
-  if (hasSecFile_)
-    return (fin_.is_open() || fin2_.is_open());
-  return fin_.is_open();
 }
 
 void GEMStreamReader::openNextFile() { 
   closeFile();
 
   RawEntryIterator::Entry entry = fIterator_.open();
+  std::string path = entry.get_data_path();
   
-  if (openFile(entry.rawfile, fin_))
+  if (openFile(path, fin_))
     procEventsFile_ = 0;
-
-  if (hasSecFile_) {
-    openFile(entry.secrawfile, fin2_);
-  }
 }
 
 void GEMStreamReader::closeFile() {
