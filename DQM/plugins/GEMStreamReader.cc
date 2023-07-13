@@ -25,7 +25,7 @@
 using namespace std;
 
 GEMStreamReader::GEMStreamReader(edm::ParameterSet const& pset, edm::InputSourceDescription const& desc)
-  : ProducerSourceFromFiles(pset, desc, true)
+  : ProducerSourceBase(pset, desc, true)
   , fIterator_(pset)
   , hasSecFile_(pset.getUntrackedParameter<bool>("secFile", false))
   , fedId_(pset.getUntrackedParameter<int>("fedId", 10))
@@ -106,7 +106,8 @@ void GEMStreamReader::openNextFile() {
   closeFile();
 
   RawEntryIterator::Entry entry = fIterator_.open();
-  std::string path = entry.get_data_path();
+  //std::string path = entry.get_data_path();
+  std::string path = entry.rawfile;
   
   if (openFile(path, fin_))
     procEventsFile_ = 0;
@@ -325,7 +326,7 @@ void GEMStreamReader::fillDescription(edm::ParameterSetDescription& desc) {
   desc.addUntracked<bool>("flagEndOfRunKills", false);
   desc.addUntracked<int>("minEventsPerFile", 1);
   RawEntryIterator::fillDescription(desc);
-  ProducerSourceFromFiles::fillDescription(desc);
+  ProducerSourceBase::fillDescription(desc);
 }
 
 DEFINE_FWK_INPUT_SOURCE(GEMStreamReader);
