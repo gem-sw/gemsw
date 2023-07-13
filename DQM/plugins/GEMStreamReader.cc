@@ -111,6 +111,11 @@ void GEMStreamReader::openNextFile() {
   
   if (openFile(path, fin_))
     procEventsFile_ = 0;
+  
+  if (hasSecFile_) {
+    std::string secpath = entry.secrawfile;
+    openFile(secpath, fin2_);
+  }
 }
 
 void GEMStreamReader::closeFile() {

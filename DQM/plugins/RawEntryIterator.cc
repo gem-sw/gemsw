@@ -20,12 +20,12 @@ RawEntryIterator::Entry
 RawEntryIterator::Entry::load_entry(const std::string& run_path,
                                    const std::string& filename,
                                    const unsigned int entryNumber,
-                                   bool sec_file) {
+                                   bool secFile) {
 
   Entry entry;
   entry.filename = filename;
   entry.run_path = run_path;
-  entry.sec_file =  sec_file;
+  entry.sec_file =  secFile;
   
   entry.entry_number = entryNumber;
 
@@ -33,6 +33,11 @@ RawEntryIterator::Entry::load_entry(const std::string& run_path,
   boost::property_tree::read_json(entry.get_entry_path(), pt);
 
   entry.rawfile = pt.get<std::string>("rawfile", "");
+  if (secFile) {
+    entry.secrawfile = pt.get<std::string>("secrawfile", "");
+  } else {
+    entry.secrawfile = "";
+  }
 
   return entry;
 }
