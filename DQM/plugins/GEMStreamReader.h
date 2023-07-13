@@ -12,7 +12,7 @@
 #include "FWCore/Framework/interface/Run.h"
 #include "FWCore/Framework/interface/InputSourceMacros.h"
 
-#include "FWCore/Sources/interface/ProducerSourceFromFiles.h"
+#include "FWCore/Sources/interface/ProducerSourceBase.h"
 
 #include "DataFormats/FEDRawData/interface/FEDRawDataCollection.h"
 #include "DataFormats/Provenance/interface/Timestamp.h"
@@ -24,7 +24,7 @@
 #include <vector>
 #include <fstream>
 
-class GEMStreamReader : public edm::ProducerSourceFromFiles {
+class GEMStreamReader : public edm::ProducerSourceBase {
 public:
   // construction/destruction
   GEMStreamReader(edm::ParameterSet const& pset, edm::InputSourceDescription const& desc);

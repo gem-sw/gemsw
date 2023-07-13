@@ -7,6 +7,9 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+
 #include <boost/regex.hpp>
 
 #include <fmt/printf.h>
@@ -25,12 +28,17 @@ RawEntryIterator::Entry::load_entry(const std::string& run_path,
   entry.sec_file =  sec_file;
   
   entry.entry_number = entryNumber;
-  
+
+  boost::property_tree::ptree pt;
+  boost::property_tree::read_json(entry.get_entry_path(), pt);
+
+  entry.rawfile = pt.get<std::string>("rawfile", "");
+
   return entry;
 }
 
 std::string 
-RawEntryIterator::Entry::get_data_path() const {
+RawEntryIterator::Entry::get_entry_path() const {
   // if (boost::starts_with(datafn, "/"))
   //  return datafn;
 
@@ -159,7 +167,7 @@ void RawEntryIterator::collect(bool ignoreTimers) {
 
   directory_iterator dend;
   for (directory_iterator diter(runPath_); diter != dend; ++diter) {
-    const boost::regex fn_re("run(\\d+)_f(\\d+)_([a-zA-Z0-9]+)(_.*)?\\.raw");
+    const boost::regex fn_re("run(\\d+)_f(\\d+)_([a-zA-Z0-9]+)(_.*)?\\.json");
     const boost::regex eor_re("run(\\d+).eor");
 
     const std::string filename = diter->path().filename().string();
