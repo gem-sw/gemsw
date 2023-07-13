@@ -3,8 +3,10 @@ QC8 and testbeam
 
 instructions for setting up
 ```bash
-cmsrel CMSSW_12_3_5_patch1
-cd CMSSW_12_3_5_patch1/src
+cmsrel CMSSW_13_0_9
+cd CMSSW_13_0_9/src
+cmsenv
+git cms-init -q
 git clone git@github.com:gem-sw/gemsw.git
 scram b -j10
 ```
@@ -12,15 +14,34 @@ scram b -j10
 # GE21 QC8 simulation
 instruction for GE21 QC8 simulation
 ```bash
-cmsrel CMSSW_12_5_2
-cd CMSSW_12_5_2/src
+cmsrel CMSSW_13_0_9
+cd CMSSW_13_0_9/src
 cmsenv
+git cms-init -q
+git cms-merge-topic yeckang:QC8Unpacker_13_0_X -q
 git clone git@github.com:gem-sw/gemsw.git
 scram b -j10
 cd gemsw/Analysis/test
 cmsRun simQC8GE21.py
 cmsRun qc8_HARVESTING.py
 ```
+
+# GE21 QC8 unpacking
+instruction for GE21 QC8 data unpacking (allowed to unpack the compressed data)
+```bash
+cmsrel CMSSW_13_0_9
+cd CMSSW_13_0_9/src
+cmsenv
+git cms-init -q
+git cms-merge-topic yeckang:QC8Unpacker_13_0_X -q
+git clone git@github.com:gem-sw/gemsw.git
+scram b -j10
+cd gemsw/EventFilter/test
+cmsRun qc8Unpack.py inputFiles=file:<file path 1>,file:<file path 2> maxEvents=<number of events to analyze>
+cmsRun qc8_HARVESTING.py
+```
+
+# The below instructions are out of date
 
 # testbeam unpacking
 instructions for unpacking the data from testbeam set up
