@@ -19,62 +19,50 @@
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/Run.h"
 
-#include "FWCore/Utilities/interface/ESGetToken.h"
-
 #include <memory>
-#include "boost/shared_ptr.hpp"
 
-namespace edm
-{
-  
-  class BaseFlatGunProducer : public one::EDProducer<one::WatchRuns,
-                                                     EndRunProducer>
-  {
-  
+namespace edm {
+
+  class BaseFlatGunProducer : public one::EDProducer<one::WatchRuns, EndRunProducer> {
   public:
-    BaseFlatGunProducer(const ParameterSet &);
-    virtual ~BaseFlatGunProducer();
-    void beginRun(const edm::Run & r, const edm::EventSetup&) override;
+    BaseFlatGunProducer(const ParameterSet&);
+    ~BaseFlatGunProducer() override;
+    void beginRun(const edm::Run& r, const edm::EventSetup&) override;
     void endRun(edm::Run const& r, const edm::EventSetup&) override;
     void endRunProduce(edm::Run& r, const edm::EventSetup&) override;
 
   private:
-   
+    const ESGetToken<HepPDT::ParticleDataTable, edm::DefaultRecord> fPDGTableToken;
+
   protected:
-  
     // non-virtuals ! this and only way !
     //
     // data members
-    
+
     // gun particle(s) characteristics
-    std::vector<int> fPartIDs ;
-    double           fMinPhi ;
-    double           fMaxPhi ;
-    double           fMinEta ;
-    double           fMaxEta ;
-    double           fMinTheta ;
-    double           fMaxTheta ;
-    bool	     	 fIsThetaFlat ; // If 'True': theta distribution is flat. If 'False': theta distribution is a cos^2
-    
+    std::vector<int> fPartIDs;
+    double fMinPhi;
+    double fMaxPhi;
+    double fMinTheta;
+    double fMaxTheta;
+    bool fIsThetaFlat;
 
     // the event format itself
     HepMC::GenEvent* fEvt;
 
-    // HepMC/HepPDT related things 
+    // HepMC/HepPDT related things
     // (for particle/event construction)
     //std::string      fPDGTablePath ;
-    //std::string      fPDGTableName ; 
+    //std::string      fPDGTableName ;
     // DefaultConfig::ParticleDataTable* fPDGTable;
     // DefaultConfig::ParticleDataTable* fTestTable ;
     // ESHandle<DefaultConfig::ParticleDataTable> fPDGTable ;
-    ESHandle<HepPDT::ParticleDataTable> fPDGTable ;
-    ESGetToken<HepPDT::ParticleDataTable, edm::DefaultRecord> fPDGTableBeginRun_; 
-            	    	
-    int              fVerbosity ;
+    ESHandle<HepPDT::ParticleDataTable> fPDGTable;
 
-    bool             fAddAntiParticle;
-    
+    int fVerbosity;
+
+    bool fAddAntiParticle;
   };
-} 
+}  // namespace edm
 
 #endif

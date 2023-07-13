@@ -1,5 +1,5 @@
-#ifndef QC8Validation_H
-#define QC8Validation_H
+#ifndef QC8TrackValidation_H
+#define QC8TrackValidation_H
 // cd /cms/ldap_home/iawatson/scratch/GEM/CMSSW_10_1_5/src/ && eval `scramv1 runtime -sh` && eval `scramv1 runtime -sh` && scram b -j 10
 // cd ../../.. && source /cvmfs/cms.cern.ch/cmsset_default.sh && eval `scramv1 runtime -sh` && eval `scramv1 runtime -sh` && scram b -j 10
 // system include files
@@ -57,10 +57,10 @@ using namespace std;
 typedef std::tuple<int, int> Key2;
 typedef std::tuple<int, int, int> Key3;
 
-class QC8Validation : public DQMEDAnalyzer {
+class QC8TrackValidation : public DQMEDAnalyzer {
 public:
-  explicit QC8Validation(const edm::ParameterSet&);
-  ~QC8Validation();
+  explicit QC8TrackValidation(const edm::ParameterSet&);
+  ~QC8TrackValidation();
 
 private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);

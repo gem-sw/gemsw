@@ -7,28 +7,56 @@ QC8Harvestor::QC8Harvestor(const edm::ParameterSet& pset)
 QC8Harvestor::~QC8Harvestor() {}
 
 void QC8Harvestor::dqmEndJob(DQMStore::IBooker& booker, DQMStore::IGetter& getter) {
-  TString track_path = "GEM/QC8/track/";
-  TString rechit_path = "GEM/QC8/rechit/";
-  TString eff_path = "GEM/QC8/efficiency/";
-  for (int i = 0; i < 7; i++) {
-    int ch_num = i*2+1;
-    TString track_histName_ch = track_path + Form("track_occ_ch%d", ch_num);
-    TString rechit_histName_ch = rechit_path + Form("rechit_occ_ch%d", ch_num);
+  {
+    TString track_path = "GEM/QC8Track/track/";
+    TString rechit_path = "GEM/QC8Track/rechit/";
+    TString eff_path = "GEM/QC8Track/efficiency/";
+    for (int i = 0; i < 7; i++) {
+      int ch_num = i+1;
+      TString track_histName_ch = track_path + Form("track_occ_ch%d", ch_num);
+      TString rechit_histName_ch = rechit_path + Form("rechit_occ_ch%d", ch_num);
 
-    TString eff_name_ch = Form("efficiency_ch%d", ch_num);
-    TString eff_title_ch = Form("efficiency ch%d", ch_num);
+      TString eff_name_ch = Form("efficiency_ch%d", ch_num);
+      TString eff_title_ch = Form("efficiency ch%d", ch_num);
 
-    bookEff2D(booker, getter, rechit_histName_ch, track_histName_ch, eff_path, eff_name_ch, eff_title_ch);
+      bookEff2D(booker, getter, rechit_histName_ch, track_histName_ch, eff_path, eff_name_ch, eff_title_ch);
 
-    for (int j = 0; j < 4; j++) {
-      int module_num = 5+j;
-      TString track_histName_module = track_histName_ch + Form("_module%d", module_num);
-      TString rechit_histName_module = rechit_histName_ch + Form("_module%d", module_num);
+      for (int j = 0; j < 4; j++) {
+        int module_num = 5+j;
+        TString track_histName_module = track_histName_ch + Form("_module%d", module_num);
+        TString rechit_histName_module = rechit_histName_ch + Form("_module%d", module_num);
 
-      TString eff_name_module = Form("efficiency_ch%d_module%d", ch_num, module_num);
-      TString eff_title_module = Form("efficiency ch%d module%d", ch_num, module_num);
+        TString eff_name_module = Form("efficiency_ch%d_module%d", ch_num, module_num);
+        TString eff_title_module = Form("efficiency ch%d module%d", ch_num, module_num);
 
-      bookEff2D(booker, getter, rechit_histName_module, track_histName_module, eff_path, eff_name_module, eff_title_module);
+        bookEff2D(booker, getter, rechit_histName_module, track_histName_module, eff_path, eff_name_module, eff_title_module);
+      }
+    }
+  }
+  {
+    TString simhit_path = "GEM/QC8Hit/simhit/";
+    TString rechit_path = "GEM/QC8Hit/rechit/";
+    TString eff_path = "GEM/QC8Hit/efficiency/";
+    for (int i = 0; i < 7; i++) {
+      int ch_num = i+1;
+      TString simhit_histName_ch = simhit_path + Form("simhit_occ_ch%d", ch_num);
+      TString rechit_histName_ch = rechit_path + Form("rechit_occ_ch%d", ch_num);
+
+      TString eff_name_ch = Form("efficiency_ch%d", ch_num);
+      TString eff_title_ch = Form("efficiency ch%d", ch_num);
+
+      bookEff2D(booker, getter, rechit_histName_ch, simhit_histName_ch, eff_path, eff_name_ch, eff_title_ch);
+
+      for (int j = 0; j < 4; j++) {
+        int module_num = 5+j;
+        TString simhit_histName_module = simhit_histName_ch + Form("_module%d", module_num);
+        TString rechit_histName_module = rechit_histName_ch + Form("_module%d", module_num);
+
+        TString eff_name_module = Form("efficiency_ch%d_module%d", ch_num, module_num);
+        TString eff_title_module = Form("efficiency ch%d module%d", ch_num, module_num);
+
+        bookEff2D(booker, getter, rechit_histName_module, simhit_histName_module, eff_path, eff_name_module, eff_title_module);
+      }
     }
   }
 }

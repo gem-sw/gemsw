@@ -9,6 +9,7 @@ process.load('Configuration.StandardSequences.Services_cff')
 process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedGauss_cfi')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
@@ -17,8 +18,8 @@ process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.DigiToRaw_cff')
 process.load('Configuration.StandardSequences.RawToDigi_cff')
 process.load("Configuration.StandardSequences.Reconstruction_cff")
-# test beam detectors at y-axis - GE21 at (0,110*cm,0), GE0 at (0,120*cm,0)
-process.load('gemsw.Geometry.GeometryQC8GE21_cff')
+#process.load("DQM.Integration.config.environment_cfi")
+process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
 
 #process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 #from Configuration.AlCa.GlobalTag import GlobalTag
@@ -112,14 +113,34 @@ process.mix = cms.EDProducer("MixingModule",
     ),
 )
 
-process.gemPacker.useDBEMap = False
+process.gemPacker.useDBEMap = cms.bool(True)
+process.gemPacker.fedIdStart = cms.uint32(1479)
+process.gemPacker.fedIdEnd = cms.uint32(1479)
 
 process.rawDataCollector.RawCollectionList = cms.VInputTag(cms.InputTag("gemPacker"))
 
+from Configuration.AlCa.GlobalTag import GlobalTag
+process.gemGeometry.applyAlignment = cms.bool(True)
+
+process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                             tag=cms.string("GEMChMapRcd"),
+                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_QC8_dummy.db")),
+                                    cms.PSet(record = cms.string('GEMAlignmentRcd'),
+                                             tag = cms.string("QC8GEMAlignment_test"),
+                                             connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
+                                    cms.PSet(record = cms.string('GEMAlignmentErrorExtendedRcd'),
+                                             tag = cms.string("QC8GEMAlignmentErrorExtended_test"),
+                                             connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
+                                    cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
+)
+
 process.muonGEMDigis.readMultiBX = True
 process.muonGEMDigis.useDBEMap = process.gemPacker.useDBEMap
+process.muonGEMDigis.fedIdStart = process.gemPacker.fedIdStart
+process.muonGEMDigis.fedIdEnd = process.gemPacker.fedIdEnd
 process.muonGEMDigis.keepDAQStatus = True
-process.gemRecHits.gemDigiLabel = cms.InputTag('simMuonGEMDigis')
+process.muonGEMDigis.isP5data = False
+process.gemRecHits.gemDigiLabel = cms.InputTag('muonGEMDigis')
 
 process.load('MagneticField.Engine.uniformMagneticField_cfi')
 process.load('Configuration.StandardSequences.Reconstruction_cff')
@@ -135,6 +156,8 @@ process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderQC8",
                                         minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
                                         direction = cms.vdouble(0,0,1),
+                                        topSeedingChamber = cms.int32(7),
+                                        botSeedingChamber = cms.int32(1),
                                         useModuleColumns = cms.bool(True),
                                         doFit = cms.bool(True),
                                         MuonSmootherParameters = cms.PSet(
@@ -156,35 +179,53 @@ process.TrackAnalyzer = cms.EDAnalyzer("QC8TrackAnalyzer",
                                        tracks = cms.InputTag("GEMTrackFinder"),
                                        trajs = cms.InputTag("GEMTrackFinder"),
                                        )
-process.Validation = DQMEDAnalyzer("QC8Validation",
-                                   process.MuonServiceProxy,
-                                   gemRecHitLabel = cms.InputTag("gemRecHits"),
-                                   tracks = cms.InputTag("GEMTrackFinder"),
-                                   trajs = cms.InputTag("GEMTrackFinder"),
-                                   )
+#process.HitValidation = DQMEDAnalyzer("QC8HitValidation",
+#                                      gemSimHitLabel = cms.InputTag("g4SimHits", "MuonGEMHits"),
+#                                      gemRecHitLabel = cms.InputTag("gemRecHits"),
+#                                      )
+#process.TrackValidation = DQMEDAnalyzer("QC8TrackValidation",
+#                                        process.MuonServiceProxy,
+#                                        gemRecHitLabel = cms.InputTag("gemRecHits"),
+#                                        tracks = cms.InputTag("GEMTrackFinder"),
+#                                        trajs = cms.InputTag("GEMTrackFinder"),
+#                                        )
+process.DQMDAQ = DQMEDAnalyzer("QC8DAQStatusSource")
+process.DQMRecHit = DQMEDAnalyzer("QC8RecHitSource")
+process.DQMHarvestor = DQMEDHarvester("QC8DQMHarvestor")
+
+#process.Harvester = DQMEDHarvester("QC8Harvestor")
+
+#process.dqmEnv.subSystemFolder = "GEM"
+#process.dqmEnv.eventInfoFolder = "EventInfo"
+#process.dqmSaver.path = ""
+#process.dqmSaver.tag = "GEM"
 
 process.generation_step = cms.Path(process.generator+process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.mix+process.simMuonGEMDigis)
-#process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
+process.digi2raw_step = cms.Path(process.gemPacker+process.rawDataCollector+process.muonGEMDigis)
 process.localreco_step = cms.Path(process.gemRecHits)
 process.reco_step = cms.Path(process.GEMTrackFinder)
 process.analyzer_step = cms.Path(process.TrackAnalyzer)
-process.validation_step = cms.Path(process.Validation)
-process.DQMoutput_step = cms.EndPath(process.DQMoutput)
+#process.validation_step = cms.Path(process.HitValidation*process.TrackValidation+process.Harvester)
+#process.DQM_step = cms.Path(process.DQMDAQ*process.DQMRecHit)
+#process.DQMoutput_step = cms.EndPath(process.DQMoutput)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
+#process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
+#process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 
 process.schedule = cms.Schedule(process.generation_step,
 process.simulation_step,
 process.digitisation_step,
+process.digi2raw_step,
 process.localreco_step,
 process.reco_step,
 process.analyzer_step,
-process.validation_step,
-process.DQMoutput_step,
-process.endjob_step,
-process.FEVTDEBUGoutput_step)
+#process.DQM_step,
+#process.DQMoutput_step,
+#process.dqmout,)
+process.endjob_step,)
+#process.FEVTDEBUGoutput_step)
 
 process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGeneratorService.generator
 
