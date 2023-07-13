@@ -12,7 +12,7 @@ void QC8Harvestor::dqmEndJob(DQMStore::IBooker& booker, DQMStore::IGetter& gette
     TString rechit_path = "GEM/QC8Track/rechit/";
     TString eff_path = "GEM/QC8Track/efficiency/";
     for (int i = 0; i < 7; i++) {
-      int ch_num = i*2+1;
+      int ch_num = i+1;
       TString track_histName_ch = track_path + Form("track_occ_ch%d", ch_num);
       TString rechit_histName_ch = rechit_path + Form("rechit_occ_ch%d", ch_num);
 
@@ -38,7 +38,7 @@ void QC8Harvestor::dqmEndJob(DQMStore::IBooker& booker, DQMStore::IGetter& gette
     TString rechit_path = "GEM/QC8Hit/rechit/";
     TString eff_path = "GEM/QC8Hit/efficiency/";
     for (int i = 0; i < 7; i++) {
-      int ch_num = i*2+1;
+      int ch_num = i+1;
       TString simhit_histName_ch = simhit_path + Form("simhit_occ_ch%d", ch_num);
       TString rechit_histName_ch = rechit_path + Form("rechit_occ_ch%d", ch_num);
 

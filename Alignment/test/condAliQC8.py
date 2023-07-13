@@ -7,7 +7,7 @@ process.load("CondCore.CondDB.CondDB_cfi")
 
 process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi")
 process.load("Geometry.GEMGeometryBuilder.gemGeometry_cfi")
-process.load('gemsw.Geometry.GeometryQC8GE21_cff')
+process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
 process.load('Configuration.StandardSequences.CondDBESSource_cff')
 
 process.load("Geometry.GEMGeometryBuilder.gemGeometry_cfi")

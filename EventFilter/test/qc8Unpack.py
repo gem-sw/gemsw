@@ -27,8 +27,8 @@ if debug:
     process.MessageLogger.cerr.threshold = "DEBUG"
     process.MessageLogger.debugModules = ["source", "muonGEMDigis"]
     process.maxEvents.input = cms.untracked.int32(100)
-else:
-    process.MessageLogger.cerr.FwkReport.reportEvery = 5000
+#else:
+#    process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 process.source = cms.Source("GEMStreamSource",
                             fileNames=cms.untracked.vstring(
@@ -54,7 +54,7 @@ process.load('RecoLocalMuon.GEMRecHit.gemRecHits_cfi')
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.load('gemsw.Geometry.GeometryQC8GE21_cff')
+process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
 process.gemGeometry.applyAlignment = cms.bool(True)
 
 process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
@@ -84,8 +84,8 @@ process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderQC8",
                                         minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
                                         direction = cms.vdouble(0,0,1),
-                                        topSeedingChamber = cms.int32(9),
-                                        botSeedingChamber = cms.int32(1),
+                                        topSeedingChamber = cms.int32(7),
+                                        botSeedingChamber = cms.int32(2),
                                         useModuleColumns = cms.bool(True),
                                         doFit = cms.bool(True),
                                         MuonSmootherParameters = cms.PSet(
@@ -110,29 +110,41 @@ process.TrackValidation = DQMEDAnalyzer("QC8TrackValidation",
                                         trajs = cms.InputTag("GEMTrackFinder"),
                                         )
 
-process.output = cms.OutputModule("PoolOutputModule",
-                                  dataset = cms.untracked.PSet(
-                                      dataTier = cms.untracked.string('RECO'),
-                                      filterName = cms.untracked.string('')
-                                  ),
-                                  outputCommands=cms.untracked.vstring(
-                                      "keep *",
-                                      "drop FEDRawDataCollection_*_*_*"
-                                  ),
-                                  fileName=cms.untracked.string('output_step1.root'),
-                                  splitLevel = cms.untracked.int32(0)
+process.load('Configuration.EventContent.EventContent_cff')
+process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
+    dataset = cms.untracked.PSet(
+        dataTier = cms.untracked.string('DQMIO'),
+        filterName = cms.untracked.string('')
+    ),
+    fileName = cms.untracked.string('file:track_inDQM.root'),
+    outputCommands = process.DQMEventContent.outputCommands,
+    splitLevel = cms.untracked.int32(0)
 )
 
-process.load("DQM.Integration.config.environment_cfi")
-process.dqmEnv.subSystemFolder = "GEM"
-process.dqmEnv.eventInfoFolder = "EventInfo"
-process.dqmSaver.path = ""
-process.dqmSaver.tag = "GEM"
+#process.output = cms.OutputModule("PoolOutputModule",
+#                                  dataset = cms.untracked.PSet(
+#                                      dataTier = cms.untracked.string('RECO'),
+#                                      filterName = cms.untracked.string('')
+#                                  ),
+#                                  outputCommands=cms.untracked.vstring(
+#                                      "keep *",
+#                                      "drop FEDRawDataCollection_*_*_*"
+#                                  ),
+#                                  fileName=cms.untracked.string('output_step1.root'),
+#                                  splitLevel = cms.untracked.int32(0)
+#)
+#
+#process.load("DQM.Integration.config.environment_cfi")
+#process.dqmEnv.subSystemFolder = "GEM"
+#process.dqmEnv.eventInfoFolder = "EventInfo"
+#process.dqmSaver.path = ""
+#process.dqmSaver.tag = "GEM"
 
 process.unpack = cms.Path(process.muonGEMDigis)
 process.localreco = cms.Path(process.gemRecHits)
 process.reco_step = cms.Path(process.GEMTrackFinder)
 process.validation_step = cms.Path(process.TrackValidation)
-process.DQM_step = cms.Path(process.DQMDAQ*process.DQMRecHit)
-process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
+process.dqmout_step = cms.EndPath(process.DQMoutput)
+#process.DQM_step = cms.Path(process.DQMDAQ*process.DQMRecHit)
+#process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 #process.outpath = cms.EndPath(process.output)

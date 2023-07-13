@@ -26,40 +26,40 @@
             <Translation x="0*cm" y="0*cm" z="0*cm" />
             <rRotation name="x90" />
         </PosPart>
-        <PosPart copyNumber="3">
+        <PosPart copyNumber="52">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
             <Translation x="0*cm" y="0*cm" z="20*cm" />
             <rRotation name="x90" />
         </PosPart>
 
-        <PosPart copyNumber="5">
+        <PosPart copyNumber="3">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
             <Translation x="0*cm" y="0*cm" z="40*cm" />
             <rRotation name="x90" />
         </PosPart>
-        <PosPart copyNumber="7">
+        <PosPart copyNumber="54">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
             <Translation x="0*cm" y="0*cm" z="60*cm" />
             <rRotation name="x90" />
         </PosPart>
 
-        <PosPart copyNumber="9">
+        <PosPart copyNumber="5">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
             <Translation x="0*cm" y="0*cm" z="80*cm" />
             <rRotation name="x90" />
         </PosPart>
-        <PosPart copyNumber="11">
+        <PosPart copyNumber="56">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
             <Translation x="0*cm" y="0*cm" z="100*cm" />
             <rRotation name="x90" />
         </PosPart>
 
-        <PosPart copyNumber="13">
+        <PosPart copyNumber="7">
             <rParent name="gem21:GEMDisk21LP"/>
             <rChild name="gem21:GEMBox21B"/>
             <Translation x="0*cm" y="0*cm" z="120*cm" />
