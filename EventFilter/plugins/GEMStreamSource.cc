@@ -343,16 +343,14 @@ void GEMStreamSource::readFile(char* buffer, size_t size, std::ifstream& fin, ZS
 
       // If compressed buffer has been read, first read compressed buffer from file:
       if (zstd_read != inBuff.size) {
-        throw cms::Exception("GEMStreamSource", "file reading erro") << "file stream reads wrong length";
+        inBuff.size = zstd_read;
+        edm::LogWarning("GEMStreamSource") << "The pointer reached to the end of the file, it may drop some events.";
       }
       inBuff.pos = 0;
       inBuff.size = zstd_read;
     }
 
-    //std::cout << inBuff.pos << std::endl;
     size_t ret = ZSTD_decompressStream(context, &outBuff, &inBuff);
-    //std::cout << inBuff.pos << std::endl;
-    //std::cout << int(*buffer) << std::endl;
 
     if (ZSTD_isError(ret))
       throw cms::Exception("GEMStreamSource", "ZSTD uncompression error") << "Error core " << ret << ", message:" << ZSTD_getErrorName(ret);
