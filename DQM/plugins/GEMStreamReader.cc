@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
-// #include <zlib.h>
+#include <zlib.h>
+#include <zstd.h>
 
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
@@ -35,6 +36,29 @@ GEMStreamReader::GEMStreamReader(edm::ParameterSet const& pset, edm::InputSource
 {
   produces<FEDRawDataCollection>();
   init();
+  isZstFile_ = false;
+  if (isCompressed(fin_)) {
+    if (!hasSecFile) isZstFile_ = true;
+    else if (isCompressed(fin2_)) isZstFile_ = true;
+    else throw cms::Exception("GEMStreamSource::GEMStreamSource") << "The second file is not compressed!";
+  }
+
+  if (isZstFile_) {
+    zstdBufferIn_.pos = ZSTD_DStreamInSize();
+    zstdBufferIn_.size = ZSTD_DStreamInSize();
+    zstdBufferInData_ = new char[zstdBufferIn_.size];
+    zstdBufferIn_.src = zstdBufferInData_;
+
+    zstdContext_ = ZSTD_createDCtx();
+    if (hasSecFile) {
+      zstdBufferIn2_.pos = ZSTD_DStreamInSize();
+      zstdBufferIn2_.size = ZSTD_DStreamInSize();
+      zstdBufferInData2_ = new char[zstdBufferIn2_.size];
+      zstdBufferIn2_.src = zstdBufferInData2_;
+
+      zstdContext2_ = ZSTD_createDCtx();
+    }
+  }
 }
 
 void GEMStreamReader::init() {
@@ -160,14 +184,42 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::prepareNextEvent() {
   return eview;
 }
 
+void GEMStreamSource::resetBuffer(std::ifstream& fin, ZSTD_DCtx* &context, ZSTD_inBuffer& inBuff) {
+  inBuff.pos = ZSTD_DStreamInSize();
+  inBuff.size = ZSTD_DStreamInSize();
+  context = ZSTD_createDCtx();
+}
+
+size_t GEMStreamSource::countBuffer(ZSTD_outBuffer& outBuff) {
+  if (outBuff.size == outBuff.pos) return outBuff.size;
+  else return 0;
+}
+
+bool GEMStreamSource::isCompressed(std::ifstream& fin) {
+  uint32_t magic;
+  fin.read((char*)&magic, 4);
+  size_t magic_read = fin.gcount();
+  if (magic_read != 4) {
+    throw cms::Exception("GEMStreamSource::isCompressed")
+          << "Error reading magic from first file: needed 4 bytes, but read " <<  std::to_string(magic_read);
+  } else if (magic == ZSTD_MAGICNUMBER) {
+    std::cout << "input file is zstd compressed" << std::endl;
+    fin.seekg(0, fin.beg);
+    return true;
+  }
+  std::cout << "input file is not zstd compressed" << std::endl;
+  fin.seekg(0, fin.beg);
+  return false;
+}
+
 bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
                                          edm::TimeValue_t& theTime,
                                          edm::EventAuxiliary::ExperimentType& eType) {
 
   rawData_ = std::make_unique<FEDRawDataCollection>();
 
-  // std::unique_ptr<FRDEventMsgView> frdEventMsg = getEventMsg(fin_);
-  std::unique_ptr<FRDEventMsgView> frdEventMsg = prepareNextEvent();
+  // std::unique_ptr<FRDEventMsgView> frdEventMsg = prepareNextEvent();
+  std::unique_ptr<FRDEventMsgView> frdEventMsg = getEventMsg(fin_, isZstFile_, zstdContext_, zstdBufferIn_, zstdBufferOut_);
   if (!frdEventMsg) return false;
 
   //id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
@@ -183,7 +235,7 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
   memcpy(fedData.data(), words->data(), fedSize);
 
   if (hasSecFile_) {
-    std::unique_ptr<FRDEventMsgView> frdEventMsg2 = getEventMsg(fin2_);
+    std::unique_ptr<FRDEventMsgView> frdEventMsg2 = getEventMsg(fin2_, isZstFile_, zstdContext2_, zstdBufferIn2_, zstdBufferOut2_);
     if (!frdEventMsg2) return false;
 
     if (frdEventMsg->event() != frdEventMsg2->event()) {
@@ -222,6 +274,11 @@ bool GEMStreamReader::openFile(const std::string& fileName, std::ifstream& fin) 
   return fin.is_open();
 }
 
+std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin, bool isZstFile, ZSTD_DCtx* &context, ZSTD_inBuffer& inBuff, ZSTD_outBuffer& outBuff) {
+  if (isZstFile) return getEventMsg(fin, context, inBuff, outBuff);
+  else return getEventMsg(fin);
+}
+
 std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin) {
   if (fin.peek() == EOF) return nullptr;
   
@@ -242,10 +299,12 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
         if (fileHead.headerSize_ < buf_sz)
           throw cms::Exception("GEMStreamReader::setRunAndEventInfo")
               << "Invalid FRD file header (size mismatch) in file ";
-        else if (fileHead.headerSize_ > buf_sz)
+        else if (fileHead.headerSize_ > buf_sz) {
           fin.seekg(fileHead.headerSize_, fin.beg);
-      } else
+        }
+      } else {
         fin.seekg(0, fin.beg);
+      }
     }
   }
 
@@ -287,6 +346,76 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
   return frdEventMsg;
 }
 
+std::unique_ptr<FRDEventMsgView> GEMStreamSource::getEventMsg(std::ifstream& fin, ZSTD_DCtx* &context, ZSTD_inBuffer& inBuff, ZSTD_outBuffer& outBuff) {
+  if (fin.peek() == EOF) return NULL;
+  
+  //look for FRD header at beginning of the file and skip it
+  if (fin.tellg() == 0) {
+    constexpr size_t buf_sz = sizeof(FRDFileHeader_v1);  //try to read v1 FRD header size
+    FRDFileHeader_v1 fileHead;
+    readFile((char*)&fileHead, buf_sz, fin, context, inBuff, outBuff);
+
+    if (countBuffer(outBuff) == 0)
+      throw cms::Exception("GEMStreamSource::setRunAndEventInfo")
+          << "Unable to read file or empty file";
+    else if (countBuffer(outBuff) < (ssize_t)buf_sz) {
+      fin.seekg(0);
+      if (isZstFile_) resetBuffer(fin, context, inBuff);
+    } else {
+      uint16_t frd_version = getFRDFileHeaderVersion(fileHead.id_, fileHead.version_);
+      if (frd_version >= 1) {
+        if (fileHead.headerSize_ < buf_sz)
+          throw cms::Exception("GEMStreamSource::setRunAndEventInfo")
+              << "Invalid FRD file header (size mismatch) in file ";
+        else if (fileHead.headerSize_ > buf_sz) {
+          fin.seekg(fileHead.headerSize_, fin.beg);
+          if (isZstFile_) resetBuffer(fin, context, inBuff);
+        }
+      } else {
+        fin.seekg(0, fin.beg);
+        if (isZstFile_) resetBuffer(fin, context, inBuff);
+      }
+    }
+  }
+
+  if (detectedFRDversion_ == 0) {
+    readFile((char*)&detectedFRDversion_, sizeof(uint16_t), fin, context, inBuff, outBuff);
+    readFile((char*)&flags_, sizeof(uint16_t), fin, context, inBuff, outBuff);
+    assert(detectedFRDversion_ > 0 && detectedFRDversion_ <= FRDHeaderMaxVersion);
+    if (buffer_.size() < FRDHeaderVersionSize[detectedFRDversion_])
+      buffer_.resize(FRDHeaderVersionSize[detectedFRDversion_]);
+    *((uint32_t*)(&buffer_[0])) = detectedFRDversion_;
+    readFile(&buffer_[0] + sizeof(uint32_t), FRDHeaderVersionSize[detectedFRDversion_] - sizeof(uint32_t), fin, context, inBuff, outBuff);
+    assert(countBuffer(outBuff) == FRDHeaderVersionSize[detectedFRDversion_] - (unsigned int)(sizeof(uint32_t)));
+  } else {
+    if (buffer_.size() < FRDHeaderVersionSize[detectedFRDversion_])
+      buffer_.resize(FRDHeaderVersionSize[detectedFRDversion_]);
+    readFile(&buffer_[0], FRDHeaderVersionSize[detectedFRDversion_], fin, context, inBuff, outBuff);
+    assert(countBuffer(outBuff) == FRDHeaderVersionSize[detectedFRDversion_]);
+  }
+
+  std::unique_ptr<FRDEventMsgView> frdEventMsg(new FRDEventMsgView(&buffer_[0]));
+
+  const uint32_t totalSize = frdEventMsg->size();
+  if (totalSize > buffer_.size()) {
+    buffer_.resize(totalSize);
+  }
+  if (totalSize > FRDHeaderVersionSize[detectedFRDversion_]) {
+    readFile(&buffer_[0] + FRDHeaderVersionSize[detectedFRDversion_],
+             totalSize - FRDHeaderVersionSize[detectedFRDversion_], fin, context, inBuff, outBuff);
+    if (countBuffer(outBuff) != totalSize - FRDHeaderVersionSize[detectedFRDversion_]) {
+      throw cms::Exception("GEMStreamSource::setRunAndEventInfo") << "premature end of file ";
+    }
+    frdEventMsg = std::make_unique<FRDEventMsgView>(&buffer_[0]);
+  }
+
+  LogDebug("GEMStreamSource") << "frdEventMsg run=" << frdEventMsg->run() << " lumi=" << frdEventMsg->lumi()
+                              << " event=" << frdEventMsg->event() << " size=" << int(frdEventMsg->size())
+                              << " eventSize=" << int(frdEventMsg->eventSize());
+
+  return frdEventMsg;
+}
+
 std::vector<uint64_t>* GEMStreamReader::makeFEDRAW(FRDEventMsgView* frdEventMsg, uint16_t fedId) {
   uint64_t* event = (uint64_t*)frdEventMsg->payload();
   GEMAMC amc;
@@ -322,6 +451,36 @@ std::vector<uint64_t>* GEMStreamReader::makeFEDRAW(FRDEventMsgView* frdEventMsg,
                               << " words=" << words->size();
   return words;
   
+}
+
+void GEMStreamSource::readFile(char* buffer, size_t size, std::ifstream& fin, ZSTD_DCtx* &context, ZSTD_inBuffer& inBuff, ZSTD_outBuffer& outBuff) {
+  outBuff = { buffer, size, 0 };
+
+  // Decompression stops when output buffer has same size as requested
+  while (outBuff.pos < size) {
+    if (inBuff.pos == inBuff.size) {
+
+      fin.read((char*)inBuff.src, inBuff.size);
+
+      size_t zstd_read = fin.gcount();
+
+      // If compressed buffer has been read, first read compressed buffer from file:
+      if (zstd_read != inBuff.size) {
+        throw cms::Exception("GEMStreamSource", "file reading erro") << "file stream reads wrong length";
+      }
+      inBuff.pos = 0;
+      inBuff.size = zstd_read;
+    }
+    
+    //std::cout << inBuff.pos << std::endl;
+    size_t ret = ZSTD_decompressStream(context, &outBuff, &inBuff);
+    //std::cout << inBuff.pos << std::endl;
+    //std::cout << int(*buffer) << std::endl;
+
+    
+    if (ZSTD_isError(ret))
+      throw cms::Exception("GEMStreamSource", "ZSTD uncompression error") << "Error core " << ret << ", message:" << ZSTD_getErrorName(ret);
+  }
 }
 
 void GEMStreamReader::fillDescription(edm::ParameterSetDescription& desc) {
