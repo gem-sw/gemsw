@@ -170,7 +170,7 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::prepareNextEvent() {
       fIterator_.delay();
     } 
     else {
-      eview = getEventMsg(fin_);
+      eview = getEventMsg(fin_, isZstFile_, zstdContext_, zstdBufferIn_, zstdBufferOut_);
       
       if (eview == nullptr) {
         closeFile();
@@ -218,8 +218,7 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
 
   rawData_ = std::make_unique<FEDRawDataCollection>();
 
-  // std::unique_ptr<FRDEventMsgView> frdEventMsg = prepareNextEvent();
-  std::unique_ptr<FRDEventMsgView> frdEventMsg = getEventMsg(fin_, isZstFile_, zstdContext_, zstdBufferIn_, zstdBufferOut_);
+  std::unique_ptr<FRDEventMsgView> frdEventMsg = prepareNextEvent();
   if (!frdEventMsg) return false;
 
   //id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
@@ -281,7 +280,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
 
 std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin) {
   if (fin.peek() == EOF) return nullptr;
-  
   //look for FRD header at beginning of the file and skip it
   if (fin.tellg() == 0) {
     constexpr size_t buf_sz = sizeof(FRDFileHeader_v1);  //try to read v1 FRD header size
@@ -342,7 +340,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
   LogDebug("GEMStreamReader") << "frdEventMsg run=" << frdEventMsg->run() << " lumi=" << frdEventMsg->lumi()
                               << " event=" << frdEventMsg->event() << " size=" << int(frdEventMsg->size())
                                << " eventSize=" << int(frdEventMsg->eventSize());
-
   return frdEventMsg;
 }
 
@@ -466,16 +463,14 @@ void GEMStreamReader::readFile(char* buffer, size_t size, std::ifstream& fin, ZS
 
       // If compressed buffer has been read, first read compressed buffer from file:
       if (zstd_read != inBuff.size) {
-        throw cms::Exception("GEMStreamReader", "file reading erro") << "file stream reads wrong length";
+          inBuff.size = zstd_read;
+          edm::LogWarning("GEMStreamReader") << "The pointer reached to the end of the file, it may drop some events.";
       }
       inBuff.pos = 0;
       inBuff.size = zstd_read;
     }
     
-    //std::cout << inBuff.pos << std::endl;
     size_t ret = ZSTD_decompressStream(context, &outBuff, &inBuff);
-    //std::cout << inBuff.pos << std::endl;
-    //std::cout << int(*buffer) << std::endl;
 
     
     if (ZSTD_isError(ret))
