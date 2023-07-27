@@ -173,8 +173,9 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::prepareNextEvent() {
   for (;;) {
     
     bool next = prepareNextFile();
-    if (!next)
+    if (!next) 
       return nullptr;
+    
       
     if (!fin_.is_open()) {
       fIterator_.delay();
@@ -229,7 +230,9 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
   rawData_ = std::make_unique<FEDRawDataCollection>();
 
   std::unique_ptr<FRDEventMsgView> frdEventMsg = prepareNextEvent();
-  if (!frdEventMsg) return false;
+  if (!frdEventMsg) {
+    return false;
+  }
 
   //id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
   // should be set up frdEventMsg, but run is wrong and lumi is not set for DB emap
@@ -245,7 +248,9 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
 
   if (hasSecFile_) {
     std::unique_ptr<FRDEventMsgView> frdEventMsg2 = getEventMsg(fin2_, isZstFile_, zstdContext2_, zstdBufferIn2_, zstdBufferOut2_);
-    if (!frdEventMsg2) return false;
+    if (!frdEventMsg2) {
+      return false;
+    }
 
     if (frdEventMsg->event() != frdEventMsg2->event()) {
       cout << " event number does not match between files " << frdEventMsg->event() << " " << frdEventMsg2->event()
@@ -289,7 +294,9 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
 }
 
 std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin) {
-  if (fin.peek() == EOF) return nullptr;
+  typedef RawEntryIterator::State State;
+  if (fin.peek() == EOF && fIterator_.state() == State::EOR)
+    return nullptr;
   //look for FRD header at beginning of the file and skip it
   if (fin.tellg() == 0) {
     constexpr size_t buf_sz = sizeof(FRDFileHeader_v1);  //try to read v1 FRD header size
@@ -354,7 +361,9 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
 }
 
 std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin, ZSTD_DCtx* &context, ZSTD_inBuffer& inBuff, ZSTD_outBuffer& outBuff) {
-  if (fin.peek() == EOF) return NULL;
+   typedef RawEntryIterator::State State; 
+   if (fin.peek() == EOF && fIterator_.state() == State::EOR)
+    return NULL;
   
   //look for FRD header at beginning of the file and skip it
   if (fin.tellg() == 0) {
@@ -419,7 +428,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
   LogDebug("GEMStreamReader") << "frdEventMsg run=" << frdEventMsg->run() << " lumi=" << frdEventMsg->lumi()
                               << " event=" << frdEventMsg->event() << " size=" << int(frdEventMsg->size())
                               << " eventSize=" << int(frdEventMsg->eventSize());
-
   return frdEventMsg;
 }
 
