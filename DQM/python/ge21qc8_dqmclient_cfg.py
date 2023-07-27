@@ -43,7 +43,7 @@ process.load('RecoLocalMuon.GEMRecHit.gemRecHits_cfi')
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.load('gemsw.Geometry.GeometryQC8GE21_front_cff')
+# process.load('gemsw.Geometry.GeometryQC8GE21_front_cff')
 process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
 process.gemGeometry.applyAlignment = cms.bool(True)
 
@@ -110,7 +110,7 @@ process.dqmSaver.path = options.updir
 process.unpack = cms.Path(process.muonGEMDigis)
 process.localreco = cms.Path(process.gemRecHits)
 # process.reco_step = cms.Path(process.GEMTrackFinder)
-# process.validation_step = cms.Path(process.TrackValidation)
-# process.DQM_step = cms.Path(process.DQMDAQ*process.DQMRecHit)
+process.validation_step = cms.Path(process.TrackValidation)
+process.DQM_step = cms.Path(process.DQMDAQ*process.DQMRecHit)
 process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 #process.outpath = cms.EndPath(process.output)

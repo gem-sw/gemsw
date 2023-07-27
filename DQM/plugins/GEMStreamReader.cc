@@ -100,6 +100,11 @@ bool GEMStreamReader::prepareNextFile() {
     if ((!fin_.is_open()) && (!fIterator_.entryReady()) && (fIterator_.state() == State::EOR)) {
       return false;
     }
+  
+    if ((!fin_.is_open()) && (!fIterator_.entryReady()) && !(fIterator_.state() == State::EOR)) {
+      fIterator_.delay();
+      continue;
+    }
 
     if ((procEventsFile_ >= minEventsFile_) && (!fIterator_.entryReady()) && (fIterator_.state() == State::EOR)) {
       closeFile();
@@ -108,6 +113,11 @@ bool GEMStreamReader::prepareNextFile() {
 
     if (fIterator_.entryReady() && (procEventsFile_ >= minEventsFile_)) {
       openNextFile();
+      continue;
+    }
+  
+    if (!fIterator_.entryReady() && (procEventsFile_ >= minEventsFile_)) {
+      fIterator_.delay();
       continue;
     }
 
