@@ -18,26 +18,22 @@
 
 RawEntryIterator::Entry
 RawEntryIterator::Entry::load_entry(const std::string& run_path,
-                                   const std::string& filename,
+                                   const std::string& filename1,
+                                   const std::string& filename2,
                                    const unsigned int entryNumber,
                                    bool secFile) {
 
   Entry entry;
-  entry.filename = filename;
+  entry.filename1 = filename1;
+  entry.filename2 = filename2;   
   entry.run_path = run_path;
-  entry.sec_file =  secFile;
+  entry.sec_file = secFile;
   
   entry.entry_number = entryNumber;
 
-  boost::property_tree::ptree pt;
-  boost::property_tree::read_json(entry.get_entry_path(), pt);
-
-  entry.rawfile = pt.get<std::string>("rawfile", "");
-  if (secFile) {
-    entry.secrawfile = pt.get<std::string>("secrawfile", "");
-  } else {
-    entry.secrawfile = "";
-  }
+  std::filesystem::path p(run_path);
+  entry.rawfile = p / filename1;
+  entry.secrawfile = p / filename2;
 
   return entry;
 }
@@ -48,7 +44,6 @@ RawEntryIterator::Entry::get_entry_path() const {
   //  return datafn;
 
   std::filesystem::path p(run_path);
-  p /= filename;
   return p.string();
 }
 
@@ -81,10 +76,10 @@ RawEntryIterator::RawEntryIterator(edm::ParameterSet const& pset)
 
 void RawEntryIterator::reset() {
   
-  runPath_ = fmt::sprintf("%s/run%06d", runInputDir_, runNumber_);
+  runPath_ = fmt::sprintf("%s/%08d", runInputDir_, runNumber_);
   eor_.loaded = false;
   state_ = State::OPEN;
-  nextEntryNumber_ = 1;
+  nextEntryNumber_ = 0;
   entrySeen_.clear();
   filesSeen_.clear();
 
@@ -102,6 +97,13 @@ RawEntryIterator::Entry RawEntryIterator::open() {
 
 bool RawEntryIterator::entryReady() {
   if (entrySeen_.find(nextEntryNumber_) != entrySeen_.end()) {
+    return true;
+  }
+  return false;
+}
+
+bool RawEntryIterator::nextEntryReady() {
+  if (entrySeen_.find(nextEntryNumber_ + 1) != entrySeen_.end()) {
     return true;
   }
   return false;
@@ -142,7 +144,7 @@ unsigned RawEntryIterator::mtimeHash() const {
 
 void RawEntryIterator::collect(bool ignoreTimers) {
   // search fylesystem to find available files
-
+  
   auto now = std::chrono::high_resolution_clock::now();
   auto last_ms = std::chrono::duration_cast<std::chrono::milliseconds>(now - runPathLastCollect_).count();
 
@@ -163,17 +165,21 @@ void RawEntryIterator::collect(bool ignoreTimers) {
   using std::filesystem::directory_iterator;
 
   std::string fn_eor;
-
+  
   if (!std::filesystem::exists(runPath_)) {
     logFileAction("Directory does not exist: ", runPath_);
     state_ = State::EOR;
     return;
   }
-
+  
+  std::string filename1;
+  std::string filename2;
   directory_iterator dend;
+  bool firstFile = true; 
   for (directory_iterator diter(runPath_); diter != dend; ++diter) {
-    const boost::regex fn_re("run(\\d+)_f(\\d+)_([a-zA-Z0-9]+)(_.*)?\\.json");
-    const boost::regex eor_re("run(\\d+).eor");
+    const boost::regex fn_re1("run-([a-zA-Z0-9:]+)?a-index(\\d+)\\.raw\\.zst");
+    const boost::regex fn_re2("run-([a-zA-Z0-9:]+)?b-index(\\d+)\\.raw\\.zst");
+    const boost::regex eor_re("EoR\\.jsn");
 
     const std::string filename = diter->path().filename().string();
     const std::string file = diter->path().string();
@@ -182,36 +188,61 @@ void RawEntryIterator::collect(bool ignoreTimers) {
       continue;
     }
 
-    boost::smatch result, eor_match;
-    if (boost::regex_match(filename, result, fn_re)) {
-      unsigned int run = std::stoi(result[1]);
-      unsigned int fragment = std::stoi(result[2]);
-      std::string label = result[3];
-
-      filesSeen_.insert(filename);
-
-      if (run != runNumber_)
-        continue;
-
-      if (entrySeen_.find(fragment) != entrySeen_.end()) {
-        continue;
-      }
-
-      Entry entry = Entry::load_entry(runPath_, filename, fragment, secFile_);
-      entrySeen_.emplace(fragment, entry);
-      logFileAction("Found file: ", filename);
-    }
-
+    boost::smatch result1, result2, eor_match;
+    unsigned int fragment; 
     // check if file is EoR
     if (boost::regex_match(filename, eor_match, eor_re)) {
-      unsigned int run = std::stoi(eor_match[1]);
-      if (run != runNumber_)
-        continue;
       if (!eor_.loaded) {
         fn_eor = file;
         continue;
       }
     }
+
+    if (boost::regex_match(filename, result1, fn_re1) && firstFile) {
+      fragment = std::stoi(result1[2]);
+    
+      filesSeen_.insert(filename);
+     
+      if (entrySeen_.find(fragment) != entrySeen_.end()) {
+        continue;
+      }
+      else {
+        firstFile = false;
+      }
+ 
+      filename1 = filename;
+
+      continue; 
+    }
+ 
+    if (!secFile_) {
+      Entry entry = Entry::load_entry(runPath_, filename1, "", fragment, secFile_);
+      entrySeen_.emplace(fragment, entry);
+      logFileAction("Found file: ", filename1);
+    }
+
+    if (boost::regex_match(filename, result2, fn_re2)) {
+      unsigned int fragment2 = std::stoi(result2[2]);
+     
+      if (fragment2 != fragment) {
+        continue;
+      }
+      else {
+        firstFile = true;
+      }
+
+      filesSeen_.insert(filename);
+      
+      filename2 = filename;
+    }
+    else {
+      continue;
+    } 
+
+    Entry entry = Entry::load_entry(runPath_, filename1, filename2, fragment, secFile_);
+    entrySeen_.emplace(fragment, entry);
+    logFileAction("Found file: ", filename1);
+    logFileAction("Found file: ", filename2);  
   }
 
   if ((!fn_eor.empty()) || flagScanOnce_ ) {

@@ -21,7 +21,8 @@ class RawEntryIterator {
   public:
 
     struct Entry {
-      std::string filename;
+      std::string filename1;
+      std::string filename2;
       std::string run_path;
 
       unsigned int entry_number;
@@ -30,7 +31,8 @@ class RawEntryIterator {
       std::string secrawfile;
 
       static Entry load_entry(const std::string& run_path,
-                              const std::string& filename,
+                              const std::string& filename1,
+                              const std::string& filename2, 
                               const unsigned int entryNumber,
                               bool secFile);
 
@@ -67,6 +69,7 @@ class RawEntryIterator {
     */
     
     bool entryReady();
+    bool nextEntryReady();
     Entry open();
 
     // control

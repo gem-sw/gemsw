@@ -64,9 +64,8 @@ GEMStreamReader::GEMStreamReader(edm::ParameterSet const& pset, edm::InputSource
 void GEMStreamReader::init() {
   
   fIterator_.logFileAction("Waiting for first file to come");
-
+  
   fIterator_.update_state();
-
   for (;;) {
     bool next = prepareNextFile();
     
@@ -110,9 +109,14 @@ bool GEMStreamReader::prepareNextFile() {
       closeFile();
       return false;
     }
-
+    
+    if (!fIterator_.nextEntryReady() && (fIterator_.state() == State::OPEN) && ((procEventsFile_ >= minEventsFile_) || !fin_.is_open())) {
+      fIterator_.delay();
+      continue;
+    }
+  
     if (fIterator_.entryReady() && (procEventsFile_ >= minEventsFile_)) {
-      openNextFile();
+      openNextFile(); 
       continue;
     }
   
@@ -132,7 +136,6 @@ bool GEMStreamReader::prepareNextFile() {
       return true;
     }
   }
-
   return true;
 }
 
@@ -228,7 +231,7 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
                                          edm::EventAuxiliary::ExperimentType& eType) {
 
   rawData_ = std::make_unique<FEDRawDataCollection>();
-
+  
   std::unique_ptr<FRDEventMsgView> frdEventMsg = prepareNextEvent();
   if (!frdEventMsg) {
     return false;
@@ -275,16 +278,8 @@ bool GEMStreamReader::openFile(const std::string& fileName, std::ifstream& fin) 
   std::cout << " openning file.. " << fileName << std::endl;
   fin.close();
   fin.clear();
-  size_t pos = fileName.find(':');
-  if (pos != std::string::npos) {
-    std::string prefix = fileName.substr(0, pos);
-    if (prefix != "file")
-      return false;
-    pos++;
-  } else
-    pos = 0;
 
-  fin.open(fileName.substr(pos).c_str(), std::ios::in | std::ios::binary);
+  fin.open(fileName.c_str(), std::ios::in | std::ios::binary);
   return fin.is_open();
 }
 
@@ -362,15 +357,14 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
 
 std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin, ZSTD_DCtx* &context, ZSTD_inBuffer& inBuff, ZSTD_outBuffer& outBuff) {
    typedef RawEntryIterator::State State; 
-   if (fin.peek() == EOF && fIterator_.state() == State::EOR)
+   if (fin.peek() == EOF && fIterator_.state() == State::EOR) {
     return NULL;
-  
+   }
   //look for FRD header at beginning of the file and skip it
   if (fin.tellg() == 0) {
     constexpr size_t buf_sz = sizeof(FRDFileHeader_v1);  //try to read v1 FRD header size
     FRDFileHeader_v1 fileHead;
     readFile((char*)&fileHead, buf_sz, fin, context, inBuff, outBuff);
-
     if (countBuffer(outBuff) == 0)
       throw cms::Exception("GEMStreamReader::setRunAndEventInfo")
           << "Unable to read file or empty file";
@@ -393,7 +387,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
       }
     }
   }
-
   if (detectedFRDversion_ == 0) {
     readFile((char*)&detectedFRDversion_, sizeof(uint16_t), fin, context, inBuff, outBuff);
     readFile((char*)&flags_, sizeof(uint16_t), fin, context, inBuff, outBuff);
@@ -409,7 +402,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
     readFile(&buffer_[0], FRDHeaderVersionSize[detectedFRDversion_], fin, context, inBuff, outBuff);
     assert(countBuffer(outBuff) == FRDHeaderVersionSize[detectedFRDversion_]);
   }
-
   std::unique_ptr<FRDEventMsgView> frdEventMsg(new FRDEventMsgView(&buffer_[0]));
 
   const uint32_t totalSize = frdEventMsg->size();
@@ -424,7 +416,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
     }
     frdEventMsg = std::make_unique<FRDEventMsgView>(&buffer_[0]);
   }
-
   LogDebug("GEMStreamReader") << "frdEventMsg run=" << frdEventMsg->run() << " lumi=" << frdEventMsg->lumi()
                               << " event=" << frdEventMsg->event() << " size=" << int(frdEventMsg->size())
                               << " eventSize=" << int(frdEventMsg->eventSize());
@@ -490,7 +481,6 @@ void GEMStreamReader::readFile(char* buffer, size_t size, std::ifstream& fin, ZS
     
     size_t ret = ZSTD_decompressStream(context, &outBuff, &inBuff);
 
-    
     if (ZSTD_isError(ret))
       throw cms::Exception("GEMStreamReader", "ZSTD uncompression error") << "Error core " << ret << ", message:" << ZSTD_getErrorName(ret);
   }
