@@ -39,6 +39,7 @@ variables:
 
 cmssw_build:
   stage: build
+  image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
   tags:
     - cvmfs
   before_script:
@@ -74,6 +75,7 @@ cmssw_build:
 
 run-test:
   stage: test
+  image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
   tags:
     - cvmfs
   before_script:
