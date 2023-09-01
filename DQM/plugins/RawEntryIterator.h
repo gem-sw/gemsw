@@ -21,8 +21,6 @@ class RawEntryIterator {
   public:
 
     struct Entry {
-      std::string filename1;
-      std::string filename2;
       std::string run_path;
 
       unsigned int entry_number;
@@ -59,7 +57,7 @@ class RawEntryIterator {
     ~RawEntryIterator() = default;
     void init(int run, const std::string&, const std::string&);
 
-    State state() const { return state_; }
+    State state() const { return state_; } 
 
     /* methods to iterate over the files */
     
@@ -75,6 +73,7 @@ class RawEntryIterator {
     // control
     void reset();
     void update_state();
+    void change_state(State state);
 
     void delay();
 

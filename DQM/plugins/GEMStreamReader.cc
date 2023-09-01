@@ -64,14 +64,15 @@ GEMStreamReader::GEMStreamReader(edm::ParameterSet const& pset, edm::InputSource
 void GEMStreamReader::init() {
   
   fIterator_.logFileAction("Waiting for first file to come");
-  
   fIterator_.update_state();
   for (;;) {
     bool next = prepareNextFile();
-    
     // check for end of run
     if (!next) {
       fIterator_.logFileAction("End of Run reach before GEMStreamReader was initialized");
+      if (!fin_.is_open()) {
+        exit(1);
+      }
       return;
     }
 
@@ -87,8 +88,14 @@ void GEMStreamReader::init() {
 bool GEMStreamReader::prepareNextFile() {
   typedef RawEntryIterator::State State;
 
+  time_t init_time = time(nullptr);
   for (;;) {
     fIterator_.update_state();
+    
+    // timeout if no files come in 
+    if (difftime(time(nullptr), init_time) > 30 * 60) {     
+      fIterator_.change_state(State::EOR); 
+    } 
 
     // check for end of run file and quit
     if (flagEndOfRunKills_ && (fIterator_.state() != State::OPEN)) {
@@ -96,31 +103,31 @@ bool GEMStreamReader::prepareNextFile() {
       return false;
     }
 
-    if ((!fin_.is_open()) && (!fIterator_.entryReady()) && (fIterator_.state() == State::EOR)) {
+    if ((!fin_.is_open()) && (!fIterator_.entryReady()) && (fIterator_.state() != State::OPEN)) {
       return false;
     }
   
-    if ((!fin_.is_open()) && (!fIterator_.entryReady()) && !(fIterator_.state() == State::EOR)) {
+    if ((!fin_.is_open()) && (!fIterator_.entryReady()) && (fIterator_.state() == State::OPEN)) {
       fIterator_.delay();
       continue;
     }
 
-    if ((procEventsFile_ >= minEventsFile_) && (!fIterator_.entryReady()) && (fIterator_.state() == State::EOR)) {
+    if (fin_.eof() && (!fIterator_.entryReady()) && (fIterator_.state() == State::EOR)) {
       closeFile();
       return false;
     }
     
-    if (!fIterator_.nextEntryReady() && (fIterator_.state() == State::OPEN) && ((procEventsFile_ >= minEventsFile_) || !fin_.is_open())) {
+    if (!fIterator_.nextEntryReady() && (fIterator_.state() == State::OPEN) && (!fin_.is_open() || fin_.eof())) {
       fIterator_.delay();
       continue;
-    }
-  
-    if (fIterator_.entryReady() && (procEventsFile_ >= minEventsFile_)) {
+    } 
+ 
+    if (fIterator_.entryReady() && fin_.eof()) {
       openNextFile(); 
       continue;
     }
   
-    if (!fIterator_.entryReady() && (procEventsFile_ >= minEventsFile_)) {
+    if (!fIterator_.entryReady() && fin_.eof()) {
       fIterator_.delay();
       continue;
     }
@@ -171,14 +178,12 @@ void GEMStreamReader::closeFile() {
 std::unique_ptr<FRDEventMsgView> GEMStreamReader::prepareNextEvent() {
 
   std::unique_ptr<FRDEventMsgView> eview = nullptr;
-
   // check for next event
   for (;;) {
-    
     bool next = prepareNextFile();
-    if (!next) 
+    if (!next) {
       return nullptr;
-    
+    }
       
     if (!fin_.is_open()) {
       fIterator_.delay();
@@ -231,12 +236,10 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
                                          edm::EventAuxiliary::ExperimentType& eType) {
 
   rawData_ = std::make_unique<FEDRawDataCollection>();
-  
   std::unique_ptr<FRDEventMsgView> frdEventMsg = prepareNextEvent();
   if (!frdEventMsg) {
     return false;
   }
-
   //id = edm::EventID(frdEventMsg->run(), frdEventMsg->lumi(), frdEventMsg->event());
   // should be set up frdEventMsg, but run is wrong and lumi is not set for DB emap
   id = edm::EventID(id.run(), id.luminosityBlock(), frdEventMsg->event());
@@ -275,7 +278,7 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
 void GEMStreamReader::produce(edm::Event& e) { e.put(std::move(rawData_)); }
 
 bool GEMStreamReader::openFile(const std::string& fileName, std::ifstream& fin) {
-  std::cout << " openning file.. " << fileName << std::endl;
+  std::cout << " opening file.. " << fileName << std::endl;
   fin.close();
   fin.clear();
 
@@ -298,9 +301,12 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
     FRDFileHeader_v1 fileHead;
     fin.read((char*)&fileHead, buf_sz);
 
-    if (fin.gcount() == 0)
-      throw cms::Exception("GEMStreamReader::setRunAndEventInfo")
-          << "Unable to read file or empty file";
+    if (fin.gcount() == 0) {
+      // throw cms::Exception("GEMStreamReader::setRunAndEventInfo")
+      //    << "Unable to read file or empty file";
+      cout << "Unable to read file or empty file" << endl; 
+      return NULL;
+    }
     else if (fin.gcount() < (ssize_t)buf_sz) {
       fin.seekg(0);
     } else {
@@ -365,9 +371,12 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
     constexpr size_t buf_sz = sizeof(FRDFileHeader_v1);  //try to read v1 FRD header size
     FRDFileHeader_v1 fileHead;
     readFile((char*)&fileHead, buf_sz, fin, context, inBuff, outBuff);
-    if (countBuffer(outBuff) == 0)
-      throw cms::Exception("GEMStreamReader::setRunAndEventInfo")
-          << "Unable to read file or empty file";
+    if (countBuffer(outBuff) == 0) {
+      // throw cms::Exception("GEMStreamReader::setRunAndEventInfo")
+      //    << "Unable to read file or empty file";
+      cout << "Unable to read file or empty file" << endl;
+      return NULL;
+    }
     else if (countBuffer(outBuff) < (ssize_t)buf_sz) {
       fin.seekg(0);
       if (isZstFile_) resetBuffer(fin, context, inBuff);
@@ -390,6 +399,8 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
   if (detectedFRDversion_ == 0) {
     readFile((char*)&detectedFRDversion_, sizeof(uint16_t), fin, context, inBuff, outBuff);
     readFile((char*)&flags_, sizeof(uint16_t), fin, context, inBuff, outBuff);
+    if (detectedFRDversion_ == 0) 
+      return NULL;
     assert(detectedFRDversion_ > 0 && detectedFRDversion_ <= FRDHeaderMaxVersion);
     if (buffer_.size() < FRDHeaderVersionSize[detectedFRDversion_])
       buffer_.resize(FRDHeaderVersionSize[detectedFRDversion_]);
@@ -461,13 +472,12 @@ std::vector<uint64_t>* GEMStreamReader::makeFEDRAW(FRDEventMsgView* frdEventMsg,
 
 void GEMStreamReader::readFile(char* buffer, size_t size, std::ifstream& fin, ZSTD_DCtx* &context, ZSTD_inBuffer& inBuff, ZSTD_outBuffer& outBuff) {
   outBuff = { buffer, size, 0 };
-
   // Decompression stops when output buffer has same size as requested
   while (outBuff.pos < size) {
     if (inBuff.pos == inBuff.size) {
 
       fin.read((char*)inBuff.src, inBuff.size);
-
+      
       size_t zstd_read = fin.gcount();
 
       // If compressed buffer has been read, first read compressed buffer from file:
@@ -480,7 +490,10 @@ void GEMStreamReader::readFile(char* buffer, size_t size, std::ifstream& fin, ZS
     }
     
     size_t ret = ZSTD_decompressStream(context, &outBuff, &inBuff);
-
+    if (outBuff.pos == 0) {
+      cout << "Unable to read file or empty file" << endl;
+      break;
+    }
     if (ZSTD_isError(ret))
       throw cms::Exception("GEMStreamReader", "ZSTD uncompression error") << "Error core " << ret << ", message:" << ZSTD_getErrorName(ret);
   }
@@ -491,7 +504,7 @@ void GEMStreamReader::fillDescription(edm::ParameterSetDescription& desc) {
   desc.addUntracked<int>("fedId2", 11);
   desc.addUntracked<bool>("secFile", true);
   desc.addUntracked<bool>("flagEndOfRunKills", false);
-  desc.addUntracked<int>("minEventsPerFile", 1);
+  desc.addUntracked<int>("minEventsPerFile", 10000);
   RawEntryIterator::fillDescription(desc);
   ProducerSourceBase::fillDescription(desc);
 }

@@ -24,8 +24,6 @@ RawEntryIterator::Entry::load_entry(const std::string& run_path,
                                    bool secFile) {
 
   Entry entry;
-  entry.filename1 = filename1;
-  entry.filename2 = filename2;   
   entry.run_path = run_path;
   entry.sec_file = secFile;
   
@@ -175,10 +173,15 @@ void RawEntryIterator::collect(bool ignoreTimers) {
   std::string filename1;
   std::string filename2;
   directory_iterator dend;
-  bool firstFile = true; 
+  unsigned int fragment;
+  if (entrySeen_.empty()) {
+    fragment = 0;
+  }
+  else {
+    fragment = entrySeen_.rbegin()->first + 1;
+  }
   for (directory_iterator diter(runPath_); diter != dend; ++diter) {
-    const boost::regex fn_re1("run-([a-zA-Z0-9:]+)?a-index(\\d+)\\.raw\\.zst");
-    const boost::regex fn_re2("run-([a-zA-Z0-9:]+)?b-index(\\d+)\\.raw\\.zst");
+    const boost::regex fn_re("run-([a-zA-Z0-9:]+)?(\\l+)-index(\\d+)\\.raw\\.zst");
     const boost::regex eor_re("EoR\\.jsn");
 
     const std::string filename = diter->path().filename().string();
@@ -188,8 +191,7 @@ void RawEntryIterator::collect(bool ignoreTimers) {
       continue;
     }
 
-    boost::smatch result1, result2, eor_match;
-    unsigned int fragment; 
+    boost::smatch result, eor_match;
     // check if file is EoR
     if (boost::regex_match(filename, eor_match, eor_re)) {
       if (!eor_.loaded) {
@@ -197,52 +199,49 @@ void RawEntryIterator::collect(bool ignoreTimers) {
         continue;
       }
     }
+   
+    if (boost::regex_match(filename, result, fn_re)) {
+      std::string filelabel = result[1]; 
+      std::string type = result[2];
+      unsigned int index = std::stoi(result[3]);
 
-    if (boost::regex_match(filename, result1, fn_re1) && firstFile) {
-      fragment = std::stoi(result1[2]);
-    
-      filesSeen_.insert(filename);
-     
-      if (entrySeen_.find(fragment) != entrySeen_.end()) {
+      if (index != fragment) {
         continue;
       }
-      else {
-        firstFile = false;
-      }
- 
-      filename1 = filename;
 
-      continue; 
+      if (entrySeen_.find(fragment) != entrySeen_.end()) {
+        continue;
+      }   
+      
+      if (secFile_) {
+        if (type == "a") {
+          filename2 = "run-" + filelabel + "b-index" + result[3] + ".raw.zst";
+        }
+        else {
+          filename2 = "run-" + filelabel + "a-index" + result[3] + ".raw.zst";
+        }
+        filesSeen_.insert(filename2); 
+      }
+      
+      filesSeen_.insert(filename);
+      filename1 = filename;
+    }
+    else {
+      continue;
     }
  
     if (!secFile_) {
       Entry entry = Entry::load_entry(runPath_, filename1, "", fragment, secFile_);
       entrySeen_.emplace(fragment, entry);
       logFileAction("Found file: ", filename1);
+      continue; 
     }
-
-    if (boost::regex_match(filename, result2, fn_re2)) {
-      unsigned int fragment2 = std::stoi(result2[2]);
-     
-      if (fragment2 != fragment) {
-        continue;
-      }
-      else {
-        firstFile = true;
-      }
-
-      filesSeen_.insert(filename);
-      
-      filename2 = filename;
-    }
-    else {
-      continue;
-    } 
 
     Entry entry = Entry::load_entry(runPath_, filename1, filename2, fragment, secFile_);
     entrySeen_.emplace(fragment, entry);
     logFileAction("Found file: ", filename1);
-    logFileAction("Found file: ", filename2);  
+    logFileAction("Found file: ", filename2); 
+    fragment += 1; 
   }
 
   if ((!fn_eor.empty()) || flagScanOnce_ ) {
@@ -257,6 +256,10 @@ void RawEntryIterator::collect(bool ignoreTimers) {
       eor_.n_entry = entrySeen_.rbegin()->first;
     }
   }
+}
+
+void RawEntryIterator::change_state(State state) {
+  state_ = state;
 }
 
 void RawEntryIterator::update_state() {
