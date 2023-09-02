@@ -40,7 +40,6 @@ variables:
 cmssw_build:
   stage: build
   image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
-  executor: docker
   tags:
     - cvmfs
   before_script:
@@ -77,7 +76,6 @@ cmssw_build:
 run-test:
   stage: test
   image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
-  executor: docker
   tags:
     - cvmfs
   before_script:
@@ -104,7 +102,6 @@ build-docker:
   tags:
     - docker-privileged
   image: docker:20.10.6
-  executor: docker
   services:
     - docker:20.10.6-dind
   variables:
