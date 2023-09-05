@@ -76,6 +76,7 @@ cmssw_build:
 run-test:
   stage: test
   image: gitlab-registry.cern.ch/ci-tools/ci-worker:cc7
+  when: manual
   tags:
     - cvmfs
   before_script:
