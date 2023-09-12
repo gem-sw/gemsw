@@ -205,14 +205,10 @@ void RawEntryIterator::collect(bool ignoreTimers) {
       std::string type = result[2];
       unsigned int index = std::stoi(result[3]);
 
-      if (index != fragment) {
-        continue;
-      }
-
       auto index_pos = fileStack_.end();
       if (ignoreTimers)
         index_pos = std::find(fileStack_.begin(), fileStack_.end(), index);
-      if (entrySeen_.find(fragment) != entrySeen_.end()) {
+      if (index != fragment) {
         if (index_pos == fileStack_.end()) {
           fileStack_.push_back(index);
         }
@@ -220,7 +216,11 @@ void RawEntryIterator::collect(bool ignoreTimers) {
       }
       else if (index_pos != fileStack_.end()) {
         fileStack_.erase(index_pos);
-      }   
+      }
+
+      if (entrySeen_.find(fragment) != entrySeen_.end()) {
+        continue;
+      }
       
       if (secFile_) {
         if (type == "a") {
