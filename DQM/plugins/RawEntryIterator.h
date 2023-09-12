@@ -104,6 +104,7 @@ class RawEntryIterator {
     unsigned int nextEntryNumber_;
     std::map<unsigned int, Entry> entrySeen_;
     std::unordered_set<std::string> filesSeen_;
+    std::vector<int> fileStack_;
 
     unsigned runPathModTime_;
     std::chrono::high_resolution_clock::time_point runPathLastCollect_;

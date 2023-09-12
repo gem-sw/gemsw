@@ -209,8 +209,17 @@ void RawEntryIterator::collect(bool ignoreTimers) {
         continue;
       }
 
+      auto index_pos = fileStack_.end();
+      if (ignoreTimers)
+        index_pos = std::find(fileStack_.begin(), fileStack_.end(), index);
       if (entrySeen_.find(fragment) != entrySeen_.end()) {
+        if (index_pos == fileStack_.end()) {
+          fileStack_.push_back(index);
+        }
         continue;
+      }
+      else if (index_pos != fileStack_.end()) {
+        fileStack_.erase(index_pos);
       }   
       
       if (secFile_) {
@@ -242,6 +251,12 @@ void RawEntryIterator::collect(bool ignoreTimers) {
     logFileAction("Found file: ", filename1);
     logFileAction("Found file: ", filename2); 
     fragment += 1; 
+  }
+
+  if (fileStack_.size() < 10) {
+    while (!fileStack_.empty()) {
+      collect(true);
+    }
   }
 
   if ((!fn_eor.empty()) || flagScanOnce_ ) {
