@@ -253,10 +253,8 @@ void RawEntryIterator::collect(bool ignoreTimers) {
     fragment += 1; 
   }
 
-  if (fileStack_.size() < 10) {
-    while (!fileStack_.empty()) {
-      collect(true);
-    }
+  while (!fileStack_.empty()) {
+    collect(true);
   }
 
   if ((!fn_eor.empty()) || flagScanOnce_ ) {
