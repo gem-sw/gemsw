@@ -251,6 +251,9 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
   FEDRawData& fedData = rawData_->FEDData(GEMAMC13::CDFHeader{cdfh}.sourceId);
   fedData.resize(fedSize);
   memcpy(fedData.data(), words->data(), fedSize);
+  if (words != nullptr) {
+    delete words;
+  }
 
   if (hasSecFile_) {
     std::unique_ptr<FRDEventMsgView> frdEventMsg2 = getEventMsg(fin2_, isZstFile_, zstdContext2_, zstdBufferIn2_, zstdBufferOut2_);
@@ -271,6 +274,9 @@ bool GEMStreamReader::setRunAndEventInfo(edm::EventID& id,
     FEDRawData& fedData2 = rawData_->FEDData(GEMAMC13::CDFHeader{cdfh2}.sourceId);
     fedData2.resize(fedSize2);
     memcpy(fedData2.data(), words2->data(), fedSize2);
+    if (words2 != nullptr) {
+      delete words2;
+    }
   }
   return true;
 }
@@ -411,6 +417,9 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
     if (buffer_.size() < FRDHeaderVersionSize[detectedFRDversion_])
       buffer_.resize(FRDHeaderVersionSize[detectedFRDversion_]);
     readFile(&buffer_[0], FRDHeaderVersionSize[detectedFRDversion_], fin, context, inBuff, outBuff);
+    if (countBuffer(outBuff) == 0) {
+      return NULL;
+    }
     assert(countBuffer(outBuff) == FRDHeaderVersionSize[detectedFRDversion_]);
   }
   std::unique_ptr<FRDEventMsgView> frdEventMsg(new FRDEventMsgView(&buffer_[0]));
