@@ -417,10 +417,6 @@ std::unique_ptr<FRDEventMsgView> GEMStreamReader::getEventMsg(std::ifstream& fin
     if (buffer_.size() < FRDHeaderVersionSize[detectedFRDversion_])
       buffer_.resize(FRDHeaderVersionSize[detectedFRDversion_]);
     readFile(&buffer_[0], FRDHeaderVersionSize[detectedFRDversion_], fin, context, inBuff, outBuff);
-    if (countBuffer(outBuff) == 0) {
-      std::cout << "Unable to read FRD Header" << std::endl;
-      return NULL;
-    }
     assert(countBuffer(outBuff) == FRDHeaderVersionSize[detectedFRDversion_]);
   }
   std::unique_ptr<FRDEventMsgView> frdEventMsg(new FRDEventMsgView(&buffer_[0]));
