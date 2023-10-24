@@ -101,7 +101,7 @@ build-docker:
   stage: registry
   when: manual
   tags:
-    - docker-privileged
+    - docker-privileged-xl
   image: docker:20.10.6
   services:
     - docker:20.10.6-dind
