@@ -42,13 +42,26 @@ private:
   edm::ESGetToken<GEMGeometry, MuonGeometryRecord> hGEMGeomBeginRun_;
 
   std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiOcc_;
-  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOccEta1_4_;
-  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOccEta5_8_;
-  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOccEta9_12_;
-  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOccEta13_16_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc1hrEta1_4_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc1hrEta5_8_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc1hrEta9_12_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc1hrEta13_16_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc5hrEta1_4_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc5hrEta5_8_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc5hrEta9_12_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc5hrEta13_16_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc10hrEta1_4_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc10hrEta5_8_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc10hrEta9_12_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc10hrEta13_16_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc24hrEta1_4_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc24hrEta5_8_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc24hrEta9_12_;
+  std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc24hrEta13_16_;
   std::map<unsigned int, dqm::impl::MonitorElement*> mapRecHitOcc_;
   std::map<unsigned int, dqm::impl::MonitorElement*> mapRecHitClsSize_;
   std::map<unsigned int, dqm::impl::MonitorElement*> ChamberStatus_Ch;
+  std::map<unsigned int, dqm::impl::MonitorElement*> ChamberHitMultiplicityStatus_Ch;
 
   int maxClsSizeToShow_ = 10;
 };
