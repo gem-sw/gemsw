@@ -174,14 +174,8 @@ void RawEntryIterator::collect(bool ignoreTimers) {
   std::string filename2;
   directory_iterator dend;
   unsigned int fragment;
-  if (entrySeen_.empty()) {
-    fragment = 0;
-  }
-  else {
-    fragment = entrySeen_.rbegin()->first + 1;
-  }
   for (directory_iterator diter(runPath_); diter != dend; ++diter) {
-    const boost::regex fn_re("run-([a-zA-Z0-9:]+)?(\\l+)-index(\\d+)\\.raw\\.zst");
+    const boost::regex fn_re("run-([a-zA-Z0-9:]+)?(\\l+)-index(\\d+)\\.raw?(\\.zst)");
     const boost::regex eor_re("EoR\\.jsn");
 
     const std::string filename = diter->path().filename().string();
@@ -203,46 +197,32 @@ void RawEntryIterator::collect(bool ignoreTimers) {
     if (boost::regex_match(filename, result, fn_re)) {
       std::string filelabel = result[1]; 
       std::string type = result[2];
-      unsigned int index = std::stoi(result[3]);
-
-      auto index_pos = fileStack_.end();
-      if (ignoreTimers)
-        index_pos = std::find(fileStack_.begin(), fileStack_.end(), index);
-      if (index != fragment) {
-        if (index_pos == fileStack_.end()) {
-          fileStack_.push_back(index);
-        }
-        continue;
-      }
-      else if (index_pos != fileStack_.end()) {
-        fileStack_.erase(index_pos);
-      }
+      fragment = std::stoi(result[3]);
+      std::string compress = result[4];
 
       if (entrySeen_.find(fragment) != entrySeen_.end()) {
         continue;
       }
       
-      if (secFile_) {
-        if (type == "a") {
-          filename2 = "run-" + filelabel + "b-index" + result[3] + ".raw.zst";
-        }
-        else {
-          filename2 = "run-" + filelabel + "a-index" + result[3] + ".raw.zst";
-        }
-        filesSeen_.insert(filename2); 
-      }
-      
       filesSeen_.insert(filename);
-      filename1 = filename;
+    
+      if (secFile_ && fragmentSeen_.find(fragment) != fragmentSeen_.end()) {
+        filename1 = "run-" + filelabel + "a-index" + result[3] + ".raw" + compress;  
+        filename2 = "run-" + filelabel + "b-index" + result[3] + ".raw" + compress;
+      }
+      else {
+        fragmentSeen_.insert(fragment);
+        if (secFile_) continue;   
+      }
     }
     else {
       continue;
     }
  
     if (!secFile_) {
-      Entry entry = Entry::load_entry(runPath_, filename1, "", fragment, secFile_);
+      Entry entry = Entry::load_entry(runPath_, filename, "", fragment, secFile_);
       entrySeen_.emplace(fragment, entry);
-      logFileAction("Found file: ", filename1);
+      logFileAction("Found file: ", filename);
       continue; 
     }
 
@@ -250,13 +230,6 @@ void RawEntryIterator::collect(bool ignoreTimers) {
     entrySeen_.emplace(fragment, entry);
     logFileAction("Found file: ", filename1);
     logFileAction("Found file: ", filename2); 
-    fragment += 1; 
-  }
-
-  if (fileStack_.size() < 10) {
-    while (!fileStack_.empty()) {
-      collect(true);
-    }
   }
 
   if ((!fn_eor.empty()) || flagScanOnce_ ) {
