@@ -2,9 +2,19 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 QC8Harvestor::QC8Harvestor(const edm::ParameterSet& pset)
- : MuonGEMBaseHarvestor(pset, "QC8Harvestor") {}
+ : MuonGEMBaseHarvestor(pset, "QC8Harvestor") {
+ isMC_ = pset.getParameter<bool>("isMC");
+}
 
 QC8Harvestor::~QC8Harvestor() {}
+
+void QC8Harvestor::fillDescriptions(edm::ConfigurationDescriptions &descriptions) {
+  edm::ParameterSetDescription desc;
+
+  desc.add<bool>("isMC", false);
+
+  descriptions.add("QC8DQMHarvestor", desc);
+}
 
 void QC8Harvestor::dqmEndJob(DQMStore::IBooker& booker, DQMStore::IGetter& getter) {
   {
@@ -33,7 +43,7 @@ void QC8Harvestor::dqmEndJob(DQMStore::IBooker& booker, DQMStore::IGetter& gette
       }
     }
   }
-  {
+  if (isMC_) {
     TString simhit_path = "GEM/QC8Hit/simhit/";
     TString rechit_path = "GEM/QC8Hit/rechit/";
     TString eff_path = "GEM/QC8Hit/efficiency/";

@@ -55,6 +55,13 @@ void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
       setBinLabelAndTitle(track_occ_[key]->getTH2F(), module);
       setBinLabelAndTitle(rechit_occ_[key]->getTH2F(), module);
     }
+    for (int ieta = 1; ieta < 17; ieta++) {
+      booker.setCurrentFolder("GEM/QC8Track/residual");
+      Key2 key(ch, ieta);
+      residual_[key] = booker.book1D(Form("track_residual_ch%d_ieta%d", ch, ieta),
+                                     Form("track_residual_ch%d_ieta%d", ch, ieta),
+                                     100, -200, 200);
+    }
   }
 }
 
@@ -124,6 +131,7 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
       int sector = 1 - ((16-ieta) % 4 / 2);
 
       Key2 key(ch, module);
+      Key2 etaKey(ch, ieta);
 
       track_occ_[key]->Fill(strip / 64, sector);
       track_ch_occ_[ch]->Fill(strip / 64, ieta);
@@ -132,6 +140,16 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
 
       rechit_occ_[key]->Fill(strip / 64, sector);
       rechit_ch_occ_[ch]->Fill(strip / 64, ieta);
+
+      auto range = gemRecHits->get(etaPartId);
+      float residual = FLT_MAX;
+      for (auto rechit = range.first; rechit != range.second; ++rechit) {
+        auto rechitStrip = etaPart->strip(rechit->localPosition());
+        if (abs(residual) > abs(strip - rechitStrip)) {
+          residual = (strip - rechitStrip);
+        }
+      }
+      residual_[etaKey]->Fill(residual);
     }
   }
 }

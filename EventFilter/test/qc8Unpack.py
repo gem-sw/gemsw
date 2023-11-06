@@ -54,20 +54,38 @@ process.load('RecoLocalMuon.GEMRecHit.gemRecHits_cfi')
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
-process.gemGeometry.applyAlignment = cms.bool(True)
+isBackTypeOnly = True
 
-process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
-                                             tag=cms.string("GEMChMapRcd"),
-                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_QC8.db")),
-                                    cms.PSet(record = cms.string('GEMAlignmentRcd'),
-                                             tag = cms.string("QC8GEMAlignment_test"),
-                                             connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
-                                    cms.PSet(record = cms.string('GEMAlignmentErrorExtendedRcd'),
-                                             tag = cms.string("QC8GEMAlignmentErrorExtended_test"),
-                                             connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
-                                    cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
-)
+if isBackTypeOnly :
+  process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
+  process.gemGeometry.applyAlignment = cms.bool(True)
+  
+  process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                               tag=cms.string("GEMChMapRcd"),
+                                               connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_QC8.db")),
+                                      cms.PSet(record = cms.string('GEMAlignmentRcd'),
+                                               tag = cms.string("QC8GEMAlignment_test"),
+                                               connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign_backTypeOnly.db")),
+                                      cms.PSet(record = cms.string('GEMAlignmentErrorExtendedRcd'),
+                                               tag = cms.string("QC8GEMAlignmentErrorExtended_test"),
+                                               connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign_backTypeOnly.db")),
+                                      cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
+  )
+else :
+  process.load('gemsw.Geometry.GeometryQC8GE21_front_cff')
+  process.gemGeometry.applyAlignment = cms.bool(True)
+  
+  process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                               tag=cms.string("GEMChMapRcd"),
+                                               connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_QC8.db")),
+                                      cms.PSet(record = cms.string('GEMAlignmentRcd'),
+                                               tag = cms.string("QC8GEMAlignment_test"),
+                                               connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign_frontTypeOnly.db")),
+                                      cms.PSet(record = cms.string('GEMAlignmentErrorExtendedRcd'),
+                                               tag = cms.string("QC8GEMAlignmentErrorExtended_test"),
+                                               connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign_frontTypeOnly.db")),
+                                      cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
+  )
 
 process.load('Configuration.StandardSequences.Services_cff')
 process.load('MagneticField.Engine.uniformMagneticField_cfi')
@@ -84,8 +102,9 @@ process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderQC8",
                                         minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1.2),
                                         direction = cms.vdouble(0,0,1),
+                                        residual = cms.double(10),
                                         topSeedingChamber = cms.int32(7),
-                                        botSeedingChamber = cms.int32(2),
+                                        botSeedingChamber = cms.int32(3),
                                         useModuleColumns = cms.bool(True),
                                         doFit = cms.bool(True),
                                         MuonSmootherParameters = cms.PSet(

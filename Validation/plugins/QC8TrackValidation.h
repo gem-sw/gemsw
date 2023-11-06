@@ -83,6 +83,8 @@ private:
   std::map<int, dqm::impl::MonitorElement*> rechit_ch_occ_;
   std::map<Key2, dqm::impl::MonitorElement*> track_occ_;
   std::map<Key2, dqm::impl::MonitorElement*> rechit_occ_;
+
+  std::map<Key2, dqm::impl::MonitorElement*> residual_;
 };
 
 #endif

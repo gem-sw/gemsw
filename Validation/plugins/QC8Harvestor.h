@@ -8,7 +8,9 @@ public :
   explicit QC8Harvestor(const edm::ParameterSet&);
   ~QC8Harvestor();
   void dqmEndJob(DQMStore::IBooker&, DQMStore::IGetter&) override;
+  static void fillDescriptions(edm::ConfigurationDescriptions &descriptions);
 private:
+  bool isMC_;
 };
 
 #endif

@@ -79,7 +79,8 @@ bool GEMStreamSource::isCompressed(std::ifstream& fin) {
   size_t magic_read = fin.gcount();
   if (magic_read != 4) {
     throw cms::Exception("GEMStreamSource::isCompressed")
-          << "Error reading magic from first file: needed 4 bytes, but read " <<  std::to_string(magic_read);
+          << "Error reading magic from first file: needed 4 bytes, but read " <<  std::to_string(magic_read)
+          << ", Please check if you put file: in front of inputfile name";
   } else if (magic == ZSTD_MAGICNUMBER) {
     std::cout << "input file is zstd compressed" << std::endl;
     fin.seekg(0, fin.beg);

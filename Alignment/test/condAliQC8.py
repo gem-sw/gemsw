@@ -7,7 +7,7 @@ process.load("CondCore.CondDB.CondDB_cfi")
 
 process.load("Geometry.MuonNumbering.muonNumberingInitialization_cfi")
 process.load("Geometry.GEMGeometryBuilder.gemGeometry_cfi")
-process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
+process.load('gemsw.Geometry.GeometryQC8GE21_front_cff')
 process.load('Configuration.StandardSequences.CondDBESSource_cff')
 
 process.load("Geometry.GEMGeometryBuilder.gemGeometry_cfi")
@@ -18,7 +18,7 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 # output database (in this case local sqlite file)                                                                                                       
 process.OutDB = process.CondDB.clone()
-process.OutDB.connect = 'sqlite_file:QC8_GE21_FakeAlign.db'
+process.OutDB.connect = 'sqlite_file:QC8_GE21_FakeAlign_frontTypeOnly.db'
 
 # A data source must always be defined. We don't need it, so here's a dummy one.                                                                         
 process.source = cms.Source("EmptyIOVSource",

@@ -26,8 +26,8 @@ if debug:
     process.MessageLogger.cerr.threshold = "DEBUG"
     process.MessageLogger.debugModules = ["source", "muonGEMDigis"]
     process.maxEvents.input = cms.untracked.int32(100)
-else:
-    process.MessageLogger.cerr.FwkReport.reportEvery = 5000
+#else:
+#    process.MessageLogger.cerr.FwkReport.reportEvery = 5000
 
 process.source = cms.Source("GEMStreamSource",
                             fileNames=cms.untracked.vstring(
@@ -53,20 +53,38 @@ process.load('RecoLocalMuon.GEMRecHit.gemRecHits_cfi')
 
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
-process.gemGeometry.applyAlignment = cms.bool(True)
+isBackTypeOnly = True
 
-process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
-                                             tag=cms.string("GEMChMapRcd"),
-                                             connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_QC8.db")),
-                                    cms.PSet(record = cms.string('GEMAlignmentRcd'),
-                                             tag = cms.string("QC8GEMAlignment_test"),
-                                             connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
-                                    cms.PSet(record = cms.string('GEMAlignmentErrorExtendedRcd'),
-                                             tag = cms.string("QC8GEMAlignmentErrorExtended_test"),
-                                             connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign.db")),
-                                    cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
-)
+if isBackTypeOnly :
+  process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
+  process.gemGeometry.applyAlignment = cms.bool(True)
+  
+  process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                               tag=cms.string("GEMChMapRcd"),
+                                               connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_QC8.db")),
+                                      cms.PSet(record = cms.string('GEMAlignmentRcd'),
+                                               tag = cms.string("QC8GEMAlignment_test"),
+                                               connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign_backTypeOnly.db")),
+                                      cms.PSet(record = cms.string('GEMAlignmentErrorExtendedRcd'),
+                                               tag = cms.string("QC8GEMAlignmentErrorExtended_test"),
+                                               connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign_backTypeOnly.db")),
+                                      cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
+  )
+else :
+  process.load('gemsw.Geometry.GeometryQC8GE21_front_cff')
+  process.gemGeometry.applyAlignment = cms.bool(True)
+  
+  process.GlobalTag.toGet = cms.VPSet(cms.PSet(record=cms.string("GEMChMapRcd"),
+                                               tag=cms.string("GEMChMapRcd"),
+                                               connect=cms.string("sqlite_fip:gemsw/EventFilter/data/GEMChMap_QC8.db")),
+                                      cms.PSet(record = cms.string('GEMAlignmentRcd'),
+                                               tag = cms.string("QC8GEMAlignment_test"),
+                                               connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign_frontTypeOnly.db")),
+                                      cms.PSet(record = cms.string('GEMAlignmentErrorExtendedRcd'),
+                                               tag = cms.string("QC8GEMAlignmentErrorExtended_test"),
+                                               connect = cms.string("sqlite_fip:gemsw/Geometry/data/QC8GE21/QC8_GE21_FakeAlign_frontTypeOnly.db")),
+                                      cms.PSet(record=cms.string('GlobalPositionRcd'), tag = cms.string('IdealGeometry'))
+  )
 
 process.DQMDAQ = DQMEDAnalyzer("QC8DAQStatusSource")
 process.DQMRecHit = DQMEDAnalyzer("QC8RecHitSource")
