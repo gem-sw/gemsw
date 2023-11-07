@@ -90,6 +90,9 @@ process.GEMTrackFinder.ServiceParameters.GEMLayers = cms.untracked.bool(True)
 process.GEMTrackFinder.ServiceParameters.CSCLayers = cms.untracked.bool(False)
 process.GEMTrackFinder.ServiceParameters.RPCLayers = cms.bool(False)
 
+#process.DQMDAQ = DQMEDAnalyzer("QC8DAQStatusSource") 
+#process.DQMRecHit = DQMEDAnalyzer("QC8RecHitSource")
+
 process.DQMDAQ = DQMEDAnalyzer("QC8DAQStatusSource")
 process.DQMRecHit = DQMEDAnalyzer("QC8RecHitSource")
 
