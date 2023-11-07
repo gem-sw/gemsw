@@ -18,6 +18,7 @@ GEMTrackFinder::GEMTrackFinder(const edm::ParameterSet& ps)
   doFit_ = ps.getParameter<bool>("doFit");
   maxClusterSize_ = ps.getParameter<int>("maxClusterSize");
   minClusterSize_ = ps.getParameter<int>("minClusterSize");
+  residualCut_ = ps.getParameter<double>("residual");
   theGEMRecHitToken_ = consumes<GEMRecHitCollection>(ps.getParameter<edm::InputTag>("gemRecHitLabel"));
   // register what this produces
   edm::ParameterSet serviceParameters = ps.getParameter<edm::ParameterSet>("ServiceParameters");
@@ -278,6 +279,11 @@ Trajectory GEMTrackFinder::makeTrajectory(TrajectorySeed& seed,
  
         if (rechit->clusterSize() > maxClusterSize_ or rechit->clusterSize() < minClusterSize_) continue;
         LocalPoint rhLP = (*rechit).localPosition();
+
+        auto tsosStrip = etaPart->strip(tsosLP);
+        auto rhStrip = etaPart->strip(rhLP);
+
+        if (abs(tsosStrip - rhStrip) > residualCut_) continue;
 
         // need to find best hits per chamber
         float deltaR = (rhLP - tsosLP).mag();

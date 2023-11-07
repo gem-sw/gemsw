@@ -78,6 +78,7 @@ protected:
                          MuonTransientTrackingRecHit::MuonRecHitContainer rearHits);
 
   int maxClusterSize_, minClusterSize_;
+  double residualCut_;
   multimap<float,const GEMEtaPartition*> detLayerMap_;
   vector<TrajectorySeed> trajectorySeedCands_;
   map<GEMDetId, bool> excludingChambers_;

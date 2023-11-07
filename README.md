@@ -37,9 +37,25 @@ git cms-merge-topic yeckang:QC8Unpacker_13_0_X -q
 git clone git@github.com:gem-sw/gemsw.git
 scram b -j10
 cd gemsw/EventFilter/test
-cmsRun qc8Unpack.py inputFiles=file:<file path 1>,file:<file path 2> maxEvents=<number of events to analyze>
+cmsRun qc8Unpack.py inputFiles=file:<file path a>,file:<file path b> maxEvents=<number of events to analyze>
 cmsRun qc8_HARVESTING.py
 ```
+
+# GE21 QC8 unpacking with data directory
+instruction for GE21 QC8 data unpacking (allowed to unpack the compressed data)
+```bash
+cmsrel CMSSW_13_0_9
+cd CMSSW_13_0_9/src
+cmsenv
+git cms-init -q
+git cms-merge-topic yeckang:QC8Unpacker_13_0_X -q
+git clone git@github.com:gem-sw/gemsw.git
+scram b -j10
+cd gemsw/EventFilter/test
+python3 runQC8Unapck_onDir.py -d <path to the dierectory with data>
+cmsRun qc8_HARVESTING.py
+```
+`DQM_V0001_R000000001__Global__CMSSW_X_Y_Z__RECO.root` will contain the efficiency and residual, occupancies.
 
 # The below instructions are out of date
 

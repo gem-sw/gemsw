@@ -26,7 +26,7 @@ process.load('gemsw.Geometry.GeometryQC8GE21_back_cff')
 #process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(10000),
+    input = cms.untracked.int32(1000),
 )
 process.source = cms.Source("EmptySource")
 process.configurationMetadata = cms.untracked.PSet(
@@ -155,6 +155,7 @@ process.GEMTrackFinder = cms.EDProducer("GEMTrackFinderQC8",
                                         maxClusterSize = cms.int32(10),
                                         minClusterSize = cms.int32(1),
                                         trackChi2 = cms.double(1000.0),
+                                        residual = cms.double(100.),
                                         direction = cms.vdouble(0,0,1),
                                         topSeedingChamber = cms.int32(7),
                                         botSeedingChamber = cms.int32(1),
@@ -211,7 +212,7 @@ process.analyzer_step = cms.Path(process.TrackAnalyzer)
 #process.DQM_step = cms.Path(process.DQMDAQ*process.DQMRecHit)
 #process.DQMoutput_step = cms.EndPath(process.DQMoutput)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-#process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
+process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
 #process.dqmout = cms.EndPath(process.dqmEnv + process.dqmSaver)
 
 process.schedule = cms.Schedule(process.generation_step,
@@ -224,8 +225,8 @@ process.analyzer_step,
 #process.DQM_step,
 #process.DQMoutput_step,
 #process.dqmout,)
-process.endjob_step,)
-#process.FEVTDEBUGoutput_step)
+process.endjob_step,
+process.FEVTDEBUGoutput_step)
 
 process.RandomNumberGeneratorService.simMuonGEMDigis = process.RandomNumberGeneratorService.generator
 
