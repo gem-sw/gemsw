@@ -5,7 +5,7 @@ import subprocess
 def runCommand(cmd) :
   subprocess.run(['echo'] + cmd)
   re = subprocess.run(cmd)
-  if re != 0 : exit(re)
+  if re.returncode != 0 : exit(re)
 
 def runQC8Analysis(dataDir, outName) :
   flist = glob(f'{dataDir}/*')
