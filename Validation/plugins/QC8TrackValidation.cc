@@ -126,7 +126,7 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
 
       auto strip = int(etaPart->strip(lp_track));
       int module = (16-ieta)/4 + 1 + (2-ly)*4;
-      int sector = ieta % 4 - 1;
+      int sector = 3 - (16-ieta) % 4;
 
       Key2 key(ch, module);
       Key2 etaKey(ch, ieta);
