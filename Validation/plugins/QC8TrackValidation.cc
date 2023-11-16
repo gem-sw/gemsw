@@ -31,12 +31,12 @@ void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
     track_ch_occ_[ch] = booker.book2D(Form("track_occ_ch%d", ch),
                                       Form("track_occ_ch%d", ch),
                                       6, 0, 6,
-                                      8, 1, 17);
+                                      16, 1, 17);
     booker.setCurrentFolder("GEM/QC8Track/rechit");
     rechit_ch_occ_[ch] = booker.book2D(Form("rechit_occ_ch%d", ch),
                                        Form("rechit_occ_ch%d", ch),
                                        6, 0, 6,
-                                       8, 1, 17);
+                                       16, 1, 17);
     setBinLabelAndTitle(track_ch_occ_[ch]->getTH2F());
     setBinLabelAndTitle(rechit_ch_occ_[ch]->getTH2F());
     for (int idx_mod = 0; idx_mod < 4; idx_mod++) {
@@ -46,12 +46,12 @@ void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
       track_occ_[key] = booker.book2D(Form("track_occ_ch%d_module%d", ch, module),
                                       Form("track_occ_ch%d_module%d", ch, module),
                                       6, 0, 6,
-                                      2, 0, 2);
+                                      4, 0, 4);
       booker.setCurrentFolder("GEM/QC8Track/rechit");
       rechit_occ_[key] = booker.book2D(Form("rechit_occ_ch%d_module%d", ch, module),
                                        Form("rechit_occ_ch%d_module%d", ch, module),
                                        6, 0, 6,
-                                       2, 0, 2);
+                                       4, 0, 4);
       setBinLabelAndTitle(track_occ_[key]->getTH2F(), module);
       setBinLabelAndTitle(rechit_occ_[key]->getTH2F(), module);
     }
@@ -75,12 +75,10 @@ void QC8TrackValidation::setBinLabelAndTitle(TH2F* hist, int module) {
   }
   int nBinsy = hist->GetYaxis()->GetNbins();
   for (int i = 1; i <= nBinsy; i++) {
-    if (module == 0) hist->GetYaxis()->SetBinLabel(i, Form("%d & %d", i*2-1, i*2));
+    if (module == 0) hist->GetYaxis()->SetBinLabel(i, Form("%d", i));
     else {
-      int ieta_offset = (8 - module) % 4 * 4;
-      int ieta_start = ieta_offset + (i-1) * 2 + 1;
-      int ieta_end = ieta_start + 1;
-      hist->GetYaxis()->SetBinLabel(i, Form("%d & %d", ieta_start, ieta_end));
+      int ieta = (8 - module) % 4 * 4 + i;
+      hist->GetYaxis()->SetBinLabel(i, Form("%d", ieta));
     }
   }
 }
@@ -128,7 +126,7 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
 
       auto strip = int(etaPart->strip(lp_track));
       int module = (16-ieta)/4 + 1 + (2-ly)*4;
-      int sector = 1 - ((16-ieta) % 4 / 2);
+      int sector = ieta % 4 - 1;
 
       Key2 key(ch, module);
       Key2 etaKey(ch, ieta);
