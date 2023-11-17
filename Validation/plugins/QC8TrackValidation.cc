@@ -126,7 +126,7 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
 
       auto strip = int(etaPart->strip(lp_track));
       int module = (16-ieta)/4 + 1 + (2-ly)*4;
-      int sector = ieta % 4 - 1;
+      int sector = 3 - (16-ieta) % 4;
 
       Key2 key(ch, module);
       Key2 etaKey(ch, ieta);
@@ -142,9 +142,8 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
       auto range = gemRecHits->get(etaPartId);
       float residual = FLT_MAX;
       for (auto rechit = range.first; rechit != range.second; ++rechit) {
-        auto rechitStrip = etaPart->strip(rechit->localPosition());
-        if (abs(residual) > abs(strip - rechitStrip)) {
-          residual = (strip - rechitStrip);
+        if (abs(residual) > abs(lp_track.x() - rechit->localPosition().x())) {
+          residual = (lp_track.x() - rechit->localPosition().x());
         }
       }
       residual_[etaKey]->Fill(residual);
