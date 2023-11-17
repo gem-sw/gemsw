@@ -142,9 +142,8 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
       auto range = gemRecHits->get(etaPartId);
       float residual = FLT_MAX;
       for (auto rechit = range.first; rechit != range.second; ++rechit) {
-        auto rechitStrip = etaPart->strip(rechit->localPosition());
-        if (abs(residual) > abs(strip - rechitStrip)) {
-          residual = (strip - rechitStrip);
+        if (abs(residual) > abs(lp_track.x() - rechit->localPosition().x())) {
+          residual = (lp_track.x() - rechit->localPosition().x());
         }
       }
       residual_[etaKey]->Fill(residual);
