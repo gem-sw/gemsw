@@ -60,7 +60,7 @@ void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
       Key2 key(ch, ieta);
       residual_[key] = booker.book1D(Form("track_residual_ch%d_ieta%d", ch, ieta),
                                      Form("track_residual_ch%d_ieta%d", ch, ieta),
-                                     100, -200, 200);
+                                     100, -5, 5);
     }
   }
 }
