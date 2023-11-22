@@ -43,107 +43,121 @@ void QC8RecHitSource::bookHistograms(DQMStore::IBooker &booker, edm::Run const &
                                           Form("Rechit Cluster Size Chamber %d;Cluster Size;i#eta", ch),
                                           maxClsSizeToShow_, 0.5, maxClsSizeToShow_ + 0.5,
                                           16, 0.5, 16.5);
+    
     //Not Uploaded 
     // 1 hour
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc1hrEta1_4_[ch] = booker.book2D(Form("digiStrip_occ_1hr_ch%d_eta1_4", ch),
-                                    Form("DigiStrip Occupancy Chamber %d Eta 1-4;events;strip", ch),
+                                    Form("DigiStrip Occupancy Chamber %d Eta 1-4: 1 Hour;events;strip", ch),
                                     6000, 0, 375000,
                                     1536, 0, 1535);
     // Not Uploaded
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc1hrEta5_8_[ch] = booker.book2D(Form("digiStrip_occ_1hr_ch%d_eta5_8", ch),
-                                    Form("DigiStrip Occupancy Chamber %d Eta 5-8;events;strip", ch),
+                                    Form("DigiStrip Occupancy Chamber %d Eta 5-8: 1 Hour;events;strip", ch),
                                     6000, 0, 375000,
                                     1536, 0, 1535);
     //Not Uploaded
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc1hrEta9_12_[ch] = booker.book2D(Form("digiStrip_occ_1hr_ch%d_eta9_12", ch),
-                                     Form("DigiStrip Occupancy Chamber %d Eta 9-12;events;strip", ch),
+                                     Form("DigiStrip Occupancy Chamber %d Eta 9-12: 1 Hour;events;strip", ch),
                                      6000, 0, 375000,
                                      1536, 0, 1535);                                                         // Not Uploaded 
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc1hrEta13_16_[ch] = booker.book2D(Form("digiStrip_occ_1hr_ch%d_eta13_16", ch),
-                                      Form("DigiStrip Occupancy Chamber %d Eta 13-16;events;strip", ch),
+                                      Form("DigiStrip Occupancy Chamber %d Eta 13-16: 1 Hour;events;strip", ch),
                                       6000, 0, 375000,
                                       1536, 0, 1535);
-    booker.setCurrentFolder("GE21QC8/DigiStrip");
-    mapDigiStripOcc5hrEta1_4_[ch] = booker.book2D(Form("digiStrip_occ_5hr_ch%d_eta1_4", ch),
-                                    Form("DigiStrip Occupancy Chamber %d Eta 1-4;events;strip", ch),
-                                    60000, 0, 2000000,
-                                    1536, 0, 1535);
 
     // Not Uploaded
     // 5 Hour
     booker.setCurrentFolder("GE21QC8/DigiStrip");
+    mapDigiStripOcc5hrEta1_4_[ch] = booker.book2D(Form("digiStrip_occ_5hr_ch%d_eta1_4", ch),
+                                    Form("DigiStrip Occupancy Chamber %d Eta 1-4: 5 Hours;events;strip", ch),
+                                    6000, 0, 2000000,
+                                    //60000, 0, 2000000,
+                                    1536, 0, 1535);
+    booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc5hrEta5_8_[ch] = booker.book2D(Form("digiStrip_occ_5hr_ch%d_eta5_8", ch),
-                                    Form("DigiStrip Occupancy Chamber %d Eta 5-8;events;strip", ch),
-                                    60000, 0, 2000000,
+                                    Form("DigiStrip Occupancy Chamber %d Eta 5-8;events: 5 Hours;strip", ch),
+                                    6000, 0, 2000000,
+                                    //60000, 0, 2000000,
                                     1536, 0, 1535);
     // Not Uploaded
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc5hrEta9_12_[ch] = booker.book2D(Form("digiStrip_occ_5hr_ch%d_eta9_12", ch),
-                                     Form("DigiStrip Occupancy Chamber %d Eta 9-12;events;strip", ch),
-                                     60000, 0, 2000000,
+                                     Form("DigiStrip Occupancy Chamber %d Eta 9-12: 5 Hours;events;strip", ch),
+                                     6000, 0, 2000000,
+                                     //60000, 0, 2000000,
                                      1536, 0, 1535);
     // Not Uploaded 
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc5hrEta13_16_[ch] = booker.book2D(Form("digiStrip_occ_5hr_ch%d_eta13_16", ch),
-                                      Form("DigiStrip Occupancy Chamber %d Eta 13-16;events;strip", ch),
-                                      60000, 0, 2000000,
+                                      Form("DigiStrip Occupancy Chamber %d Eta 13-16: 5 Hours;events;strip", ch),
+                                      6000, 0, 2000000,
+                                      //60000, 0, 2000000,
                                       1536, 0, 1535);
     // Not Uploaded 
     // 10 hour 
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc10hrEta1_4_[ch] = booker.book2D(Form("digiStrip_occ_10hr_ch%d_eta1_4", ch),
-                                     Form("DigiStrip Occupancy Chamber %d Eta 1-4;events;strip", ch),
-                                     60000, 0, 3750000,
+                                     Form("DigiStrip Occupancy Chamber %d Eta 1-4: 10 Hours;events;strip", ch),
+                                     6000, 0, 3750000,
+                                     //60000, 0, 3750000,
                                      1536, 0, 1535);
 
     // Not Uploaded
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc10hrEta5_8_[ch] = booker.book2D(Form("digiStrip_occ_10hr_ch%d_eta5_8", ch),
-                                     Form("DigiStrip Occupancy Chamber %d Eta 5-8;events;strip", ch),
-                                     60000, 0, 3750000,
+                                     Form("DigiStrip Occupancy Chamber %d Eta 5-8: 10 Hours;events;strip", ch),
+                                     6000, 0, 3750000,
+                                     //60000, 0, 3750000,
                                      1536, 0, 1535);
     // Not Uploaded
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc10hrEta9_12_[ch] = booker.book2D(Form("digiStrip_occ_10hr_ch%d_eta9_12", ch),
-                                      Form("DigiStrip Occupancy Chamber %d Eta 9-12;events;strip", ch),
-                                      60000, 0, 3750000,
+                                      Form("DigiStrip Occupancy Chamber %d Eta 9-12: 10 Hours;events;strip", ch),
+                                      6000, 0, 3750000,
+                                      //60000, 0, 3750000,
                                       1536, 0, 1535);
     // Not Uploaded 
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc10hrEta13_16_[ch] = booker.book2D(Form("digiStrip_occ_10hr_ch%d_eta13_16", ch),
-                                       Form("DigiStrip Occupancy Chamber %d Eta 13-16;events;strip", ch),
-                                       60000, 0, 3750000,
+                                       Form("DigiStrip Occupancy Chamber %d Eta 13-16: 10 Hours;events;strip", ch),
+                                       6000, 0, 3750000,
+                                       //60000, 0, 3750000,
                                        1536, 0, 1535);
     // Not Uploaded 
     // 24 hours 
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc24hrEta1_4_[ch] = booker.book2D(Form("digiStrip_occ_24hr_ch%d_eta1_4", ch),
-                                     Form("DigiStrip Occupancy Chamber %d Eta 1-4;events;strip", ch),
-                                     90000, 0, 8750000,
+                                     Form("DigiStrip Occupancy Chamber %d Eta 1-4: 24 Hours;events;strip", ch),
+                                     6000, 0, 8750000,
+                                     //90000, 0, 8750000,
                                      1536, 0, 1535);
 
     // Not Uploaded
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc24hrEta5_8_[ch] = booker.book2D(Form("digiStrip_occ_24hr_ch%d_eta5_8", ch),
-                                     Form("DigiStrip Occupancy Chamber %d Eta 5-8;events;strip", ch),
-                                     90000, 0, 8750000,
+                                     Form("DigiStrip Occupancy Chamber %d Eta 5-8: 24 Hours;events;strip", ch),
+                                     6000, 0, 8750000,
+                                     //90000, 0, 8750000,
                                      1536, 0, 1535);
     // Not Uploaded 
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc24hrEta9_12_[ch] = booker.book2D(Form("digiStrip_occ_24hr_ch%d_eta9_12", ch),
-                                      Form("DigiStrip Occupancy Chamber %d Eta 9-12;events;strip", ch),
-                                      90000, 0, 8750000,
+                                      Form("DigiStrip Occupancy Chamber %d Eta 9-12: 24 Hours;events;strip", ch),
+                                      6000, 0, 8750000,
+                                      //90000, 0, 8750000,
                                       1536, 0, 1535);
     // Not Uploaded 
     booker.setCurrentFolder("GE21QC8/DigiStrip");
     mapDigiStripOcc24hrEta13_16_[ch] = booker.book2D(Form("digiStrip_occ_24hr_ch%d_eta13_16", ch),
-                                       Form("DigiStrip Occupancy Chamber %d Eta 13-16;events;strip", ch),
-                                       90000, 0, 8750000,
+                                       Form("DigiStrip Occupancy Chamber %d Eta 13-16: 24 Hours;events;strip", ch),
+                                       6000, 0, 8750000,
+                                       //90000, 0, 8750000,
                                        1536, 0, 1535);
+    
   }
 }
 
@@ -173,7 +187,7 @@ void QC8RecHitSource::analyze(edm::Event const &event, edm::EventSetup const &iS
     for (auto digi = digiRange.first; digi != digiRange.second; ++digi) {
       auto strip = digi->strip();
       mapDigiOcc_[ch]->Fill(strip, ieta);
-      if (ieta >= 1 && ieta <= 4) {
+     if (ieta >= 1 && ieta <= 4) {
         if (ieta == 2) {
           strip = strip + 384;
         }
@@ -184,6 +198,54 @@ void QC8RecHitSource::analyze(edm::Event const &event, edm::EventSetup const &iS
           strip = strip + 1152;
         }
         mapDigiStripOcc1hrEta1_4_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc5hrEta1_4_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc10hrEta1_4_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc24hrEta1_4_[ch]->Fill(nEvent,strip);
+      }
+     if (ieta >= 5 && ieta <= 8) {
+        if (ieta == 6) {
+          strip = strip + 384;
+        }
+        if (ieta == 7) {
+          strip = strip + 768;
+        }
+        if (ieta == 8) {
+          strip = strip + 1152;
+        }
+        mapDigiStripOcc1hrEta5_8_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc5hrEta5_8_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc10hrEta5_8_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc24hrEta5_8_[ch]->Fill(nEvent,strip);
+      }
+     if (ieta >= 9 && ieta <= 12) {
+        if (ieta == 10) {
+          strip = strip + 384;
+        }
+        if (ieta == 11) {
+          strip = strip + 768;
+        }
+        if (ieta == 12) {
+          strip = strip + 1152;
+        }
+        mapDigiStripOcc1hrEta9_12_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc5hrEta9_12_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc10hrEta9_12_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc24hrEta9_12_[ch]->Fill(nEvent,strip);
+      }
+     if (ieta >= 13 && ieta <= 16) {
+        if (ieta == 14) {
+          strip = strip + 384;
+        }
+        if (ieta == 15) {
+          strip = strip + 768;
+        }
+        if (ieta == 16) {
+          strip = strip + 1152;
+        }
+        mapDigiStripOcc1hrEta13_16_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc5hrEta13_16_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc10hrEta13_16_[ch]->Fill(nEvent,strip);
+        mapDigiStripOcc24hrEta13_16_[ch]->Fill(nEvent,strip);
       }
     } 
    auto rechitRange = gemRecHit->get(gId);

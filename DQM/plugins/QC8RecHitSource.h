@@ -64,7 +64,6 @@ private:
   std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc24hrEta5_8_;
   std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc24hrEta9_12_;
   std::map<unsigned int, dqm::impl::MonitorElement*> mapDigiStripOcc24hrEta13_16_;
-
   int maxClsSizeToShow_ = 10;
 };
 
