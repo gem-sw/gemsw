@@ -40,6 +40,16 @@ void QC8Harvestor::dqmEndJob(DQMStore::IBooker& booker, DQMStore::IGetter& gette
         TString eff_title_module = Form("efficiency ch%d module%d", ch_num, module_num);
 
         bookEff2D(booker, getter, rechit_histName_module, track_histName_module, eff_path, eff_name_module, eff_title_module);
+        for (int k = 0; k < 4; k++) {
+          int ieta = 16 - 4 * (j % 4) - k;
+          TString track_histName_ieta = track_histName_ch + Form("_ieta%d", ieta);
+          TString rechit_histName_ieta = rechit_histName_ch + Form("_ieta%d", ieta);
+
+          TString eff_name_ieta = Form("efficiency_ch%d_ieta%d", ch_num, ieta);
+          TString eff_title_ieta = Form("efficiency ch%d module%d ieta%d", ch_num, module_num, ieta);
+
+          bookEff1D(booker, getter, rechit_histName_ieta, track_histName_ieta, eff_path, eff_name_ieta, eff_title_ieta);
+        }
       }
     }
   }
@@ -66,6 +76,16 @@ void QC8Harvestor::dqmEndJob(DQMStore::IBooker& booker, DQMStore::IGetter& gette
         TString eff_title_module = Form("efficiency ch%d module%d", ch_num, module_num);
 
         bookEff2D(booker, getter, rechit_histName_module, simhit_histName_module, eff_path, eff_name_module, eff_title_module);
+        for (int k = 0; k < 4; k++) {
+          int ieta = 16 - 4 * (j % 4) - k;
+          TString simhit_histName_ieta = simhit_histName_ch + Form("_ieta%d", ch_num);
+          TString rechit_histName_ieta = rechit_histName_ch + Form("_ieta%d", ch_num);
+
+          TString eff_name_ieta = Form("efficiency_ch%d_ieta%d", ch_num, ieta);
+          TString eff_title_ieta = Form("efficiency ch%d module%d ieta%d", ch_num, module_num, ieta);
+
+          bookEff1D(booker, getter, rechit_histName_ieta, simhit_histName_ieta, eff_path, eff_name_ieta, eff_title_ieta);
+        }
       }
     }
   }
