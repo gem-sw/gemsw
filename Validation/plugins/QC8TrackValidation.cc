@@ -37,8 +37,8 @@ void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
                                        Form("rechit_occ_ch%d", ch),
                                        6, 0, 6,
                                        16, 1, 17);
-    setBinLabelAndTitle(track_ch_occ_[ch]->getTH2F());
-    setBinLabelAndTitle(rechit_ch_occ_[ch]->getTH2F());
+    setBinLabelAndTitle2D(track_ch_occ_[ch]->getTH2F());
+    setBinLabelAndTitle2D(rechit_ch_occ_[ch]->getTH2F());
     for (int idx_mod = 0; idx_mod < 4; idx_mod++) {
       int module = idx_mod + (2 -ly) * 4 + 1;
       Key2 key(ch, module);
@@ -52,8 +52,8 @@ void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
                                        Form("rechit_occ_ch%d_module%d", ch, module),
                                        6, 0, 6,
                                        4, 0, 4);
-      setBinLabelAndTitle(track_occ_[key]->getTH2F(), module);
-      setBinLabelAndTitle(rechit_occ_[key]->getTH2F(), module);
+      setBinLabelAndTitle2D(track_occ_[key]->getTH2F(), module);
+      setBinLabelAndTitle2D(rechit_occ_[key]->getTH2F(), module);
 
     }
     for (int ieta = 1; ieta < 17; ieta++) {
@@ -66,17 +66,20 @@ void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
       booker.setCurrentFolder("GEM/QC8Track/track");
       track_occ_ieta_[key] = booker.book1D(Form("track_occ_ch%d_ieta%d", ch, ieta),
                                       Form("track_occ_ch%d_ieta%d", ch, ieta),
-                                      16, 0, 16);
+                                      16, 1, 385);
       booker.setCurrentFolder("GEM/QC8Track/rechit");
       rechit_occ_ieta_[key] = booker.book1D(Form("rechit_occ_ch%d_ieta%d", ch, ieta),
                                        Form("rechit_occ_ch%d_ieta%d", ch, ieta),
-                                       16, 0, 16);
+                                       16, 1, 385);
+      setBinLabelAndTitle1D(residual_[key]->getTH1F(), "x [cm]");
+      setBinLabelAndTitle1D(track_occ_ieta_[key]->getTH1F(), "strip");
+      setBinLabelAndTitle1D(rechit_occ_ieta_[key]->getTH1F(), "strip");
     }
   }
 }
 
-void QC8TrackValidation::setBinLabelAndTitle(TH2F* hist, int module) {
-  hist->GetXaxis()->SetTitle("ix");
+void QC8TrackValidation::setBinLabelAndTitle2D(TH2F* hist, int module) {
+  hist->GetXaxis()->SetTitle("i#phi");
   hist->GetYaxis()->SetTitle("i#eta");
 
   int nBinsx = hist->GetXaxis()->GetNbins();
@@ -91,6 +94,15 @@ void QC8TrackValidation::setBinLabelAndTitle(TH2F* hist, int module) {
       hist->GetYaxis()->SetBinLabel(i, Form("%d", ieta));
     }
   }
+}
+
+void QC8TrackValidation::setBinLabelAndTitle1D(TH1F* hist, std::string xlabel) {
+  hist->GetXaxis()->SetTitle(xlabel.c_str());
+
+  //int nBinsx = hist->GetXaxis()->GetNbins();
+  //for (int i = 1; i <= nBinsx; i++) {
+  //  hist->GetXaxis()->SetBinLabel(i, Form("%d", i));
+  //}
 }
 
 void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -120,7 +132,6 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
       auto gemId = GEMDetId(rechit->geographicalId());
       tsosMap[gemId] = tsos;
     }
-
     for (auto hit : track->recHits()) {
       auto etaPart = GEMGeometry_->etaPartition(hit->geographicalId());
       auto etaPartId = etaPart->id();
@@ -142,13 +153,13 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
 
       track_occ_[key]->Fill(strip / 64, sector);
       track_ch_occ_[ch]->Fill(strip / 64, ieta);
-      track_occ_ieta_[etaKey]->Fill(strip / 32);
+      track_occ_ieta_[etaKey]->Fill(strip);
 
       if (!hit->isValid()) continue;
 
       rechit_occ_[key]->Fill(strip / 64, sector);
       rechit_ch_occ_[ch]->Fill(strip / 64, ieta);
-      rechit_occ_ieta_[etaKey]->Fill(strip / 32);
+      rechit_occ_ieta_[etaKey]->Fill(strip);
 
       auto range = gemRecHits->get(etaPartId);
       float residual = FLT_MAX;
