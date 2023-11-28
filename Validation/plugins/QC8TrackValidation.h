@@ -66,7 +66,8 @@ private:
   virtual void analyze(const edm::Event&, const edm::EventSetup&);
   virtual void bookHistograms(DQMStore::IBooker&, edm::Run const&, edm::EventSetup const&) override;
 
-  void setBinLabelAndTitle(TH2F* hist, int module = 0);
+  void setBinLabelAndTitle2D(TH2F* hist, int module = 0);
+  void setBinLabelAndTitle1D(TH1F* hist, std::string xlabel);
 
   std::pair<int, int> getModuleVfat(int ieta, int strip);
 
