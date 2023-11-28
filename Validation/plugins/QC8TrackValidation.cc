@@ -54,13 +54,23 @@ void QC8TrackValidation::bookHistograms(DQMStore::IBooker& booker,
                                        4, 0, 4);
       setBinLabelAndTitle(track_occ_[key]->getTH2F(), module);
       setBinLabelAndTitle(rechit_occ_[key]->getTH2F(), module);
+
     }
     for (int ieta = 1; ieta < 17; ieta++) {
-      booker.setCurrentFolder("GEM/QC8Track/residual");
       Key2 key(ch, ieta);
+      booker.setCurrentFolder("GEM/QC8Track/residual");
       residual_[key] = booker.book1D(Form("track_residual_ch%d_ieta%d", ch, ieta),
                                      Form("track_residual_ch%d_ieta%d", ch, ieta),
-                                     100, -200, 200);
+                                     100, -5, 5);
+      clustersize_ = booker.book1D("clustersize", "Cluster Size", 20, 0, 20);
+      booker.setCurrentFolder("GEM/QC8Track/track");
+      track_occ_ieta_[key] = booker.book1D(Form("track_occ_ch%d_ieta%d", ch, ieta),
+                                      Form("track_occ_ch%d_ieta%d", ch, ieta),
+                                      16, 0, 16);
+      booker.setCurrentFolder("GEM/QC8Track/rechit");
+      rechit_occ_ieta_[key] = booker.book1D(Form("rechit_occ_ch%d_ieta%d", ch, ieta),
+                                       Form("rechit_occ_ch%d_ieta%d", ch, ieta),
+                                       16, 0, 16);
     }
   }
 }
@@ -114,7 +124,6 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
     for (auto hit : track->recHits()) {
       auto etaPart = GEMGeometry_->etaPartition(hit->geographicalId());
       auto etaPartId = etaPart->id();
-
       if (tsosMap.find(etaPartId) == tsosMap.end()) continue;
       auto tsos = tsosMap[etaPartId];
 
@@ -133,20 +142,25 @@ void QC8TrackValidation::analyze(const edm::Event& iEvent, const edm::EventSetup
 
       track_occ_[key]->Fill(strip / 64, sector);
       track_ch_occ_[ch]->Fill(strip / 64, ieta);
+      track_occ_ieta_[etaKey]->Fill(strip / 32);
 
       if (!hit->isValid()) continue;
 
       rechit_occ_[key]->Fill(strip / 64, sector);
       rechit_ch_occ_[ch]->Fill(strip / 64, ieta);
+      rechit_occ_ieta_[etaKey]->Fill(strip / 32);
 
       auto range = gemRecHits->get(etaPartId);
       float residual = FLT_MAX;
+      int nhits = -1;
       for (auto rechit = range.first; rechit != range.second; ++rechit) {
         if (abs(residual) > abs(lp_track.x() - rechit->localPosition().x())) {
           residual = (lp_track.x() - rechit->localPosition().x());
+          nhits = rechit->clusterSize();
         }
       }
       residual_[etaKey]->Fill(residual);
+      clustersize_->Fill(nhits);
     }
   }
 }
